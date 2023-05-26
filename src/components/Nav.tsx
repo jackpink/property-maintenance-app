@@ -32,7 +32,7 @@ type NavPopoverProps = {
 }
 
 const NavPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', className, ...props }) => {
-  let [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className={clsx('inline', className, display)} {...props}>
