@@ -1,4 +1,3 @@
-import { type NextComponentType } from 'next'
 import { type PropsWithChildren } from 'react';
 import Head from "next/head";
 
