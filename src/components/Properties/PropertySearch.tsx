@@ -1,18 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
-
-const filterProperties= (properties: IProperty[], term: string): IProperty[] => {
-    // if type and job.type match then keep
-    const filteredProperties: IProperty[] = []
-    properties.forEach(property => {
-        const suburb = property.suburb.toLowerCase();
-        const suburbMatch: boolean = suburb.includes(term.toLowerCase());
-        if (suburbMatch) {
-            filteredProperties.push(property)
-            //console.log(job.type, typeValue)
-        }
-    });
-    return filteredProperties;
-}
+import { type Dispatch, type SetStateAction } from 'react';
 
 
 type Props = {

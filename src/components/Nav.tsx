@@ -4,7 +4,7 @@ import { Dialog } from '@headlessui/react'
 import clsx from 'clsx';
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
-export function NavItems() {
+const NavItems: React.FC = () => {
   return (
     <>
       <li>
@@ -31,7 +31,7 @@ type NavPopoverProps = {
     className: string
 }
 
-export function NavPopover({ display = 'md:hidden', className, ...props }: NavPopoverProps) {
+const NavPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', className, ...props }) => {
   let [isOpen, setIsOpen] = useState(false)
 
   return (

@@ -30,7 +30,7 @@ const Properties: React.FC<Props> = ({ properties} ) => {
     useEffect(() => {
         const newFilteredProperties = filterProperties(properties, searchTerm);
         setFilteredProperties(newFilteredProperties);
-    }, [searchTerm])
+    }, [searchTerm, properties])
 
     console.log(searchTerm);
     console.log(filteredProperties);
