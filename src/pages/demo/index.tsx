@@ -6,11 +6,11 @@ const properties: IProperty[] = [{apartment: '', streetnumber: '47', street: 'Do
 const DemoPage: NextPage = () => {
 
     return(
-        <>
+        <div className="grid grid-cols-1 flex flex-col  w-9/12 md:w-8/12 lg:w-7/12 xl:w-128">
             <h1>Demo Page - Trade Dashboard</h1>
             <Properties properties={properties} /> 
             <h1>Recents Jobs</h1>
-        </>
+        </div>
     )
 }
 
