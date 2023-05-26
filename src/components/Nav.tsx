@@ -98,7 +98,6 @@ export function NavPopover({ display = 'md:hidden', className, ...props }: NavPo
 
 
 const Nav: React.FC = () => {
-    const hasNav = true;
 
     return(
          <>
