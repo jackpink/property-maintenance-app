@@ -1,5 +1,6 @@
 import { type PropsWithChildren } from 'react';
 import Head from "next/head";
+import Nav from './Nav';
 
 
 
@@ -12,7 +13,7 @@ const PageLayout = ({ children }: PropsWithChildren) => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#ccfbf0] to-[#f0fdfa]">
-            
+                <Nav />
                 {children}
             </main>
         </>
