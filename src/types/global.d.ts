@@ -1,9 +1,14 @@
 export {}
 
 declare global {
-  interface IPost {
-    id: number
-    title: string
-    body: string
+  interface IProperty {
+    apartment: string
+    streetnumber: string
+    street: string
+    suburb: string
+    postcode: string
+    state: string
+    country: string
+    lastjob: string
   }
 }
