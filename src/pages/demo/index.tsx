@@ -1,7 +1,10 @@
 import { type NextPage } from "next";
 import Properties from "~/components/Properties";
+import RecentJobs from "~/components/RecentJobs";
 
 const properties: IProperty[] = [{apartment: '', streetnumber: '47', street: 'Donnelly Street', suburb: 'Balmain', postcode: '2041', state: 'NSW', country: 'Australia', lastjob: 'Patch and Paint'}, {apartment: '7602', streetnumber: '177-219', street: 'Mitchell Road', suburb: 'Erskinville', postcode: '2043', state: 'NSW', country: 'Australia', lastjob: 'Repair Leaking Tap'}]
+
+const recentJobs: IJob[] = [{id: '1', title: "Repair Leaking Tap", property: {apartment: '7602', streetnumber: '177-219', street: 'Mitchell Road', suburb: 'Erskinville', postcode: '2043', state: 'NSW', country: 'Australia', lastjob: 'Repair Leaking Tap'}, documents: [], photos: [], notes: [], date: new Date(2023,5,27,12,0,0,0)}, {id: '2', title: 'Repair Leaking Tap', property: {apartment: '', streetnumber: '47', street: 'Donnelly Street', suburb: 'Balmain', postcode: '2041', state: 'NSW', country: 'Australia', lastjob: 'Patch and Paint'}, documents: [], photos: [], notes: [], date: new Date(2023,5,24,11,0,0,0)}]
 
 const DemoPage: NextPage = () => {
 
@@ -13,6 +16,7 @@ const DemoPage: NextPage = () => {
             <Properties properties={properties} /> 
             <div className="pb-8 mb-8 border-black border-b-2"></div>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Recents Jobs</h2>
+            <RecentJobs recentJobs={recentJobs} />
         </div>
     )
 }

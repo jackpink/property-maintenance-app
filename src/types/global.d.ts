@@ -11,4 +11,13 @@ declare global {
     country: string
     lastjob: string
   }
+  interface IJob {
+    id: string
+    title: string
+    property: IProperty
+    documents: string[]
+    photos: string[]
+    notes: string[]
+    date: Date
+  }
 }

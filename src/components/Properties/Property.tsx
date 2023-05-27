@@ -1,7 +1,7 @@
 import Image from "next/image";
 import house from '../../images/demo-page/house-stock-image.png';
 
-const concatAddress = (property: IProperty) => {
+export const concatAddress = (property: IProperty) => {
     let address = property.streetnumber + ' ' + property.street + ', ' + property.suburb + ', ' + property.state + ', ' + property.country;
     if (!(property.apartment === '')) {
         // add apartment number in front /
