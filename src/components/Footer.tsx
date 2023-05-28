@@ -3,7 +3,7 @@
 
 const Footer: React.FC = () => {
     return(
-        <footer className="bg-white grid grid-cols-1 flex flex-col xl:w-128" aria-labelledby="footer-heading">
+        <footer className="grid grid-cols-1 flex flex-col xl:w-128" aria-labelledby="footer-heading">
         <h2 id="footer-heading" className="sr-only">Footer</h2>
 
         <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-16">

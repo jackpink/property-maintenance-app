@@ -32,8 +32,6 @@ const Properties: React.FC<Props> = ({ properties} ) => {
         setFilteredProperties(newFilteredProperties);
     }, [searchTerm, properties])
 
-    console.log(searchTerm);
-    console.log(filteredProperties);
     return(
         <div>
             <PropertySearch setSearchTerm={setSearchTerm}/>
