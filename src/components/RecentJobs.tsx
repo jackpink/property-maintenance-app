@@ -10,11 +10,11 @@ type RecentJobsProps = {
 
 const Job: React.FC<JobProps> = ({ job }) => {
     const address = concatAddress(job.property);
-    const date = job.date.getDate();
+    const date = job.date.toDateString();
     return(
         <div className="grid grid-cols-4 border-solid border-2 border-teal-800 rounded-xl w-full hover:bg-black/20" >
             <div className="col-span-3 relative">
-                <h1 className="text-slate-900 font-extrabold text-lg lg:text-2xl p-3">{job.title}</h1>
+                <h1 className="text-slate-900 text-lg font-extrabold lg:text-2xl p-3">{job.title}</h1>
                 <h2 className="p-3 font-italic">{address}</h2>
             </div>
             <div className=" relative">

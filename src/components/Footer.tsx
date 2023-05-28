@@ -12,60 +12,30 @@ const Footer: React.FC = () => {
             <div className="grid grid-cols-2 gap-8 mt-12 xl:mt-0 xl:col-span-2">
                 <div className="md:grid md:grid-cols-2 md:gap-8">
                 <div>
-                    <h3 className="text-sm font-bold tracking-wider text-teal-600 uppercase">Navigation</h3>
+                    <h3 className="text-sm font-bold tracking-wider text-teal-600 uppercase">Trades</h3>
                     <ul role="list" className="mt-4 space-y-2">
                     <li>
-                        <a href="./pricing.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Pricing </a>
+                        <a href="./pricing.html" className="text-base font-normal text-gray-500 hover:text-blue-600">Dashboard</a>
                     </li>
                     <li>
-                        <a href="./templates.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> All Templates </a>
+                        <a href="./templates.html" className="text-base font-normal text-gray-500 hover:text-blue-600">Properties</a>
                     </li>
                     <li>
-                        <a href="./landing-pages.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Landing Pages </a>
+                        <a href="./landing-pages.html" className="text-base font-normal text-gray-500 hover:text-blue-600">Jobs</a>
                     </li>
                     <li>
-                        <a href="./nextjs.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Next.js Templates </a>
+                        <a href="./nextjs.html" className="text-base font-normal text-gray-500 hover:text-blue-600">Demo</a>
                     </li>
                     <li>
-                        <a href="./multi-page.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Full Templates </a>
-                    </li>
-                    <li>
-                        <a href="./demos.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Free Templates </a>
-                    </li>
-                    <li>
-                        <a href="./documentation.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Documentation </a>
-                    </li>
-                    <li>
-                        <a href="./expo.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Customers </a>
-                    </li>
-                    <li>
-                        <a href="https://wickedlabs.dev/" className="text-base font-normal text-gray-500 hover:text-blue-600"> About </a>
+                        <a href="./multi-page.html" className="text-base font-normal text-gray-500 hover:text-blue-600">Pricing</a>
                     </li>
                     </ul>
                 </div>
                 <div className="mt-12 md:mt-0">
-                    <h3 className="text-sm font-bold tracking-wider text-teal-600 uppercase">UI/UX &amp; Dev</h3>
+                    <h3 className="text-sm font-bold tracking-wider text-teal-600 uppercase">Home Owners</h3>
                     <ul role="list" className="mt-4 space-y-2">
                     <li>
-                        <a href="https://www.wickedblocks.dev" className="text-base font-normal text-gray-500 hover:text-blue-600"> Wickled Blocks </a>
-                    </li>
-                    <li>
-                        <a href="https://www.wickedbackgrounds.com/" className="text-base font-normal text-gray-500 hover:text-blue-600"> Wicked Backgrounds </a>
-                    </li>
-                    <li>
-                        <a href="https://wickedpopups.com/" className="text-base font-normal text-gray-500 hover:text-blue-600"> Wicked Popup's </a>
-                    </li>
-                    <li>
-                        <a href="https://www.colorsandfonts.com/.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Colors &amp; Fonts </a>
-                    </li>
-                    <li>
-                        <a href="https://30daysoftailwindcss.com/" className="text-base font-normal text-gray-500 hover:text-blue-600"> 30 Days Of Tailwind CSS</a>
-                    </li>
-                    <li>
-                        <a href="https://www.wvsc.dev/.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Wicked VS Code</a>
-                    </li>
-                    <li>
-                        <a href="https://www.brutalist.one/.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Brutalist Websites</a>
+                        <a href="https://www.wickedblocks.dev" className="text-base font-normal text-gray-500 hover:text-blue-600"> TBC </a>
                     </li>
                     </ul>
                 </div>
@@ -75,7 +45,7 @@ const Footer: React.FC = () => {
                     <h3 className="text-sm font-bold tracking-wider text-teal-600 uppercase">Legal</h3>
                     <ul role="list" className="mt-4 space-y-2">
                     <li>
-                        <a href="./changelog.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> Changelog </a>
+                        <a href="./changelog.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> About</a>
                     </li>
                     <li>
                         <a href="./faq.html" className="text-base font-normal text-gray-500 hover:text-blue-600"> FAQ </a>
