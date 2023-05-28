@@ -1,6 +1,7 @@
 import { type PropsWithChildren } from 'react';
 import Head from "next/head";
 import Nav from './Nav';
+import Footer from './Footer';
 
 
 
@@ -15,7 +16,9 @@ const PageLayout = ({ children }: PropsWithChildren) => {
             <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#ccfbf0] to-[#f0fdfa]">
                 <Nav />
                 {children}
+                <Footer />
             </main>
+            
         </>
     );
 }
