@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
+import RoomSelector from "./RoomSelector";
 
 type NavPopoverProps = {
     display: string
     className: string
+    levels: ILevel[]
 }
 
-const RoomPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', className, ...props }) => {
+const RoomPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', className, levels, ...props }) => {
     const [isOpen, setIsOpen] = useState(false)
   
     return (
@@ -52,7 +54,7 @@ const RoomPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', classNa
                   />
                   </svg>
               </button>
-              <p>Rooms</p>
+             <RoomSelector levels={levels} />
               
               </div>
           </Dialog>
