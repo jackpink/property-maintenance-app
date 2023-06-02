@@ -4,9 +4,8 @@ We could sort these on the front end before rendering, however,
 I think it would be best if this was handled in the backend, ideally
 in the original sql queries for speed
 */
-import { SetStateAction, Dispatch } from 'react';
+import type { SetStateAction, Dispatch } from 'react';
 
-import { PropsWithChildren } from "react"
 
 type RoomButtonProps = {
     room: IRoom
@@ -40,7 +39,7 @@ type Props = {
         <div className="grid grid-cols-1 gap-2 text-center ">
             <h1>{level?.label}</h1>
             {level?.rooms.map((room, index) => 
-                <RoomButton room={room} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+                <RoomButton key={index} room={room} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
             )}
         </div>
     )

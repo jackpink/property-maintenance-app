@@ -1,7 +1,6 @@
-import { ReactComponentElement, useState, type PropsWithChildren } from "react";
+import { useState, type PropsWithChildren } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
-import RoomSelector from "./RoomSelector";
 
 type NavPopoverProps = {
     className: string
