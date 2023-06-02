@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { ReactComponentElement, useState, type PropsWithChildren } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
 import RoomSelector from "./RoomSelector";
 
 type NavPopoverProps = {
     className: string
-    levels: ILevel[]
     selectedRoom: string
 }
 
-const RoomPopover: React.FC<NavPopoverProps> = ({ className, levels, selectedRoom, ...props }) => {
+const RoomPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ className, selectedRoom, ...props }) => {
     const [isOpen, setIsOpen] = useState(false)
     return (
       <div className={clsx('inline', className)} {...props}>
@@ -19,15 +18,11 @@ const RoomPopover: React.FC<NavPopoverProps> = ({ className, levels, selectedRoo
               onClick={() => setIsOpen(true)}
           >
               <p className="">Select Room</p>
-              <svg width="24" height="24" fill="none" aria-hidden="true">
-              <path
-                  d="M12 6v.01M12 12v.01M12 18v.01M12 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-              />
-              </svg>
+             
+              <svg fill="currentColor" viewBox="0 0 20 20" className="w-8 h-8">
+                    <path x-show="!open" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <p  className="border rounded border-teal-800 bg-teal-300 p-2" >{selectedRoom}</p>
           </button>
           <Dialog
               as="div"
@@ -53,8 +48,7 @@ const RoomPopover: React.FC<NavPopoverProps> = ({ className, levels, selectedRoo
                   />
                   </svg>
               </button>
-             <RoomSelector levels={levels} selectedRoom={selectedRoom} />
-              
+              {props.children}
               </div>
           </Dialog>
         </div>

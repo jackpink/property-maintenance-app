@@ -1,6 +1,8 @@
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
 import RoomPopover from './RoomPopover';
+import RoomSelector from './RoomSelector';
+import { SetStateAction, Dispatch } from 'react';
 
 /* 
 Need to create columns for the levels of the property, 
@@ -16,12 +18,15 @@ Then create a hidden version which is displayed on larger screen size
 type Props = {
     levels: ILevel[]
     selectedRoom: string
+    setSelectedRoom: Dispatch<SetStateAction<string>>
 }
 
-const Rooms: React.FC<Props> = ({ levels, selectedRoom }) => {
+const Rooms: React.FC<Props> = ({ levels, selectedRoom, setSelectedRoom }) => {
     return (
         <div>
-            <RoomPopover className="ml-2 -my-1"  levels={levels} selectedRoom={selectedRoom} />
+            <RoomPopover className="ml-2 -my-1" selectedRoom={selectedRoom} >
+                <RoomSelector levels={levels} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+            </RoomPopover>
         </div>
     )}
 
