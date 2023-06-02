@@ -4,16 +4,15 @@ import clsx from 'clsx';
 import RoomSelector from "./RoomSelector";
 
 type NavPopoverProps = {
-    display: string
     className: string
     levels: ILevel[]
+    selectedRoom: string
 }
 
-const RoomPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', className, levels, ...props }) => {
+const RoomPopover: React.FC<NavPopoverProps> = ({ className, levels, selectedRoom, ...props }) => {
     const [isOpen, setIsOpen] = useState(false)
-  
     return (
-      <div className={clsx('inline', className, display)} {...props}>
+      <div className={clsx('inline', className)} {...props}>
           <button
               type="button"
               className="text-slate-500 w-1/2 h-8 flex items-center justify-center hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
@@ -32,7 +31,7 @@ const RoomPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', classNa
           </button>
           <Dialog
               as="div"
-              className={clsx('fixed z-50 inset-0', display)}
+              className={clsx('fixed z-50 inset-0')}
               open={isOpen}
               onClose={setIsOpen}
           >
@@ -54,7 +53,7 @@ const RoomPopover: React.FC<NavPopoverProps> = ({ display = 'md:hidden', classNa
                   />
                   </svg>
               </button>
-             <RoomSelector levels={levels} />
+             <RoomSelector levels={levels} selectedRoom={selectedRoom} />
               
               </div>
           </Dialog>

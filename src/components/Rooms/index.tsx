@@ -15,13 +15,13 @@ Then create a hidden version which is displayed on larger screen size
 
 type Props = {
     levels: ILevel[]
+    selectedRoom: string
 }
 
-const Rooms: React.FC<Props> = ({ levels }) => {
-  
+const Rooms: React.FC<Props> = ({ levels, selectedRoom }) => {
     return (
         <div>
-            <RoomPopover className="ml-2 -my-1" display="lg:hidden" levels={levels} />
+            <RoomPopover className="ml-2 -my-1"  levels={levels} selectedRoom={selectedRoom} />
         </div>
     )}
 
