@@ -1,16 +1,16 @@
 import { useState, type PropsWithChildren } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
+import type { selectedRoom } from ".";
 
 type NavPopoverProps = {
-    className: string
-    selectedRoom: string
+    selectedRoom: selectedRoom
 }
 
-const RoomPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ className, selectedRoom, ...props }) => {
+const RoomPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ selectedRoom, ...props }) => {
     const [isOpen, setIsOpen] = useState(false)
     return (
-      <div className={clsx('inline', className)} {...props}>
+      <div className={clsx('inline')} {...props}>
           <button
               type="button"
               className="text-slate-500 w-1/2 h-8 flex items-center justify-center hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
@@ -19,9 +19,9 @@ const RoomPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ className, 
               <p className="">Select Room</p>
              
               <svg fill="currentColor" viewBox="0 0 20 20" className="w-8 h-8">
-                    <path x-show="!open" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    <path x-show="!open" fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
             </svg>
-            <p  className="border rounded border-teal-800 bg-teal-300 p-2" >{selectedRoom}</p>
+            <p  className="border rounded border-teal-800 bg-teal-300 p-2" >{selectedRoom.level} &gt; {selectedRoom.room}</p>
           </button>
           <Dialog
               as="div"

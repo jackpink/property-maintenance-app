@@ -1,5 +1,5 @@
 import RoomPopover from './RoomPopover';
-import RoomSelector from './RoomSelector';
+import { RoomSelectorOneLevel, RoomSelectorTwoLevel } from './RoomSelector';
 import { SetStateAction, Dispatch } from 'react';
 
 /* 
@@ -12,20 +12,35 @@ will need useState to track current room
 
 Then create a hidden version which is displayed on larger screen size
 */
+export type selectedRoom = {
+    level: string
+    room: string
+}
+
 
 type Props = {
     levels: ILevel[]
-    selectedRoom: string
-    setSelectedRoom: Dispatch<SetStateAction<string>>
+    selectedRoom: selectedRoom
+    setSelectedRoom: Dispatch<SetStateAction<selectedRoom>>
 }
 
 const Rooms: React.FC<Props> = ({ levels, selectedRoom, setSelectedRoom }) => {
+const number_of_levels = levels.length;
+if (number_of_levels === 1) {
+    return(
+        <RoomPopover selectedRoom={selectedRoom} >
+            <RoomSelectorOneLevel levels={levels} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+        </RoomPopover>
+    )
+} else if (number_of_levels === 2) {
+    return(
+        <RoomPopover selectedRoom={selectedRoom} >
+            <RoomSelectorTwoLevel levels={levels} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+        </RoomPopover>
+    )
+}
     return (
-        <div>
-            <RoomPopover className="ml-2 -my-1" selectedRoom={selectedRoom} >
-                <RoomSelector levels={levels} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
-            </RoomPopover>
-        </div>
+        <>Error: too many levels</>
     )}
 
     export default Rooms;

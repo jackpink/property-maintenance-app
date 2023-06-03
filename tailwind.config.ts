@@ -6,6 +6,9 @@ export default {
     extend: {
       width: {
         '128': '50rem',
+      },
+      screens: {
+        '3xl': '1800px'
       }
     },
   },

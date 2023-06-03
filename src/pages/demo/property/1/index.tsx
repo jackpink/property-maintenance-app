@@ -4,8 +4,14 @@ import { properties } from "../..";
 import Rooms from "~/components/Rooms";
 import { useState } from "react";
 
+type selectedRoom = {
+    level: string
+    room: string
+}
+const f:selectedRoom = {level: 'df', room: 'rt'}
+
 const PropertyPage: NextPage = () => {
-    const  [selectedRoom, setSelectedRoom ] = useState('WC')
+    const  [selectedRoom, setSelectedRoom ] = useState({level: '', room: ''})
     let address = '';
     let levels: ILevel[] = [];
     if (properties[0]) {
