@@ -3,15 +3,12 @@ import { concatAddress } from "~/components/Properties/Property";
 import { properties } from "../..";
 import Rooms from "~/components/Rooms";
 import { useState } from "react";
+import type { selectedRoom } from "~/components/Rooms";
 
-type selectedRoom = {
-    level: string
-    room: string
-}
-const f:selectedRoom = {level: 'df', room: 'rt'}
+const initial:selectedRoom = {level: '', room: ''}
 
 const PropertyPage: NextPage = () => {
-    const  [selectedRoom, setSelectedRoom ] = useState({level: '', room: ''})
+    const  [selectedRoom, setSelectedRoom ] = useState(initial)
     let address = '';
     let levels: ILevel[] = [];
     if (properties[0]) {
