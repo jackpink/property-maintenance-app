@@ -13,7 +13,7 @@ const RoomPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ selectedRoo
       <div className={clsx('inline')} {...props}>
           <button
               type="button"
-              className="text-slate-500 w-1/2 h-8 flex items-center justify-center hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
+              className="text-slate-500 h-8 flex items-center justify-center hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
               onClick={() => setIsOpen(true)}
           >
               <p className="">Select Room</p>
