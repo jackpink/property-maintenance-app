@@ -1,5 +1,6 @@
+import Timeline from '../Timeline';
+import Element from '../Timeline/Element';
 import JobPopover from './JobPopover';
-import { RoomSelectorOneLevel, RoomSelectorTwoLevel } from './RoomSelector';
 import { SetStateAction, Dispatch } from 'react';
 
 /* 
@@ -25,11 +26,35 @@ type Props = {
     setSelectedJob: Dispatch<SetStateAction<selectedJob>>
 }
 
+const getByID = (id: string, jobs: IJob[]) => {
+    const job = jobs.find((job) => job.id === id);
+    if (!job) {
+        return {id: '', title: '', date: new Date()}
+    }
+    return job;
+
+}
+
 const Jobs: React.FC<Props> = ({ jobs, selectedJob, setSelectedJob }) => {
+
+
+
+    const EventClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const newSelectedJobID: string = event.currentTarget.value;
+        console.log("button clicked", newSelectedJobID);
+        const newSelectedJob = getByID(newSelectedJobID, jobs)
+        setSelectedJob(newSelectedJob);
+    }
 
     return (
         <JobPopover selectedJob={selectedJob} >
-            <p>Jobs</p>
+            <Timeline >
+                {jobs.map((job, index) => {
+                    return(
+                        <Element id={job.id} label={job.title} key={index} selectedEvent={selectedJob} onClick={EventClicked}/>
+                    )
+                })}
+            </Timeline>
         </JobPopover>
     )}
 
