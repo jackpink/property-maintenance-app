@@ -13,23 +13,18 @@ will need useState to track current room
 
 Then create a hidden version which is displayed on larger screen size
 */
-export type selectedJob = {
-    id: string
-    title: string
-    date: Date
-}
 
 
 type Props = {
     jobs: IJob[]
-    selectedJob: selectedJob
-    setSelectedJob: Dispatch<SetStateAction<selectedJob>>
+    selectedJob: IJob
+    setSelectedJob: Dispatch<SetStateAction<IJob>>
 }
 
 const getByID = (id: string, jobs: IJob[]) => {
     const job = jobs.find((job) => job.id === id);
     if (!job) {
-        return {id: '', title: '', date: new Date()}
+        return {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
     }
     return job;
 
@@ -51,7 +46,7 @@ const Jobs: React.FC<Props> = ({ jobs, selectedJob, setSelectedJob }) => {
             <Timeline >
                 {jobs.map((job, index) => {
                     return(
-                        <Element id={job.id} label={job.title} key={index} selectedEvent={selectedJob} onClick={EventClicked}/>
+                        <Element job={job} key={index} selectedEvent={selectedJob} onClick={EventClicked}/>
                     )
                 })}
             </Timeline>

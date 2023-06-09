@@ -7,8 +7,7 @@ type selectedEvent = {
 }
 
 export interface ElementProps {
-    label: string,
-    id: string,
+    job: IJob
     onClick: MouseEventHandler<HTMLButtonElement> 
     selectedEvent: selectedEvent
   }
@@ -24,19 +23,22 @@ return argument;
 
 const Element: React.FC<ElementProps> = (props) => {
 
-    const { label, selectedEvent, id, onClick  } = props;
+    const { job, selectedEvent, onClick  } = props;
 
-    const checked:boolean = id === selectedEvent.id;
-    console.log(checked, id, selectedEvent.id);
+    const checked:boolean = job.id === selectedEvent.id;
 
     return(
         <li className="table-cell relative text-sm">
             <div  className="flex flex-wrap" >
                 <span className="flex-1 whitespace-nowrap bg-black my-3"></span>
-                <button value={id} onClick={onClick} className={clsx("h-8", "w-8", "flex-none", "border-2", "border-solid", "border-black", "rounded-2xl", "whitespace-nowrap", {"bg-emerald-600":checked, "after:content-['✓']":checked})} id="element-radio"></button>
+                <button value={job.id} onClick={onClick} className={clsx("h-8", "w-8", "flex-none", "border-2", "border-solid", "border-black", "rounded-2xl", "whitespace-nowrap", {"bg-emerald-600":checked, "after:content-['✓']":checked})} id="element-radio"></button>
                 <span className="flex-1 whitespace-nowrap bg-black my-3"></span>
                 <span className="flex-1 basis-full w-0"></span>
-                <button value={id} onClick={onClick} className="px-4 basis-full top-24 min-w-max">{label}</button>
+                <button value={job.id} onClick={onClick} className="px-4 basis-full top-24 min-w-max">
+                    <p className="text-lg">{job.title}</p>
+                    <p className="italic">Your Company</p>
+                    <p className="text-xs">{job.date.toDateString()}</p>
+                </button>
             </div>
         </li>
     )

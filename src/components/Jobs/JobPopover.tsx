@@ -1,10 +1,10 @@
 import { useState, type PropsWithChildren } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
-import type { selectedJob } from ".";
+
 
 type NavPopoverProps = {
-    selectedJob: selectedJob
+    selectedJob: IJob
 }
 
 const JobPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ selectedJob, ...props }) => {

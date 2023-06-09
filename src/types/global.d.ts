@@ -30,4 +30,10 @@ declare global {
     notes: string[]
     date: Date
   }
+  interface IDocument {
+    name: string
+  }
+  interface IPhoto {
+    filename: string
+  }
 }
