@@ -35,5 +35,6 @@ declare global {
   }
   interface IPhoto {
     filename: string
+    url: string
   }
 }

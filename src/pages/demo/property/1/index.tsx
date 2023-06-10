@@ -5,6 +5,7 @@ import Rooms, {selectedRoom } from "~/components/Rooms";
 import Jobs from "~/components/Jobs";
 import Documents from "~/components/Documents";
 import { useState } from "react";
+import Photos from "~/components/Photos";
 
 const initialRoom:selectedRoom = {level: '', room: ''};
 const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -33,6 +34,7 @@ const PropertyPage: NextPage = () => {
             <div className="pt-8 text-slate-600 border-b-4 border-slate-600">Documents</div>
             <Documents documents={[{name: "Invoice for "+ selectedJob.title},{name: "Product in room " + selectedRoom.room}]} />
             <div className="pt-8 text-slate-600 border-b-4 border-slate-600">Photos </div>
+            <Photos photos={[{filename: "image1", url: "/photo-icon.png"}, {filename: "image2", url: "/photo-icon.png"},{filename: "image3", url: "/photo-icon.png"},{filename: "image4", url: "/photo-icon.png"},{filename: "image5", url: "/photo-icon.png"},{filename: "image6", url: "/photo-icon.png"},{filename: "image7", url: "/photo-icon.png"},{filename: "image8", url: "/photo-icon.png"},{filename: "image9", url: "/photo-icon.png"},{filename: "image10", url: "/photo-icon.png"}]} />
            
         </div>
     )
