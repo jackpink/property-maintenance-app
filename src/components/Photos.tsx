@@ -17,8 +17,8 @@ const Photos: React.FC<Props> = ({ photos }) => {
                     <Image
                         src={photo.url}
                         alt={photo.filename}
-                        width={150}
-                        height={150}
+                        width={130}
+                        height={130}
                         key={index}
                         />
 
