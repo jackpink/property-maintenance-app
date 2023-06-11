@@ -29,3 +29,21 @@ const Photos: React.FC<Props> = ({ photos }) => {
 }
 
 export default Photos;
+
+type PhotoProps = {
+    photo: IPhoto
+}
+
+const Photo: React.FC<Props> = ({ photo }) => {
+
+    return(
+        <Image
+                        src={photo.url}
+                        alt={photo.filename}
+                        width={130}
+                        height={130}
+                        key={index}
+                        />
+
+    )
+}
