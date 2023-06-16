@@ -18,6 +18,7 @@ model Room {
   order     Int?
   Level     Level @relation(fields: [levelId], references: [id])
   levelId   String
+  jobs      Job[]
 
   @@index([levelId])
 }
@@ -46,6 +47,7 @@ model Property {
   country       String
   levels        Level[]
   jobs          Job[]
+  
 }
 
 model Document {
@@ -78,7 +80,18 @@ model Job {
   propertyId  String
   documents Document[]
   photos    Photo[]
+  rooms     Room[]
   date      DateTime
+  TradeUser TradeUser @relation(fields: [tradeUserId], references: [id])
+  tradeUserId String
 
   @@index([propertyId])
+  @@index([tradeUserId])
+}
+
+model TradeUser {
+  id        String @id
+  createdAt DateTime @default(now())
+  jobs      Job[]
+  companyName String
 }
