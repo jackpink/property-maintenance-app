@@ -4,7 +4,9 @@ import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const properties = api.property.getAll.useQuery();
+  const userproperties = api.property.getPropertiesForUser.useQuery({ user: 'user_2Pm5uzeGIo3zDL8D38lLYxtyRad'})
+  console.log(userproperties.data);
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
@@ -32,7 +34,6 @@ const Home: NextPage = () => {
         
       </div>
       <p className="text-2xl text-white">
-        {hello.data ? hello.data.greeting : "Loading tRPC query..."}
       </p>
       
     </div>

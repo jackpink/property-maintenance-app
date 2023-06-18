@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { prisma } from "~/server/db";
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -11,6 +12,7 @@ export const exampleRouter = createTRPCRouter({
       };
     }),
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
+
+    return ctx.prisma.property.findMany();
   }),
 });
