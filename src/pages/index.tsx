@@ -4,9 +4,12 @@ import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const properties = api.property.getAll.useQuery();
-  const userproperties = api.property.getPropertiesForUser.useQuery({ user: 'user_2Pm5uzeGIo3zDL8D38lLYxtyRad'})
-  console.log(userproperties.data);
+  const user1 = 'user_2Pm5uzeGIo3zDL8D38lLYxtyRad';
+  const otherUser = "user_2RaC5cXnpHxdTKDmbX2Tooj1dNT"
+  const jobs = api.job.getRecentJobsForTradeUser.useQuery({ user: otherUser});
+  console.log("jobs", jobs.data);
+  const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: otherUser});
+  console.log(propertiesWithJobs.data);
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
@@ -19,7 +22,8 @@ const Home: NextPage = () => {
       </SignedIn>
       <SignedOut>
         {/* Signed out users get sign in button */}
-        <SignInButton />
+        
+        <Link href="/trade/beta" >Sign In</Link>
       </SignedOut>
       <div className="grid grid-cols-1 gap-4 ">
         <Link

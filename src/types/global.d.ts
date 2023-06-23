@@ -24,11 +24,9 @@ declare global {
   interface IJob {
     id: string
     title: string
-    property: IProperty
-    documents: string[]
-    photos: string[]
-    notes: string[]
+    photos: IPhoto[]
     date: Date
+    Property: IProperty
   }
   interface IDocument {
     name: string
