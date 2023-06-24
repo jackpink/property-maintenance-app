@@ -1,11 +1,16 @@
+import { RouterOutputs } from '~/utils/api'
 import { concatAddress } from './Properties/Property'
 
+type RecentJobs = RouterOutputs["job"]["getRecentJobsForTradeUser"]
+
+type RecentJob = RouterOutputs["job"]["getRecentJobsForTradeUser"][number]
+
 type JobProps = {
-    job: IJob
+    job: RecentJob
 }
 
 type RecentJobsProps = {
-    recentJobs: IJob[]
+    recentJobs: RecentJobs
 }
 
 const Job: React.FC<JobProps> = ({ job }) => {

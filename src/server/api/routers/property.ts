@@ -1,5 +1,4 @@
 
-import { truncate } from "fs";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -52,7 +51,8 @@ export const propertyRouter = createTRPCRouter({
         postcode: true,
         state: true,
         country: true,
-        id: true
+        id: true,
+        createdAt: true
         
       }
     });

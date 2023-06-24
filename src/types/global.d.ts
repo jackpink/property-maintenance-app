@@ -11,15 +11,13 @@ declare global {
     rooms: IRoom[]
   }
   interface IProperty {
-    apartment: string
-    streetnumber: string
+    apartment: string | null
+    streetNumber: string
     street: string
     suburb: string
     postcode: string
     state: string
     country: string
-    lastjob: string
-    levels: ILevel[]
   }
   interface IJob {
     id: string
