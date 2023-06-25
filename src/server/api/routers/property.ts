@@ -73,7 +73,11 @@ export const propertyRouter = createTRPCRouter({
     const property =  ctx.prisma.property.findUniqueOrThrow({
       include: {
         jobs: true,
-        levels: true
+        levels: {
+          include: {
+            rooms: true
+          }
+        }
       }, where: {
         id: input.id
       }

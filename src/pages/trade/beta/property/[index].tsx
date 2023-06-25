@@ -8,6 +8,27 @@ import { concatAddress } from "~/components/Properties/Property";
 // search photos
 // add new job ----> new job upload photos, assgin to rooms
 
+type Level = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number]
+
+type LevelProps = {
+    level: Level
+}
+
+const Level: React.FC<LevelProps> = ({ level }) => {
+
+    return(
+        <div>
+            <h2 className="font-sans text-slate-900 font-extrabold text-xl text-center py-4 mb-6 border-b-2 border-black" >{level.label}</h2>
+            {level.rooms.map((room, index) => {
+                return(
+                    <p key={index} >{room.label}</p>
+                )
+            })}
+            <button>Add Room</button>
+        </div>
+    )
+}
+
 type Property = RouterOutputs["property"]["getPropertyForTradeUser"]
 
 type EditPropertyProps = {
@@ -18,10 +39,10 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
     const address = concatAddress(property);
     return(
         <>
-            <h1>{address}</h1>
+            <h1 className="font-sans text-slate-900 font-extrabold text-4xl text-center py-8">{address}</h1>
             {property.levels.map((level, index) => {
                 return(
-                    <p key={index}>{level.label}</p>
+                    <Level level={level} />
                 )
             })}
         </>
@@ -43,7 +64,7 @@ const TradePropertyPageWithUser: React.FC<TradePropertyPageWithUserProps> = ({ u
 
 const TradePropertyPage = ()  => {
     const { userId } = useAuth();
-    const id = useRouter().query.index; 
+    const id = useRouter().query.index?.toString(); 
     console.log(userId);
     if (!userId || !id) {
         return <>Loading</>
