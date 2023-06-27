@@ -2,11 +2,32 @@ import { RouterOutputs, api } from "~/utils/api";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { concatAddress } from "~/components/Properties/Property";
+import { useState } from "react";
 // build the property page
 // get params, get Property by Id
 // edit and add levels and rooms
 // search photos
 // add new job ----> new job upload photos, assgin to rooms
+
+const AddRoomButton = () => {
+    const [textboxOpen, setTextboxOpen] = useState(false);
+    const OpenTextboxButtonClick = () => {
+        //toggle textboxOpen
+        setTextboxOpen(!textboxOpen);
+    }
+    if (textboxOpen) {
+        return(
+            <div>
+                <input />
+                <button>Add</button>
+            </div>
+        )
+    }
+    return(
+        <button onClick={OpenTextboxButtonClick} >Add Room</button>
+    )
+}
+
 
 type Level = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number]
 
@@ -24,7 +45,7 @@ const Level: React.FC<LevelProps> = ({ level }) => {
                     <p key={index} >{room.label}</p>
                 )
             })}
-            <button>Add Room</button>
+            <AddRoomButton />
         </div>
     )
 }
