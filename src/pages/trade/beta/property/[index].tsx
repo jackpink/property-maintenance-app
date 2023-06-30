@@ -2,29 +2,55 @@ import { RouterOutputs, api } from "~/utils/api";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { concatAddress } from "~/components/Properties/Property";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // build the property page
 // get params, get Property by Id
 // edit and add levels and rooms
 // search photos
 // add new job ----> new job upload photos, assgin to rooms
 
+type AddRoomTextInputProps = {
+    ToggleTextboxOpen: any
+}
+
+const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen }) => {
+    const ref: React.RefObject<HTMLInputElement> = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: any) => {
+            if( ref.current && !ref.current.contains(event.target)) {
+                console.log("toggle open")
+                ToggleTextboxOpen();
+                // toggle current
+            }
+        };
+        document.addEventListener('click', handleClickOutside, true);
+        return () => {
+            document.removeEventListener('click', handleClickOutside, true);
+        }
+    }, []);
+
+    return(
+        <div ref={ref} className="w-full flex">
+            <input className="w-full p-2 text-slate-900 font-extrabold"/>
+            <button className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+</button>
+        </div>
+    )
+}
+
 const AddRoomButton = () => {
     const [textboxOpen, setTextboxOpen] = useState(false);
-    const OpenTextboxButtonClick = () => {
+    const ToggleTextboxOpen = () => {
         //toggle textboxOpen
         setTextboxOpen(!textboxOpen);
     }
     if (textboxOpen) {
         return(
-            <div>
-                <input />
-                <button>Add</button>
-            </div>
+            <AddRoomTextInput ToggleTextboxOpen={ToggleTextboxOpen}/>
         )
     }
     return(
-        <button onClick={OpenTextboxButtonClick} >Add Room</button>
+        <button onClick={ToggleTextboxOpen} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+ Add Room</button>
     )
 }
 
@@ -38,14 +64,17 @@ type LevelProps = {
 const Level: React.FC<LevelProps> = ({ level }) => {
 
     return(
-        <div>
-            <h2 className="font-sans text-slate-900 font-extrabold text-xl text-center py-4 mb-6 border-b-2 border-black" >{level.label}</h2>
-            {level.rooms.map((room, index) => {
-                return(
-                    <p key={index} >{room.label}</p>
-                )
-            })}
-            <AddRoomButton />
+        <div className=" text-center bg-black/20 w-60 rounded-lg">
+            <h2 className="font-sans text-slate-900 font-extrabold text-xl text-center py-4 mb-6 bg-black/10" >{level.label}</h2>
+            <div className="grid grid-cols-1 p-2 gap-2">
+                {level.rooms.map((room, index) => {
+                    return(
+                        <p className="rounded  p-2 text-slate-900 font-extrabold text-xl" key={index} >{room.label}</p>
+                    )
+                })}
+            
+                <AddRoomButton />
+            </div>
         </div>
     )
 }
@@ -61,11 +90,13 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
     return(
         <>
             <h1 className="font-sans text-slate-900 font-extrabold text-4xl text-center py-8">{address}</h1>
-            {property.levels.map((level, index) => {
-                return(
-                    <Level level={level} />
-                )
-            })}
+            <div className="flex flex-wrap gap-3 justify-center">
+                {property.levels.map((level, index) => {
+                    return(
+                        <Level level={level} key={index} />
+                    )
+                })}
+            </div>
         </>
     )
 }
