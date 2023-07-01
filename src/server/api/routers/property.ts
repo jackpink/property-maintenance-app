@@ -1,7 +1,7 @@
 
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
 
 export const propertyRouter = createTRPCRouter({
   
@@ -83,5 +83,27 @@ export const propertyRouter = createTRPCRouter({
       }
     });
     return property
+  }),
+  createRoomForLevel: privateProcedure
+  .input(z.object({label: z.string(), levelId: z.string()}))
+  .mutation(async ({ ctx, input }) => {
+
+    const room = await ctx.prisma.room.create({
+      data: {
+        label: input.label,
+        levelId: input.levelId
+      }
+    })
+  }),
+  createLevelForProperty: privateProcedure
+  .input(z.object({label: z.string(), propertyId: z.string()}))
+  .mutation(async ({ ctx, input }) => {
+
+    const level = await ctx.prisma.level.create({
+      data: {
+        label: input.label,
+        propertyId: input.propertyId
+      }
+    })
   })
 });

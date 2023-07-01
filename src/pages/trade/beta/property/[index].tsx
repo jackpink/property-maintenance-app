@@ -13,12 +13,13 @@ import { z } from 'zod';
 // add new job ----> new job upload photos, assgin to rooms
 
 type AddRoomTextInputProps = {
-    ToggleTextboxOpen: any
+    ToggleTextboxOpen: any,
+    levelId: string
 }
 
 const ValidRoomInput = z.string().min(5, { message: "Must be 5 or more characters long" }).max(30, {message: "Must be less than 30 characters"});
 
-const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen }) => {
+const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen, levelId }) => {
 
     const [roomNameInput, setRoomNameInput] = useState('');
     const [error, setError] = useState<boolean>(false);
@@ -39,6 +40,17 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen }
         }
     }, []);
 
+    const ctx = api.useContext();
+
+    const { mutate: createRoom, isLoading: isCreatingRoom } = api.property.createRoomForLevel.useMutation({
+        onSuccess: () => {
+            // toggle the textbox open
+            ToggleTextboxOpen();
+            // refetch our property
+            void ctx.property.getPropertyForTradeUser.invalidate();
+        }
+    });
+
     const AddRoomClickEvent = (event: any) => {
         // Check The Room input for correctness
         console.log(roomNameInput);
@@ -50,12 +62,18 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen }
             console.log("add room ", roomNameInput);
         }
         // Then try to add room via trpc
+        
+        createRoom({
+            label: roomNameInput,
+            levelId: levelId
+        })
+
     }
 
     return(
         <div className="w-full ">
             <div ref={ref} className="flex">
-                <input onChange={e => setRoomNameInput(e.target.value)} className="w-full p-2 text-slate-900 font-extrabold"/>
+                <input onChange={e => setRoomNameInput(e.target.value)} disabled={isCreatingRoom} className="w-full p-2 text-slate-900 font-extrabold"/>
                 <button onClick={AddRoomClickEvent} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+</button>
             </div>
             {error ? (<p className="text-red-500">⚠️ {errorMessage}</p>) : null}
@@ -63,7 +81,11 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen }
     )
 }
 
-const AddRoomButton = () => {
+type AddRoomButtonProps = {
+    levelId: string
+}
+
+const AddRoomButton: React.FC<AddRoomButtonProps>= ({ levelId }) => {
     const [textboxOpen, setTextboxOpen] = useState(false);
     const ToggleTextboxOpen = () => {
         //toggle textboxOpen
@@ -71,7 +93,7 @@ const AddRoomButton = () => {
     }
     if (textboxOpen) {
         return(
-            <AddRoomTextInput ToggleTextboxOpen={ToggleTextboxOpen}/>
+            <AddRoomTextInput ToggleTextboxOpen={ToggleTextboxOpen} levelId={levelId} />
         )
     }
     return(
@@ -98,19 +120,20 @@ const Level: React.FC<LevelProps> = ({ level }) => {
                     )
                 })}
             
-                <AddRoomButton />
+                <AddRoomButton levelId={level.id} />
             </div>
         </div>
     )
 }
 
 type AddLevelTextInputProps = {
-    ToggleTextboxOpen: any
+    ToggleTextboxOpen: any,
+    propertyId: string
 }
 
 const ValidLevelInput = z.string().min(5, { message: "Must be 5 or more characters long" }).max(30, {message: "Must be less than 30 characters"});
 
-const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen }) => {
+const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen, propertyId }) => {
 
     const [levelNameInput, setLevelNameInput] = useState<string>('');
     const [error, setError] = useState<boolean>(false);
@@ -131,6 +154,17 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen
         }
     }, []);
 
+    const ctx = api.useContext();
+
+    const {mutate: createLevel, isLoading: createLevelLoading} = api.property.createLevelForProperty.useMutation({
+        onSuccess: () => {
+            // toggle the textbox open
+            ToggleTextboxOpen();
+            // refetch our property
+            void ctx.property.getPropertyForTradeUser.invalidate();
+        }
+    });
+
     const AddLevelClickEvent = (event: any) => {
         // Check The Room input for correctness
         const checkLevelInput = ValidLevelInput.safeParse(levelNameInput);
@@ -142,13 +176,17 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen
         } else {
             console.log("add room ", levelNameInput);
         }
-        // Then try to add room via trpc
+        // Then try to add level via trpc
+        createLevel({
+            label: levelNameInput,
+            propertyId: propertyId
+        })
     }
 
     return(
         <div className="text-center bg-black/30 w-60 h-30 rounded-lg p-6">
             <div ref={ref} className={clsx("flex")}>
-                <input onChange={e => setLevelNameInput(e.target.value)} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})}/>
+                <input disabled={createLevelLoading} onChange={e => setLevelNameInput(e.target.value)} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})}/>
                 <button onClick={AddLevelClickEvent} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+</button>
             </div>
             {error ? (<p className="text-red-500">⚠️ {errorMessage}</p>) : null}
@@ -156,7 +194,11 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen
     )
 }
 
-const AddLevelButton = () => {
+type AddLevelButtonProps = {
+    propertyId: string
+}
+
+const AddLevelButton: React.FC<AddLevelButtonProps> = ({ propertyId }) => {
     const [textboxOpen, setTextboxOpen] = useState(false);
     const ToggleTextboxOpen = () => {
         //toggle textboxOpen
@@ -164,7 +206,7 @@ const AddLevelButton = () => {
     }
     if (textboxOpen) {
         return(
-            <AddLevelTextInput ToggleTextboxOpen={ToggleTextboxOpen}/>
+            <AddLevelTextInput ToggleTextboxOpen={ToggleTextboxOpen} propertyId={propertyId} />
         )
     }
     return(
@@ -191,7 +233,7 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
                         <Level level={level} key={index} />
                     )
                 })}
-                <AddLevelButton />
+                <AddLevelButton propertyId={property.id} />
             </div>
         </>
     )
