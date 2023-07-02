@@ -1,11 +1,11 @@
 
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
 
 export const jobRouter = createTRPCRouter({
   
-  getRecentJobsForTradeUser: publicProcedure
+  getRecentJobsForTradeUser: privateProcedure
   .input(z.object({ user: z.string() }))
   .query(({ ctx, input }) => {
     return ctx.prisma.job.findMany({
@@ -17,10 +17,24 @@ export const jobRouter = createTRPCRouter({
             date: 'desc'
         },
         include: {
-            photos: true,
-            documents: true,
             Property: true
         }
     });
   }),
+  getRecentJobsForPropertyByTradeUser: privateProcedure
+  .input(z.object({ propertyId: z.string() }))
+  .query(({ ctx, input }) => {
+    return ctx.prisma.job.findMany({
+      where: {
+        tradeUserId: ctx.currentUser,
+        propertyId: input.propertyId,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      include: {
+        Property: true,
+      }
+    })
+  })
 });

@@ -2,6 +2,7 @@ import {  api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { concatAddress } from "~/components/Properties/Property";
 import EditProperty from "~/components/EditProperty";
+import RecentJobs from "~/components/RecentJobs";
 // build the property page
 // get params, get Property by Id
 // edit and add levels and rooms
@@ -17,7 +18,8 @@ type TradePropertyPageWithParamsProps = {
 const TradePropertyPageWithParams: React.FC<TradePropertyPageWithParamsProps> = ({ propertyId }) => {
     
     const property = api.property.getPropertyForTradeUser.useQuery({id: propertyId});
-    if (!property.data) return <>Loading</>
+    const recentJobs = api.job.getRecentJobsForPropertyByTradeUser.useQuery({ propertyId: propertyId});
+    if (!property.data || !recentJobs.data) return <>Loading</>
 
     const address = concatAddress(property.data);
 
@@ -26,6 +28,11 @@ const TradePropertyPageWithParams: React.FC<TradePropertyPageWithParamsProps> = 
             <h1 className="font-sans text-slate-900 font-extrabold text-4xl text-center py-8">{address}</h1>
             
             <EditProperty property={property.data} />
+            <div className="pb-8 mb-8 border-black border-b-2"></div>
+            <div className="grid grid-cols-1 flex flex-col  w-9/12 md:w-8/12 lg:w-7/12 xl:w-128">
+                <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Recents Jobs</h2>
+                <RecentJobs recentJobs={recentJobs.data} />
+            </div>
         </div>
     )
 }
