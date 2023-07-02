@@ -67,12 +67,11 @@ export const propertyRouter = createTRPCRouter({
     const props = ctx.prisma.$queryRaw`SELECT * from Property INNER JOIN Job ON Property.id=Job.propertyId WHERE tradeUserId=${input.user}`;
     return props
   }),
-  getPropertyForTradeUser: publicProcedure
-  .input(z.object({ id: z.string(), user: z.string() }))
+  getPropertyForTradeUser: privateProcedure
+  .input(z.object({ id: z.string() }))
   .query( async ({ ctx, input }) => {
     const property =  ctx.prisma.property.findUniqueOrThrow({
       include: {
-        jobs: true,
         levels: {
           include: {
             rooms: true
@@ -105,5 +104,32 @@ export const propertyRouter = createTRPCRouter({
         propertyId: input.propertyId
       }
     })
-  })
+  }),
+  updateLevelLabel: privateProcedure
+  .input(z.object({levelId: z.string(), newLabel: z.string()}))
+  .mutation( async ({ ctx, input }) => {
+
+    const newLevel = await ctx.prisma.level.update({
+      where: {
+        id: input.levelId,
+      },
+      data: {
+        label: input.newLabel,
+      },
+    })
+    return newLevel.label
+  }),
+  updateRoomLabel: privateProcedure
+  .input(z.object({roomId: z.string(), newLabel: z.string()}))
+  .mutation( async ({ ctx, input }) => {
+
+    const newRoom = await ctx.prisma.room.update({
+      where: {
+        id: input.roomId,
+      },
+      data: {
+        label: input.newLabel,
+      },
+    })
+  }),
 });
