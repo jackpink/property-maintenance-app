@@ -1,8 +1,10 @@
 import { RouterOutputs, api } from "~/utils/api";
 import clsx from 'clsx';
-import { useEffect, useRef, useState } from "react";
-import { boolean, z } from 'zod';
+import {  useState } from "react";
+import {  z } from 'zod';
 import Image from "next/image";
+import Button from "./Button";
+import ClickAwayListener from "./ClickAwayListener";
 
 // build the property page
 // get params, get Property by Id
@@ -22,22 +24,6 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen, 
     const [roomNameInput, setRoomNameInput] = useState('');
     const [error, setError] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('Error');
-
-    const ref: React.RefObject<HTMLInputElement> = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if( ref.current && !ref.current.contains(event.target)) {
-                ToggleTextboxOpen();
-                // toggle current
-                setError(false);
-            }
-        };
-        document.addEventListener('click', handleClickOutside, true);
-        return () => {
-            document.removeEventListener('click', handleClickOutside, true);
-        }
-    }, []);
 
     const ctx = api.useContext();
 
@@ -69,10 +55,12 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen, 
 
     return(
         <div className="w-full ">
-            <div ref={ref} className="flex">
-                <input onChange={e => setRoomNameInput(e.target.value)} disabled={isCreatingRoom} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})}/>
-                <button onClick={addRoomClickEvent} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+</button>
-            </div>
+            <ClickAwayListener clickOutsideAction={ToggleTextboxOpen}>
+                <div className="flex">
+                    <input onChange={e => setRoomNameInput(e.target.value)} disabled={isCreatingRoom} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})}/>
+                    <Button onClick={addRoomClickEvent}>+</Button>
+                </div>
+            </ClickAwayListener>
             {error ? (<p className="text-red-500">⚠️ {errorMessage}</p>) : null}
         </div>
     )
@@ -94,7 +82,7 @@ const AddRoomButton: React.FC<AddRoomButtonProps>= ({ levelId }) => {
         )
     }
     return(
-        <button onClick={ToggleTextboxOpen} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+ Add Room</button>
+        <Button onClick={ToggleTextboxOpen} >+ Add Room</Button>
     )
 }
 type Room = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number]["rooms"][number];
@@ -111,23 +99,6 @@ const Room: React.FC<RoomProps> = ({ room, editPropertyMode }) => {
 
     const [error, setError] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('Error');
-
-    const ref: React.RefObject<HTMLInputElement> = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if( ref.current && !ref.current.contains(event.target)) {
-                setEditLabelMode(false);
-                setEditLabelInput(room.label);
-                setError(false);
-                // toggle current
-            }
-        };
-        document.addEventListener('click', handleClickOutside, true);
-        return () => {
-            document.removeEventListener('click', handleClickOutside, true);
-        }
-    }, []);
 
     const ctx = api.useContext();
 
@@ -168,11 +139,13 @@ const Room: React.FC<RoomProps> = ({ room, editPropertyMode }) => {
         <>
         <div className="flex justify-center">
             {editLabelMode ? (
-                <div ref={ref} className="flex">
-                    <input value={editLabelInput} onChange={e => setEditLabelInput(e.target.value)} disabled={isUpdatingRoom} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})} />
-                    <button onClick={cancelEditLabelMode} className="px-1"><Image src="/cancel.svg" alt="Edit" width={40} height={40} /></button>
-                    <button onClick={updateRoomClickEvent} className="px-1"><Image src="/check_circle.svg" alt="Edit" width={40} height={40} /></button>
-                </div>
+                <ClickAwayListener clickOutsideAction={cancelEditLabelMode}>
+                    <div className="flex">
+                        <input value={editLabelInput} onChange={e => setEditLabelInput(e.target.value)} disabled={isUpdatingRoom} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})} />
+                        <button onClick={cancelEditLabelMode} className="px-1"><Image src="/cancel.svg" alt="Edit" width={40} height={40} /></button>
+                        <button onClick={updateRoomClickEvent} className="px-1"><Image src="/check_circle.svg" alt="Edit" width={40} height={40} /></button>
+                    </div>
+                </ClickAwayListener>
             ) : (
                 <>
                     <p className="rounded  p-2 text-slate-900 font-extrabold text-xl" >{room.label}</p>
@@ -202,23 +175,6 @@ const Level: React.FC<LevelProps> = ({ level, editPropertyMode }) => {
 
     const [error, setError] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('Error');
-
-    const ref: React.RefObject<HTMLInputElement> = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if( ref.current && !ref.current.contains(event.target)) {
-                setEditLabelMode(false);
-                setEditLabelInput(level.label);
-                setError(false);
-                // toggle current
-            }
-        };
-        document.addEventListener('click', handleClickOutside, true);
-        return () => {
-            document.removeEventListener('click', handleClickOutside, true);
-        }
-    }, []);
 
     const ctx = api.useContext();
 
@@ -261,11 +217,13 @@ const Level: React.FC<LevelProps> = ({ level, editPropertyMode }) => {
             <div className="py-4 mb-6 bg-black/10 text-center">
                 <div className="flex">
                 {editLabelMode ? (
-                    <div ref={ref} className="flex">
-                        <input value={editLabelInput} onChange={e => setEditLabelInput(e.target.value)} disabled={false} className={clsx("w-full p-2 mx-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error}) }/>
-                        <button onClick={cancelEditLabelMode} className="px-1"><Image src="/cancel.svg" alt="Edit" width={40} height={40} /></button>
-                        <button onClick={updateLevelClickEvent} className="px-1"><Image src="/check_circle.svg" alt="Edit" width={40} height={40} /></button>
-                    </div>
+                    <ClickAwayListener clickOutsideAction={cancelEditLabelMode} >
+                        <div  className="flex">
+                            <input value={editLabelInput} onChange={e => setEditLabelInput(e.target.value)} disabled={false} className={clsx("w-full p-2 mx-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error}) }/>
+                            <button onClick={cancelEditLabelMode} className="px-1"><Image src="/cancel.svg" alt="Edit" width={40} height={40} /></button>
+                            <button onClick={updateLevelClickEvent} className="px-1"><Image src="/check_circle.svg" alt="Edit" width={40} height={40} /></button>
+                        </div>
+                    </ClickAwayListener>
                 ) : (
                     <>
                         <h2 className="font-sans text-slate-900 font-extrabold text-xl w-full" >{level.label}</h2>
@@ -308,20 +266,7 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen
     const [error, setError] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>('Error');
 
-    const ref: React.RefObject<HTMLInputElement> = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if( ref.current && !ref.current.contains(event.target)) {
-                ToggleTextboxOpen();
-                // toggle current
-            }
-        };
-        document.addEventListener('click', handleClickOutside, true);
-        return () => {
-            document.removeEventListener('click', handleClickOutside, true);
-        }
-    }, []);
+    
 
     const ctx = api.useContext();
 
@@ -353,10 +298,12 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen
 
     return(
         <div className={clsx("text-center bg-black/30 w-60 h-24 rounded-lg p-6", {"h-32": error})} >
-            <div ref={ref} className={clsx("flex")}>
-                <input disabled={createLevelLoading} onChange={e => setLevelNameInput(e.target.value)} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})}/>
-                <button onClick={AddLevelClickEvent} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+</button>
-            </div>
+            <ClickAwayListener clickOutsideAction={ToggleTextboxOpen}>
+                <div className={clsx("flex")}>
+                    <input disabled={createLevelLoading} onChange={e => setLevelNameInput(e.target.value)} className={clsx("w-full p-2 text-slate-900 font-extrabold outline-none", {"border border-2 border-red-500": error})}/>
+                    <Button onClick={AddLevelClickEvent} >+</Button>
+                </div>
+            </ClickAwayListener>
             {error ? (<p className="text-red-500">⚠️ {errorMessage}</p>) : null}
         </div>
     )
@@ -379,7 +326,7 @@ const AddLevelButton: React.FC<AddLevelButtonProps> = ({ propertyId }) => {
     }
     return(
         <div className="text-center bg-black/30 w-60 h-24 rounded-lg py-6 ">
-            <button onClick={ToggleTextboxOpen} className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">+ Add Level</button>
+            <Button onClick={ToggleTextboxOpen} >+ Add Level</Button>
         </div>
     )
 }
@@ -397,11 +344,13 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
         <>
             {editPropertyMode ? (
                 <div className="flex justify-center">
-                    <button onClick={() => setEditPropertyMode(false)} className="flex p-2 mb-8 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">Exit Edit Mode <Image src="/cancel.svg" alt="Edit" width={30} height={30} /></button>
+                    <Button onClick={() => setEditPropertyMode(false)} className="flex mb-8">
+                        Exit Edit Mode <Image src="/cancel.svg" alt="Edit" width={30} height={30} />
+                    </Button>
                 </div>
             ) : (
                 <div className="flex justify-center">
-                    <button onClick={() => setEditPropertyMode(true)} className="flex p-2 mb-8 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300">Edit Property <Image src="/edit_button.svg" alt="Edit" width={30} height={30} /></button>
+                    <Button onClick={() => setEditPropertyMode(true)} className="flex mb-8">Edit Property <Image src="/edit_button.svg" alt="Edit" width={30} height={30} /></Button>
                 </div>
             )}
             <div className="flex flex-wrap gap-3 justify-center">
