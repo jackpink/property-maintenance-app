@@ -36,5 +36,19 @@ export const jobRouter = createTRPCRouter({
         Property: true,
       }
     })
-  })
+  }),
+  createJobForPropertyByTrade: privateProcedure
+  .input(z.object({title: z.string(), date: z.date(), propertyId: z.string()}))
+  .mutation(async ({ ctx, input }) => {
+
+    const job = await ctx.prisma.job.create({
+      data: {
+        title: input.title,
+        propertyId: '',
+        date: input.date,
+        tradeUserId: ctx.currentUser
+      }
+    })
+    return {job: job};
+  }),
 });
