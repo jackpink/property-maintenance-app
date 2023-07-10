@@ -30,10 +30,13 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [date, setDate] = useState<Date>(new Date());
 
+    const router = useRouter();
+
     const { mutate: createJob, isLoading: isCreatingJob } = api.job.createJobForPropertyByTrade.useMutation({
         onSuccess: ({ job }) => {
             // Redirect to new Job route
             console.log("redirect to job/", job.id);
+            router.push('/trade/beta/job/'+ job.id);
         }
     });
 
@@ -59,7 +62,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
     return(
         <div className="grid justify-items-center">
             <label  className="block text-sm font-medium text-gray-700"> Enter Job Title </label>
-            <input onChange={e => setJobTitleInput(e.target.value)} disabled={false} className={clsx("w-3/4 p-2 text-slate-900 font-extrabold rounded text-base text-neutral-600 placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg bg-gray-50 focus:outline-none focus:border-transparent ring-2 ring-white ring-offset-2 ring-offset-gray-300 md:w-96", {"border border-2 border-red-500": error})}/>
+            <input onChange={e => setJobTitleInput(e.target.value)} disabled={isCreatingJob} className={clsx("w-3/4 p-2 text-slate-900 font-extrabold rounded text-base text-neutral-600 placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg bg-gray-50 focus:outline-none focus:border-transparent ring-2 ring-white ring-offset-2 ring-offset-gray-300 md:w-96", {"border border-2 border-red-500": error})}/>
             <label  className="block text-sm font-medium text-gray-700"> Job Date</label>
             {date ? (
                 <p className="p-2 text-slate-900 font-extrabold ">{format(date, 'PPP')}</p>
@@ -100,7 +103,7 @@ const TradePropertyPageWithParams: React.FC<TradePropertyPageWithParamsProps> = 
             <div className="place-self-center w-9/12 md:w-8/12 lg:w-7/12 xl:w-128">
                 <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Recents Jobs</h2>
                 <Button onClick={() => setCreatejobPopoverOpen(true)} className="place-self-center mb-8">Add New Job</Button>
-                <Popover isOpen={createJobPopoverOpen} setIsOpen={setCreatejobPopoverOpen}>
+                <Popover popoverOpen={createJobPopoverOpen} setPopoverOpen={setCreatejobPopoverOpen}>
                     <CreateJobForm propertyId={property.data.id} />
                 </Popover>
                 <RecentJobs recentJobs={recentJobs.data} />

@@ -44,11 +44,27 @@ export const jobRouter = createTRPCRouter({
     const job = await ctx.prisma.job.create({
       data: {
         title: input.title,
-        propertyId: '',
+        propertyId: input.propertyId,
         date: input.date,
         tradeUserId: ctx.currentUser
       }
     })
     return {job: job};
   }),
+  getJobForTradeUser: privateProcedure
+  .input(z.object({ jobId: z.string() }))
+  .query(async ({ ctx, input }) => {
+
+    const job = await ctx.prisma.job.findUniqueOrThrow({
+      where: {
+        id: input.jobId
+      },
+      include: {
+        photos: true,
+        rooms: true,
+        Property: true
+      }
+    })
+    return job;
+  })
 });
