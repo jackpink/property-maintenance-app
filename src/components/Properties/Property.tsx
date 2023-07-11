@@ -24,7 +24,7 @@ type Props = {
     property: Property
 }
 
-const Property: React.FC<Props>= ({ property}) => {
+ const Property: React.FC<Props>= ({ property}) => {
     const address = concatAddress(property)
     const { asPath } = useRouter();
     return(
