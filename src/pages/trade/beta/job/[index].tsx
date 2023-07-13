@@ -4,7 +4,29 @@ import { concatAddress } from "~/components/Properties/Property";
 import Link from "next/link";
 import Image from "next/image";
 import house from '../../../../images/demo-page/house-stock-image.png';
+import Button from "~/components/Button";
+import Popover from "~/components/Popover";
+import { useState } from "react";
 
+type Room = RouterOutputs["job"]["getJobForTradeUser"]["rooms"][number];
+
+type RoomSelectorProps = {
+    rooms: Room[]
+}
+
+const RoomSelector: React.FC<RoomSelectorProps> = ({ rooms }) => {
+
+    const [roomSelectorOpen, setRoomSelectorOpen] = useState(false);
+
+    return(
+        <div>
+            <Button onClick={() => setRoomSelectorOpen(true)} className="w-48 place-self-center">Select Rooms</Button>
+            <Popover popoverOpen={roomSelectorOpen} setPopoverOpen={setRoomSelectorOpen}>
+                <>rooms</>
+            </Popover>
+        </div>
+    )
+}
 
 type Property = RouterOutputs["job"]["getJobForTradeUser"]["Property"]
 
@@ -14,7 +36,6 @@ type PropertyProps = {
 
  const Property: React.FC<PropertyProps>= ({ property}) => {
     const address = concatAddress(property)
-    const { asPath } = useRouter();
     return(
         <Link href={`/trade/beta/property/${property.id}`} className="w-3/4 md:w-1/2 place-self-center">        
         <div className="grid grid-cols-3 border-solid border-2 border-teal-800 rounded-xl hover:bg-black/20" >
@@ -45,6 +66,7 @@ const TradeJobPageWithParams: React.FC<TradeJobPageWithParams> = ({ job }) => {
             <p className="place-self-center">{job.date.toDateString()}</p>
             <h1 className="font-sans text-slate-900 font-extrabold text-4xl text-center py-8">{job.title}</h1>
             <Property property={job.Property} />
+            <RoomSelector rooms={job.rooms} />
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Notes</h2>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Documents</h2>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Photos</h2>
