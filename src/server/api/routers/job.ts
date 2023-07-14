@@ -1,7 +1,9 @@
 
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
+import { RouterOutputs } from "~/utils/api";
 
 export const jobRouter = createTRPCRouter({
   
@@ -61,8 +63,96 @@ export const jobRouter = createTRPCRouter({
       },
       include: {
         photos: true,
-        rooms: true,
-        Property: true
+        rooms: {
+          include: {
+            Level: true
+          }
+        },
+        Property: {
+          include : {
+            levels: {
+              include: {
+                rooms: true
+                }
+              }
+            }
+          }
+        }
+      })
+    return job;
+  }),
+  addRoomToJob: privateProcedure
+  .input(z.object({ jobId: z.string(), roomId: z.string()}))
+  .mutation(async ({ctx, input}) => {
+    //check whether room is actually in property assigned to job
+    const job = await ctx.prisma.job.findUniqueOrThrow({
+      where: {
+        id: input.jobId
+      },
+      include: {
+        Property: {
+          include: {
+            levels: {
+              include: {
+                rooms: true
+              }
+            }
+          }
+        }
+      }
+    });
+    type Levels = RouterOutputs["job"]["getJobForTradeUser"]["Property"]["levels"]
+    const checkRoomIsInProperty = (levels: Levels, roomId: string) => {
+      for (var i = 0; i < levels.length; i++) {
+        var rooms = levels[i].rooms;
+        for (var j=0; j< rooms.length; j++) {
+          if (rooms[j].id === roomId) {
+            console.log("TRUE")
+            return true;
+          }
+        }
+      };
+      return false;
+    }
+    
+    const roomIsInproperty = checkRoomIsInProperty(job.Property.levels, input.roomId);
+    if (!roomIsInproperty) {
+      console.log("ROOMS IS NOT IN PROPERTY")
+      //throw error
+      throw new TRPCError({
+        code:"FORBIDDEN"
+      })
+
+    } else {
+      console.log("ROOMS IS IN PROPERTY")
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId,
+        },
+        data: {
+          rooms: {
+            connect: {
+              id: input.roomId
+            }
+          }
+        }
+      });
+      return job;
+    }
+  }),
+  removeRoomFromJob: privateProcedure
+  .input(z.object({jobId: z.string(), roomId: z.string()}))
+  .mutation(async ({ctx, input}) => {
+    const job = ctx.prisma.job.update({
+      where: {
+        id: input.jobId,
+      },
+      data: {
+        rooms: {
+          disconnect: {
+            id: input.roomId
+          }
+        }
       }
     })
     return job;
