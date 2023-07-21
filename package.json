@@ -10,6 +10,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.374.0",
+    "@aws-sdk/s3-request-presigner": "^3.374.0",
     "@clerk/nextjs": "^4.17.3",
     "@headlessui/react": "^1.7.14",
     "@prisma/client": "^4.11.0",
@@ -20,11 +22,14 @@
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
     "clsx": "^1.2.1",
+    "date-fns": "^2.30.0",
     "next": "^13.4.1",
     "react": "18.2.0",
+    "react-day-picker": "^8.8.0",
     "react-dom": "18.2.0",
     "react-timeline-ui": "^1.0.5",
     "superjson": "1.12.2",
+    "tailwindcss-animate": "^1.0.6",
     "zod": "^3.21.4"
   },
   "devDependencies": {

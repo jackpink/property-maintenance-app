@@ -19,6 +19,7 @@ model Room {
   Level     Level @relation(fields: [levelId], references: [id])
   levelId   String
   jobs      Job[]
+  photos    Photo[]
 
   @@index([levelId])
 }
@@ -64,12 +65,15 @@ model Document {
 model Photo {
   id        String @id @default(cuid())
   createdAt DateTime @default(now())
-  filename  String
-  url       String
+  filename  String?
+  url       String?
   Job       Job? @relation(fields: [jobId], references: [id])
-  jobId     String
+  jobId     String?
+  Room      Room? @relation(fields: [roomId], references: [id])
+  roomId    String?
 
   @@index([jobId])
+  @@index([roomId])
 }
 
 model Job {
