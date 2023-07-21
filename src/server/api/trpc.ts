@@ -17,7 +17,7 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "~/server/db";
-
+import { s3 } from "../aws/s3";
 type CreateContextOptions = Record<string, string | null>;
 
 /**
@@ -36,7 +36,8 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   
   return {
     prisma,
-    currentUser: user
+    currentUser: user,
+    s3
   };
 };
 
@@ -62,8 +63,8 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getAuth } from "@clerk/nextjs/dist/server-helpers.server";
-import { User } from "@clerk/nextjs/dist/server";
+import { getAuth } from "@clerk/nextjs/dist/types/server-helpers.server";
+import { User } from "@clerk/nextjs/dist/types/server";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
