@@ -103,7 +103,7 @@ const TradePropertyPageWithParams: React.FC<TradePropertyPageWithParamsProps> = 
             <div className="place-self-center w-9/12 md:w-8/12 lg:w-7/12 xl:w-128">
                 <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Recents Jobs</h2>
                 <Button onClick={() => setCreatejobPopoverOpen(true)} className="place-self-center mb-8">Add New Job</Button>
-                <Popover popoverOpen={createJobPopoverOpen} setPopoverOpen={setCreatejobPopoverOpen}>
+                <Popover popoveropen={createJobPopoverOpen} setPopoverOpen={setCreatejobPopoverOpen}>
                     <CreateJobForm propertyId={property.data.id} />
                 </Popover>
                 <RecentJobs recentJobs={recentJobs.data} />

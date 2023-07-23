@@ -6,8 +6,107 @@ import Image from "next/image";
 import house from '../../../../images/demo-page/house-stock-image.png';
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
-import { useState } from "react";
+import { ChangeEvent, ChangeEventHandler, useCallback, useState } from "react";
 import clsx from "clsx";
+import axios from "axios";
+
+
+type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
+
+type PhotoProps = {
+    photo: Photo
+}
+
+const Photo: React.FC<PhotoProps> = ({ photo }) => {
+    const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "original"})
+    console.log("get photo url ", url);
+    return(
+        <Image src={url} width={40} height={40} alt="image"/>
+    )
+}
+
+type PhotosProps = {
+    job: Job
+}
+
+
+const Photos: React.FC<PhotosProps> = ({ job }) => {
+    const { data: photos } = api.photo.getUnassignedPhotosForJob.useQuery({jobId: job.id})
+
+    if (!!photos && photos.length>0) {
+        console.log(photos);
+        return(
+            <>
+                {photos.map((photo, index) => {
+                    return(<Photo photo={photo} key={index} />)
+                })}
+            </>
+        )
+        
+
+    }
+    return(
+    <>
+        no photo
+    </>
+    )
+}
+
+type UploadPhotoButtonProps = {
+    job: Job
+}
+
+const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
+    const [ presignedUploadUrl, setPresignedUploadUrl ] = useState('');
+    
+    const { mutateAsync: getPresignedUrl } = api.photo.getPhotoUploadPresignedUrl.useMutation();
+
+    const { mutate: createPhotoRecord } = api.photo.createPhotoRecord.useMutation();
+
+    const uploadPhotoToSignedURL = async (signedUrl :string, file: File ) => {
+        const result = await axios 
+            .put(signedUrl, file.slice(), {
+                headers: {"Content-Type": file.type},
+            })
+            .then((response) => {
+                console.log(response);
+                console.log("Successfully Uploaded ", file.name);
+                return true;
+            })
+            .catch((err) => {
+                console.log(err)
+                return false;
+            });
+        return result;
+    }
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        const file = files[0];
+        if (file) {
+            console.log(file)
+            // Need to check that file is correct type (ie jpeg/png/tif/etc)
+            const { url } = await getPresignedUrl({key: file.name})
+            console.log("URL", url)
+            // upload file
+            const uploadSuccess = await uploadPhotoToSignedURL(url, file);
+            // if successful add photo record to db for lookup (relabelling photo?)
+            if (uploadSuccess) {
+                console.log("Add photo to db");
+                createPhotoRecord({ filename: file.name, jobId: job.id });
+            }
+        }
+    }
+
+    
+
+    return(
+        <>
+            <label htmlFor="photo-upload-input" className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300  place-self-center">Upload Photo</label>
+            <input onChange={handleFileChange} type="file" id="photo-upload-input" className="opacity-0"/>
+        </>
+    )
+}
 
 type RoomButtonProps = {
     className: string
@@ -104,7 +203,7 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({ job }) => {
     return(
         <div className="grid">
             <Button onClick={() => setRoomSelectorOpen(true)} className="w-48 place-self-center my-6">Select Rooms</Button>
-            <Popover popoverOpen={roomSelectorOpen} setPopoverOpen={setRoomSelectorOpen}>
+            <Popover popoveropen={roomSelectorOpen} setPopoverOpen={setRoomSelectorOpen}>
                 <div className="flex flex-wrap gap-3 justify-center">
                 {job.Property.levels.map((level, index) => {
                     return(
@@ -149,11 +248,11 @@ type PropertyProps = {
 
 type Job = RouterOutputs["job"]["getJobForTradeUser"];
 
-type TradeJobPageWithParams = {
+type TradeJobPageWithJobProps = {
     job: Job
 }
 
-const TradeJobPageWithParams: React.FC<TradeJobPageWithParams> = ({ job }) => {
+const TradeJobPageWithJob: React.FC<TradeJobPageWithJobProps> = ({ job }) => {
     const address = concatAddress(job.Property);
 
     return(
@@ -165,7 +264,25 @@ const TradeJobPageWithParams: React.FC<TradeJobPageWithParams> = ({ job }) => {
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Notes</h2>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Documents</h2>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Photos</h2>
+            <UploadPhotoButton job={job} />
+            <Photos job={job}/>
+            
         </div>
+    )
+}
+
+type TradeJobPageWithParamsProps = {
+    id: string
+}
+
+const TradeJobPageWithParams: React.FC<TradeJobPageWithParamsProps> = ({ id }) => {
+
+    const job = api.job.getJobForTradeUser.useQuery({jobId: id});
+
+    if (!job.data) return <>Loading</> 
+
+    return(
+        <TradeJobPageWithJob job={job.data} />
     )
 }
 
@@ -177,12 +294,8 @@ const TradeJobPage = ()  => {
     //const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: userId});
     if (!id) return <>loading</>
 
-    const job = api.job.getJobForTradeUser.useQuery({jobId: id});
-
-    if (!job.data) return <>Loading</>
-
     return(
-        <TradeJobPageWithParams  job={job.data} />
+        <TradeJobPageWithParams  id={id} />
     )
     
 

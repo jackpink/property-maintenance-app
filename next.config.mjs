@@ -18,5 +18,13 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**property-maintenance-app-photos.s3.ap-southeast-2.amazonaws.com'
+      },
+    ],
+  },
 };
 export default config;

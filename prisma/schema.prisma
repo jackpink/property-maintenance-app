@@ -65,8 +65,8 @@ model Document {
 model Photo {
   id        String @id @default(cuid())
   createdAt DateTime @default(now())
-  filename  String?
-  url       String?
+  filename  String
+  directory       String
   Job       Job? @relation(fields: [jobId], references: [id])
   jobId     String?
   Room      Room? @relation(fields: [roomId], references: [id])

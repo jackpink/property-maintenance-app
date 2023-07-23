@@ -47,6 +47,9 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
+import { getAuth } from "@clerk/nextjs/server";
+
+
 export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const { req } = opts;
   const userSession = getAuth(req);
@@ -63,7 +66,6 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getAuth } from "@clerk/nextjs/dist/types/server-helpers.server";
 import { User } from "@clerk/nextjs/dist/types/server";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({

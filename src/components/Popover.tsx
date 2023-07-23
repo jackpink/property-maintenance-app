@@ -1,16 +1,17 @@
 import { Dialog } from "@headlessui/react"
 import clsx from "clsx"
-import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react"
+import { Dispatch, PropsWithChildren, ReactNode, SetStateAction, useState } from "react"
 
 type PopoverProps = {
-    popoverOpen: boolean,
-    setPopoverOpen: Dispatch<SetStateAction<boolean>>
+    popoveropen: boolean,
+    setPopoverOpen: Dispatch<SetStateAction<boolean>>,
+    children: ReactNode
 }
 
-const Popover: React.FC<PropsWithChildren<PopoverProps>> = (props) => {
-    const { popoverOpen, setPopoverOpen } = props;
+const Popover: React.FC<PopoverProps> = ({ popoveropen, setPopoverOpen, children}) => {
+
     return (
-      <div className={clsx('inline')} {...props}>
+      <div className={clsx('inline')} >
           <button
               type="button"
               className="text-slate-500 h-8 flex items-center justify-center hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
@@ -21,7 +22,7 @@ const Popover: React.FC<PropsWithChildren<PopoverProps>> = (props) => {
           <Dialog
               as="div"
               className={clsx('fixed z-50 inset-0')}
-              open={popoverOpen}
+              open={popoveropen}
               onClose={setPopoverOpen}
           >
               <Dialog.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80" />
@@ -42,7 +43,7 @@ const Popover: React.FC<PropsWithChildren<PopoverProps>> = (props) => {
                   />
                   </svg>
               </button>
-              {props.children}
+              {children}
               </div>
           </Dialog>
         </div>
