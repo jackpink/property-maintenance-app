@@ -31,6 +31,7 @@
     "react-timeline-ui": "^1.0.5",
     "superjson": "1.12.2",
     "tailwindcss-animate": "^1.0.6",
+    "uuid": "^9.0.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -86,14 +86,14 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
         if (file) {
             console.log(file)
             // Need to check that file is correct type (ie jpeg/png/tif/etc)
-            const { url } = await getPresignedUrl({key: file.name})
+            const { url, filename } = await getPresignedUrl({key: file.name})
             console.log("URL", url)
             // upload file
             const uploadSuccess = await uploadPhotoToSignedURL(url, file);
             // if successful add photo record to db for lookup (relabelling photo?)
             if (uploadSuccess) {
                 console.log("Add photo to db");
-                createPhotoRecord({ filename: file.name, jobId: job.id });
+                createPhotoRecord({ filename: filename, jobId: job.id });
             }
         }
     }
