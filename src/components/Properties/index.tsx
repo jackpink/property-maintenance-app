@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Property from "./Property";
 import PropertySearch from "./PropertySearch";
+import { RouterOutputs } from "~/utils/api";
 
-const filterProperties= (properties: IProperty[], term: string): IProperty[] => {
+type Properties = RouterOutputs["property"]["getPropertiesForTradeUser"]
+
+type Props = {
+    properties: Properties
+}
+
+const filterProperties= (properties: Properties, term: string): Properties => {
     // if type and job.type match then keep
-    const filteredProperties: IProperty[] = []
+    const filteredProperties: Properties = []
     properties.forEach(property => {
         const suburb = property.suburb.toLowerCase();
         const postcode = property.postcode;
@@ -17,10 +23,6 @@ const filterProperties= (properties: IProperty[], term: string): IProperty[] => 
         }
     });
     return filteredProperties;
-}
-
-type Props = {
-    properties: IProperty[]
 }
 
 const Properties: React.FC<Props> = ({ properties} ) => {

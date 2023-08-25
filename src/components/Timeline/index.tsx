@@ -1,16 +1,5 @@
 import React, { PropsWithChildren } from "react";
 
-export enum State {
-  checked = "CHECKED",
-  unchecked = "UNCHECKED"
-}
-
-export interface EventObj {
-  label: string,
-  id: number,
-  state: State,
-}
-
 
 
 const Timeline: React.FC<PropsWithChildren> = (props) => {

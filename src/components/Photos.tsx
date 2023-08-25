@@ -14,14 +14,7 @@ const Photos: React.FC<Props> = ({ photos }) => {
         <div className="flex flex-wrap gap-4 pt-8 justify-center">
             {photos.map((photo, index) => {
                 return(
-                    <Image
-                        src={photo.url}
-                        alt={photo.filename}
-                        width={130}
-                        height={130}
-                        key={index}
-                        />
-
+                    <Photo key={index} photo={photo} />
                 )
             })}
         </div>
@@ -34,7 +27,7 @@ type PhotoProps = {
     photo: IPhoto
 }
 
-const Photo: React.FC<Props> = ({ photo }) => {
+const Photo: React.FC<PhotoProps> = ({ photo }) => {
 
     return(
         <Image
@@ -42,7 +35,6 @@ const Photo: React.FC<Props> = ({ photo }) => {
                         alt={photo.filename}
                         width={130}
                         height={130}
-                        key={index}
                         />
 
     )
