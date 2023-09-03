@@ -18,7 +18,7 @@ type PhotoProps = {
 }
 
 const Photo: React.FC<PhotoProps> = ({ photo }) => {
-    const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "original"})
+    const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "sm"})
     console.log("get photo url ", url);
     return(
         <Image src={url} width={40} height={40} alt="image"/>

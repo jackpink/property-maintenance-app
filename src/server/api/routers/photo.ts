@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand, PutObjectCommand,  } from "@aws-sdk/client-s3";
+import { S3RequestPresigner, getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectAclCommand, GetObjectAttributesCommand, GetObjectCommand, HeadBucketCommand, HeadObjectCommand, PutObjectCommand,  } from "@aws-sdk/client-s3";
 import { env } from "../../../env.mjs";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -64,25 +64,52 @@ export const photoRouter = createTRPCRouter({
       Bucket: env.PHOTO_BUCKET_NAME,
       Key: key, 
     }
-    const metadata = await s3.headObject(params);
-    console.log("meta", metadata);
+    const getMetadataCommand = new GetObjectAttributesCommand({
+      Bucket: env.PHOTO_BUCKET_NAME,
+      Key: key,
+      ObjectAttributes: ["ObjectSize"],
+    });
+    const aclObjectCommand = new GetObjectAclCommand(params);
+    const headObjectCommand = new HeadObjectCommand(params);
+
+    const headBucketCommand = new HeadBucketCommand({
+      Bucket: env.PHOTO_BUCKET_NAME
+    })
+
+    const signer = new S3RequestPresigner({
+      ...s3.config,
+    });
+
+    //const metaUrl = await s3.send(headBucketCommand);
+
+
+
+
+    //console.log("meta", metaUrl);
     try{
-      await s3.headObject(params); // We may need to getSignedUrl to make this request
+      //const response = await fetch(metaUrl); // We may need to getSignedUrl to make this request
+      //console.log("Meta data for Object is ", response);
+      const metaUrl = await s3.send(aclObjectCommand);
+      console.log("Photo Found, now getting signed url to return");
+      const getObjectCommand = new GetObjectCommand(params); 
+
+      const url = await getSignedUrl(s3, getObjectCommand); 
+      
+      console.log("url is ", url)
+
+      return url;
+
     } catch (error) {
-      if (error === 'NotFound'){
-        console.log("error on file, NEED TO RESIZE", error);
-      }
-      console.log("error on file, NEED TO RESIZE", error);
+      console.log("Photo not found, must trigger a resize");
+      // Make API call to function endpoint
+      const endpoint = 'https://2xhggqz6rawdiukdnivka7taqm0rjoyz.lambda-url.ap-southeast-2.on.aws/'
+      const result = await fetch(endpoint);
+      console.log("RESULT", result);
     }
 
-    const getObjectCommand = new GetObjectCommand(params); 
+    
 
     
-    const url = await getSignedUrl(s3, getObjectCommand); 
-    
-    console.log("url is ", url)
-
-    return url;
   }),
 
   getUnassignedPhotosForJob: privateProcedure

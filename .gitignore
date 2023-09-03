@@ -40,3 +40,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# Nested Lambda modules
+/src/server/aws/nodejs/node_modules
+/src/server/aws/nodejs/package.json
+/src/server/aws/nodejs/package-lock.json
+/src/server/aws/nodejs/nodejs.zip
