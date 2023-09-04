@@ -1,5 +1,5 @@
 // dependencies
-import { S3, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 //const util = require('util');
 //const sharp = require('sharp');
@@ -39,8 +39,14 @@ export const handler = async (event) => {
         resizedImage = await convertAndResizeImage(orignalImage, size);
     }
     
+    const destPath = getNewPath(size, path);
 
     console.log(resizedImage);
+
+    const uploadImageResponse = await uploadImageToNewPath(destPath, resizedImage, s3);
+
+    console.log(uploadImageResponse);
+
     let response = {
         statusCode: 200,
         body: JSON.stringify("Got image")
@@ -78,11 +84,11 @@ const getImageFroms3 = async (path, s3) => {
             Key:  path
         };
         console.log("params ", params);
-        var origimage = await s3.getObject(params).promise();
         const command = new GetObjectCommand(params);
         const response = await s3.send(command);
         console.log("Got original image");
-        return response;
+        const buffer = Buffer.concat(await response.Body.toArray());
+        return buffer;
   
     } catch (error) {
         console.log(error);
@@ -98,7 +104,7 @@ const convertAndResizeImage = async (originalImage, size) => {
 
     // Use the sharp module to resize the image and save in a buffer.
     try {
-        var buffer = await sharp(originalImage.Body)
+        var buffer = await sharp(originalImage)
             .toFormat('jpg')
             .resize(width, width)
             .withMetadata()
@@ -124,26 +130,32 @@ const convertImage = async (originalImage) => {
         return;
     }
 }
-/*
-const uploadImageToNewPath = async (path, buffer, s3) => {
 
+const getNewPath = (size, path) => {
+    const [user, category, file] = path.split("/");
+    const [filename, extension] = file.split(".");
+    const newPath = user + "/" + size + "/" + filename + ".jpg";
+    console.log("new destination path is ", newPath);
+    return newPath;
+}
+
+const uploadImageToNewPath = async (path, buffer, s3) => {
     // Upload the thumbnail image to the destination bucket
     try {
-        const destparams = {
+        const destParams = {
             Bucket: "property-maintenance-app-photos",
             Key: path,
             Body: buffer,
             ContentType: "image"
         };
 
-        console.log("destparams ", destparams);
-
-        const putResult = await s3.putObject(destparams).promise();
+        console.log("destparams ", destParams);
+        const command = new PutObjectCommand(destParams);
+        const response = await s3.send(command);
+        return response;
 
     } catch (error) {
         console.log(error);
         return;
     }
 }
-
-*/
