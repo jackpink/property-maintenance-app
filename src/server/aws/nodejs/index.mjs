@@ -119,7 +119,7 @@ const convertAndResizeImage = async (originalImage, size) => {
 
 const convertImage = async (originalImage) => {
     try {
-        var buffer = await sharp(originalImage.Body)
+        var buffer = await sharp(originalImage)
             .toFormat('jpg')
             .withMetadata()
             .toBuffer();
