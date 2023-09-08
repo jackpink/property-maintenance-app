@@ -9,7 +9,18 @@ export const handler = async (event) => {
     // Read options from the event parameter.
     //console.log("Reading options from event:\n", util.inspect(event, {depth: 5}));
     // Object key may have spaces or unicode non-ASCII characters.
-    const [path, size] = getQueryStringParameters(event);
+    try {
+        const [path, size] = getQueryStringParameters(event);
+    }
+    catch (error) {
+        console.log(error);
+        let response = {
+            statusCode: 400,
+            body: JSON.stringify(error)
+        };
+        return response;
+
+    }
     const [user, category, file] = path.split("/");
 
     // Infer the image type from the file suffix.
@@ -55,8 +66,12 @@ export const handler = async (event) => {
 };
 
 const getQueryStringParameters = (event) => {
-    const path = decodeURIComponent(event.queryStringParameters.path);
-    const size = event.queryStringParameters.size;
+    try {
+        const path = decodeURIComponent(event.queryStringParameters.path);
+        const size = event.queryStringParameters.size;
+    } catch ( error) {
+        throw "Error with query string parameters, path and size required";
+    }
     return [path, size]
 }
 
