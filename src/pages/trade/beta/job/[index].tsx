@@ -6,6 +6,7 @@ import Image from "next/image";
 import house from '../../../../images/demo-page/house-stock-image.png';
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
+import Photos from "~/components/Photos";
 import { ChangeEvent, ChangeEventHandler, useCallback, useState } from "react";
 import clsx from "clsx";
 import axios from "axios";
@@ -13,33 +14,21 @@ import axios from "axios";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
-type PhotoProps = {
-    photo: Photo
-}
 
-const Photo: React.FC<PhotoProps> = ({ photo }) => {
-    const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "sm"})
-    console.log("get photo url ", url);
-    return(
-        <Image src={url} width={40} height={40} alt="image"/>
-    )
-}
 
 type PhotosProps = {
     job: Job
 }
 
 
-const Photos: React.FC<PhotosProps> = ({ job }) => {
+const UnassignedPhotos: React.FC<PhotosProps> = ({ job }) => {
     const { data: photos } = api.photo.getUnassignedPhotosForJob.useQuery({jobId: job.id})
 
     if (!!photos && photos.length>0) {
         console.log(photos);
         return(
             <>
-                {photos.map((photo, index) => {
-                    return(<Photo photo={photo} key={index} />)
-                })}
+                <Photos photos={photos} />
             </>
         )
         
@@ -85,23 +74,29 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         
         const files = event.target.files;
-        const file = files[0];
-        
-        if (file) {
-            console.log(file)
-            // Need to check that file is correct type (ie jpeg/png/tif/etc)
-            const { url, filename } = await getPresignedUrl({key: file.name})
-            console.log("URL", url)
-            // upload file
-            const uploadSuccess = await uploadPhotoToSignedURL(url, file);
-            // if successful add photo record to db for lookup (relabelling photo?)
-            if (uploadSuccess) {
-                console.log("Add photo to db");
-                createPhotoRecord({ filename: filename, jobId: job.id }).then(() => {
-                    // refetch of photos
-                    void ctx.photo.getUnassignedPhotosForJob.invalidate();
-                });
-                
+        if (files && files.length > 0) {
+
+            for (let i = 0; i < files.length; i++) {
+
+                const file = files[i];
+            
+            
+                console.log(file)
+                // Need to check that file is correct type (ie jpeg/png/tif/etc)
+                const { url, filename } = await getPresignedUrl({key: file.name})
+                console.log("URL", url)
+                // upload file
+                const uploadSuccess = await uploadPhotoToSignedURL(url, file);
+                // if successful add photo record to db for lookup (relabelling photo?)
+                if (uploadSuccess) {
+                    console.log("Add photo to db");
+                    createPhotoRecord({ filename: filename, jobId: job.id }).then(() => {
+                        // refetch of photos
+                        void ctx.photo.getUnassignedPhotosForJob.invalidate();
+                    });
+                    
+                }
+            
             }
         }
     }
@@ -111,19 +106,21 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
     return(
         <>
             <label htmlFor="photo-upload-input" className="p-2 text-slate-900 font-extrabold text-xl border border-teal-800 rounded bg-teal-300  place-self-center">Upload Photo</label>
-            <input onChange={handleFileChange} type="file" id="photo-upload-input" className="opacity-0"/>
+            <input onChange={handleFileChange} multiple type="file" id="photo-upload-input" className="opacity-0"/>
         </>
     )
 }
 
+type RoomFromLevels = RouterOutputs["job"]["getJobForTradeUser"]["Property"]["levels"][number]["rooms"][number];
+
 type RoomButtonProps = {
     className: string
-    room: Room
+    room: RoomFromLevels
     job: Job,
     closePopover: () => void
 }
 
-const checkRoomIsSelectedRoom = (room: Room, selectedRooms: Room[]) => {
+const checkRoomIsSelectedRoom = (room: RoomFromLevels, selectedRooms: RoomFromLevels[]) => {
     
     
     const result = selectedRooms.find((selectedRoom) => selectedRoom.id === room.id )
@@ -273,7 +270,7 @@ const TradeJobPageWithJob: React.FC<TradeJobPageWithJobProps> = ({ job }) => {
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Documents</h2>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Photos</h2>
             <UploadPhotoButton job={job} />
-            <Photos job={job}/>
+            <UnassignedPhotos job={job}/>
             
         </div>
     )
