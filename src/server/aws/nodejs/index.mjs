@@ -9,8 +9,9 @@ export const handler = async (event) => {
     // Read options from the event parameter.
     //console.log("Reading options from event:\n", util.inspect(event, {depth: 5}));
     // Object key may have spaces or unicode non-ASCII characters.
+    let path, size;
     try {
-        const [path, size] = getQueryStringParameters(event);
+        [path, size] = getBodyParameters(event);
     }
     catch (error) {
         console.log(error);
@@ -22,15 +23,6 @@ export const handler = async (event) => {
 
     }
     const [user, category, file] = path.split("/");
-
-    // Infer the image type from the file suffix.
-    try {
-        checkImageType(file);
-        console.log("Image type Accepted");
-    } catch (error) {
-        console.log("Problem checking image type");
-        console.log(error);
-    }
     
 
     // Download the image from the S3 source bucket.
@@ -67,12 +59,25 @@ export const handler = async (event) => {
 
 const getQueryStringParameters = (event) => {
     try {
+        console.log(event.queryStringParameters);
         const path = decodeURIComponent(event.queryStringParameters.path);
         const size = event.queryStringParameters.size;
+        return [path, size];
     } catch ( error) {
         throw "Error with query string parameters, path and size required";
     }
-    return [path, size]
+}
+
+const getBodyParameters = (event) => {
+    try{
+        console.log(event.body);
+        const body = JSON.parse(event.body);
+        const path = body.path;
+        const size = body.size;
+        return [path, size];
+    } catch (error) {
+        throw "Error with request Body, path and string JSON required";
+    }
 }
 
 const checkImageType = (file) => {
@@ -119,11 +124,13 @@ const convertAndResizeImage = async (originalImage, size) => {
 
     // Use the sharp module to resize the image and save in a buffer.
     try {
+        console.log("Attempting to resize image");
         var buffer = await sharp(originalImage)
             .toFormat('jpg')
             .resize(width, width)
             .withMetadata()
             .toBuffer();
+        console.log("Image resized, returning buffer")
         return buffer;
 
     } catch (error) {
@@ -157,6 +164,7 @@ const getNewPath = (size, path) => {
 const uploadImageToNewPath = async (path, buffer, s3) => {
     // Upload the thumbnail image to the destination bucket
     try {
+        console.log("Attemptign to upload resized image to new path")
         const destParams = {
             Bucket: "property-maintenance-app-photos",
             Key: path,
