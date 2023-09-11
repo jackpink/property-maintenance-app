@@ -5,6 +5,13 @@ import { S3RequestPresigner, getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { GetObjectAclCommand, GetObjectAttributesCommand, GetObjectCommand, HeadBucketCommand, HeadObjectCommand, PutObjectCommand,  } from "@aws-sdk/client-s3";
 import { env } from "../../../env.mjs";
 import { v4 as uuidv4 } from 'uuid';
+import axios from "axios";
+import { signer } from '../../aws/s3';
+import { CrtSignerV4 } from '@aws-sdk/signature-v4-crt';
+import { Sha256 } from "@aws-crypto/sha256-js";
+import { sign } from 'aws4';
+import { aws4Interceptor } from "aws4-axios";
+
 
 export const photoRouter = createTRPCRouter({
   
@@ -55,36 +62,23 @@ export const photoRouter = createTRPCRouter({
   .query(async ({ ctx, input }) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR Download")   
-
+  
     const { s3 } = ctx
 
-    const key = ctx.currentUser + "/" + input.type + "/" + input.name;
+    const [filename ,extension] = input.name.split(".");
+    const convertedFilename = filename + ".jpg";
+
+    const key = ctx.currentUser + "/" + input.type + "/" + convertedFilename;
 
     const params = {
       Bucket: env.PHOTO_BUCKET_NAME,
       Key: key, 
     }
-    const getMetadataCommand = new GetObjectAttributesCommand({
-      Bucket: env.PHOTO_BUCKET_NAME,
-      Key: key,
-      ObjectAttributes: ["ObjectSize"],
-    });
+    
     const aclObjectCommand = new GetObjectAclCommand(params);
-    const headObjectCommand = new HeadObjectCommand(params);
-
-    const headBucketCommand = new HeadBucketCommand({
-      Bucket: env.PHOTO_BUCKET_NAME
-    })
-
-    const signer = new S3RequestPresigner({
-      ...s3.config,
-    });
+    //const headObjectCommand = new HeadObjectCommand(params);
 
     //const metaUrl = await s3.send(headBucketCommand);
-
-
-
-
     //console.log("meta", metaUrl);
     try{
       //const response = await fetch(metaUrl); // We may need to getSignedUrl to make this request
@@ -100,11 +94,47 @@ export const photoRouter = createTRPCRouter({
       return url;
 
     } catch (error) {
-      console.log("Photo not found, must trigger a resize");
+      console.log("Photo not found, must trigger a resize", params);
+      let url;
       // Make API call to function endpoint
-      const endpoint = 'https://2xhggqz6rawdiukdnivka7taqm0rjoyz.lambda-url.ap-southeast-2.on.aws/'
-      const result = await fetch(endpoint);
-      console.log("RESULT", result);
+      const endpoint = new URL('https://l8zsjwdvg4.execute-api.ap-southeast-2.amazonaws.com/dev');
+      const path = ctx.currentUser + "/" + "original" + "/" + input.name;
+      const size = input.type 
+      console.log("path is ", path);
+      console.log("size is ", size);
+      const body = {
+        path: path,
+        size: size
+      }
+      //endpoint.searchParams.append('path', path);
+      //endpoint.searchParams.append('size', input.type);
+      const cred = {
+        accessKeyId: env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: env.AWS_SECRET_ACCESS_KEY
+      }
+      const interceptor = aws4Interceptor({
+        options: {
+          region: "ap-southeast-2",
+          service: "execute-api",
+        },
+        credentials: cred
+      });
+      const client = axios.create();
+      client.interceptors.request.use(interceptor);
+      console.log("endpoint string", decodeURIComponent(endpoint.toString()));
+      url = await client.post(endpoint.toString(), body).then( async (res) => {
+        console.log("AXIOS AWS4 RESPONSE");
+        // Now get signed url from s3
+        const getObjectCommand = new GetObjectCommand(params); 
+
+        return await getSignedUrl(s3, getObjectCommand)
+        
+        
+      });
+      console.log("The newly updated url is ", url);
+      return url;
+      
+
     }
 
     
