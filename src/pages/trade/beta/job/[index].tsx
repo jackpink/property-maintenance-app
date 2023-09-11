@@ -61,7 +61,9 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
     
     const { mutateAsync: getPresignedUrl } = api.photo.getPhotoUploadPresignedUrl.useMutation();
 
-    const { mutate: createPhotoRecord } = api.photo.createPhotoRecord.useMutation();
+    const { mutateAsync: createPhotoRecord } = api.photo.createPhotoRecord.useMutation();
+
+    const ctx = api.useContext();
 
     const uploadPhotoToSignedURL = async (signedUrl :string, file: File ) => {
         const result = await axios 
@@ -81,8 +83,10 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
     }
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        
         const files = event.target.files;
         const file = files[0];
+        
         if (file) {
             console.log(file)
             // Need to check that file is correct type (ie jpeg/png/tif/etc)
@@ -93,7 +97,11 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
             // if successful add photo record to db for lookup (relabelling photo?)
             if (uploadSuccess) {
                 console.log("Add photo to db");
-                createPhotoRecord({ filename: filename, jobId: job.id });
+                createPhotoRecord({ filename: filename, jobId: job.id }).then(() => {
+                    // refetch of photos
+                    void ctx.photo.getUnassignedPhotosForJob.invalidate();
+                });
+                
             }
         }
     }
