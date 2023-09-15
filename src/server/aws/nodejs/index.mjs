@@ -1,6 +1,7 @@
 // dependencies
 import { S3, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
+import {Response} from 'node-fetch';
 //const util = require('util');
 //const sharp = require('sharp');
 
@@ -23,6 +24,7 @@ export const handler = async (event) => {
 
     }
     const [user, category, file] = path.split("/");
+   
     
 
     // Download the image from the S3 source bucket.
@@ -33,13 +35,22 @@ export const handler = async (event) => {
         secretAccessKey: process.env.SECRET_ACCESS_KEY,
         },
     }); 
-
-    const orignalImage = await getImageFroms3(path, s3);
+    let originalImage;
+    try {
+        originalImage = await getImageFroms3(path, s3);
+    } catch (error) {
+        console.log(error);
+        let response = {
+            statusCode: 400,
+            body: JSON.stringify(error)
+        };
+        return response;
+    }
     let resizedImage
     if (size === "full") {
-        resizedImage = await convertImage(orignalImage);
+        resizedImage = await convertImage(originalImage);
     } else {
-        resizedImage = await convertAndResizeImage(orignalImage, size);
+        resizedImage = await convertAndResizeImage(originalImage, size);
     }
     
     const destPath = getNewPath(size, path);
@@ -112,6 +123,7 @@ const getImageFroms3 = async (path, s3) => {
   
     } catch (error) {
         console.log(error);
+        throw "Could not get Image from S3"
         return;
     }
 }
@@ -140,11 +152,14 @@ const convertAndResizeImage = async (originalImage, size) => {
 }
 
 const convertImage = async (originalImage) => {
+
     try {
+        console.log("Attempting to converted image");
         var buffer = await sharp(originalImage)
             .toFormat('jpg')
             .withMetadata()
             .toBuffer();
+        console.log("Image converted, returning buffer")
         return buffer;
 
     } catch (error) {
