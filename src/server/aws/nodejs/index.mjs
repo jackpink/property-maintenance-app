@@ -46,6 +46,7 @@ export const handler = async (event) => {
         };
         return response;
     }
+    console.log(originalImage);
     let resizedImage
     if (size === "full") {
         resizedImage = await convertImage(originalImage);
@@ -118,8 +119,10 @@ const getImageFroms3 = async (path, s3) => {
         const command = new GetObjectCommand(params);
         const response = await s3.send(command);
         console.log("Got original image");
-        const buffer = Buffer.concat(await response.Body.toArray());
-        return buffer;
+        const res = new Response(response.Body);
+        const arrayBuf = await res.arrayBuffer();
+        //const buffer = Buffer.concat(await response.Body.toArray());
+        return arrayBuf;
   
     } catch (error) {
         console.log(error);
