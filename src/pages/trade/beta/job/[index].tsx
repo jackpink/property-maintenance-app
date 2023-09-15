@@ -12,8 +12,42 @@ import clsx from "clsx";
 import axios from "axios";
 
 
-type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
+type Rooms = RouterOutputs["job"]["getJobForTradeUser"]["rooms"];
 
+type PhotoViewerButtonProps = {
+    label: string,
+    selected: boolean
+}
+
+const PhotoViewerButton: React.FC<PhotoViewerButtonProps> = ({label , selected}) => {
+    return(
+        <button className={clsx("p-1", {["bg-sky-500/50"]: selected})} >
+            {label}
+        </button>
+    )
+}
+
+type PhotoViewerProps = {
+    job: Job
+}
+
+const PhotoViewer: React.FC<PhotoViewerProps> = ({ job }) => {
+    return(
+        <div>
+            <div className="inline-block border-solid border-2 border-black p-3 rounded-full">
+                <PhotoViewerButton selected={true} label="UNASSIGNED" />
+                {job.rooms.map((room, index) => {
+                    return(
+                        <PhotoViewerButton  key={index} selected={false} label={room.Level.label.toUpperCase() + "→" +room.label.toUpperCase()} />
+                    )
+                })}
+            </div>
+            
+            <UnassignedPhotos job={job}/>
+        </div>
+    )
+
+}
 
 
 type PhotosProps = {
@@ -75,10 +109,10 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
         
         const files = event.target.files;
         if (files && files.length > 0) {
+            Array.from(files).forEach( async file => {
+            //for (let i = 0; i < files.length; i++) {
 
-            for (let i = 0; i < files.length; i++) {
-
-                const file = files[i];
+                
             
             
                 console.log(file)
@@ -96,8 +130,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
                     });
                     
                 }
-            
-            }
+            })
         }
     }
 
@@ -270,7 +303,8 @@ const TradeJobPageWithJob: React.FC<TradeJobPageWithJobProps> = ({ job }) => {
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Documents</h2>
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Photos</h2>
             <UploadPhotoButton job={job} />
-            <UnassignedPhotos job={job}/>
+            <PhotoViewer job={job}/>
+            
             
         </div>
     )
