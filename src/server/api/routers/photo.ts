@@ -58,7 +58,7 @@ export const photoRouter = createTRPCRouter({
   }),
 
   getPhoto: privateProcedure
-  .input(z.object({ name: z.string(), type: z.enum(["sm","original"] as const)}))
+  .input(z.object({ name: z.string(), type: z.enum(["sm","full"] as const)}))
   .query(async ({ ctx, input }) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR Download")   
