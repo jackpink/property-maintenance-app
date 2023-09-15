@@ -52,6 +52,6 @@ const FullSizePhoto: React.FC<PhotoProps> = ({ photo }) => {
     const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "full"})
     if (typeof url !== 'string') return <>Loading</>
     return(
-         <Image src={url} width={300} height={300} alt="image" />
+         <Image src={url} width="0" height="0" alt="image" sizes="100vw" className="w-full h-auto" />
     )
 }
