@@ -14,48 +14,42 @@ import axios from "axios";
 
 type Rooms = RouterOutputs["job"]["getJobForTradeUser"]["rooms"];
 
-type PhotoViewerButtonProps = {
-    label: string,
-    selected: boolean
-}
-
-const PhotoViewerButton: React.FC<PhotoViewerButtonProps> = ({label , selected}) => {
-    return(
-        <button className={clsx("p-1", {["bg-sky-500/50"]: selected})} >
-            {label}
-        </button>
-    )
-}
 
 type PhotoViewerProps = {
     job: Job
 }
 
 const PhotoViewer: React.FC<PhotoViewerProps> = ({ job }) => {
+    const [selectedRoom, setSelectedRoom] = useState("UNASSIGNED"); 
     return(
-        <div>
-            <div className="inline-block border-solid border-2 border-black p-3 rounded-full">
-                <PhotoViewerButton selected={true} label="UNASSIGNED" />
+        <div className="text-center	">
+            <select 
+                className="border-solid border-2 border-black p-3 rounded-full text-center	"
+                value={selectedRoom}
+                onChange={e => setSelectedRoom(e.target.value)}
+            >
+                <option value="UNASSIGNED">UNASSIGNED</option>
                 {job.rooms.map((room, index) => {
                     return(
-                        <PhotoViewerButton  key={index} selected={false} label={room.Level.label.toUpperCase() + "→" +room.label.toUpperCase()} />
+                        <option value={room.id}>{room.Level.label.toUpperCase() + "→" +room.label.toUpperCase()}</option>
                     )
                 })}
-            </div>
+                
+            </select>
+            {(selectedRoom==="UNASSIGNED") ? <UnassignedPhotos job={job}/> : <RoomPhotos job={job} roomId={selectedRoom}/>}
             
-            <UnassignedPhotos job={job}/>
         </div>
     )
 
 }
 
 
-type PhotosProps = {
+type UnassignedPhotosProps = {
     job: Job
 }
 
 
-const UnassignedPhotos: React.FC<PhotosProps> = ({ job }) => {
+const UnassignedPhotos: React.FC<UnassignedPhotosProps> = ({ job }) => {
     const { data: photos } = api.photo.getUnassignedPhotosForJob.useQuery({jobId: job.id})
 
     if (!!photos && photos.length>0) {
@@ -74,6 +68,32 @@ const UnassignedPhotos: React.FC<PhotosProps> = ({ job }) => {
     </>
     )
 }
+
+type RoomPhotosProps = {
+    job: Job,
+    roomId: string
+}
+
+const RoomPhotos: React.FC<RoomPhotosProps> = ({ job, roomId }) => {
+    const { data: photos } = api.photo.getPhotosForJobAndRoom.useQuery({jobId: job.id, roomId: roomId})
+
+    if (!!photos && photos.length>0) {
+        console.log(photos);
+        return(
+            <>
+                <Photos photos={photos} />
+            </>
+        )
+        
+
+    }
+    return(
+    <>
+        no photo
+    </>
+    )
+}
+
 
 type UploadPhotoButtonProps = {
     job: Job
@@ -115,9 +135,9 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
                 
             
             
-                console.log(file)
+                console.log(job.Property.id)
                 // Need to check that file is correct type (ie jpeg/png/tif/etc)
-                const { url, filename } = await getPresignedUrl({key: file.name})
+                const { url, filename } = await getPresignedUrl({key: file.name, property: job.Property.id})
                 console.log("URL", url)
                 // upload file
                 const uploadSuccess = await uploadPhotoToSignedURL(url, file);
