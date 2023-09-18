@@ -6,17 +6,13 @@ import { GetObjectAclCommand, GetObjectAttributesCommand, GetObjectCommand, Head
 import { env } from "../../../env.mjs";
 import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
-import { signer } from '../../aws/s3';
-import { CrtSignerV4 } from '@aws-sdk/signature-v4-crt';
-import { Sha256 } from "@aws-crypto/sha256-js";
-import { sign } from 'aws4';
 import { aws4Interceptor } from "aws4-axios";
 
 
 export const photoRouter = createTRPCRouter({
   
   getPhotoUploadPresignedUrl: privateProcedure
-  .input(z.object({ key: z.string() }))
+  .input(z.object({ key: z.string(), property: z.string() }))
   .mutation(async ({ ctx, input}) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR UPLOAD")
@@ -24,9 +20,9 @@ export const photoRouter = createTRPCRouter({
     const filenameArray = input.key.split(".");
     const fileExtension = filenameArray[1];
     const uuidName = uuidv4();
-    const newFilename = uuidName + "." + fileExtension;
+    const newFilename = input.property + "/" + uuidName + "." + fileExtension;
     console.log("new filename ", newFilename);
-    const key = ctx.currentUser + "/original/" + newFilename;
+    const key = "original/" + newFilename;
     
     const { s3 } = ctx
 
@@ -50,7 +46,6 @@ export const photoRouter = createTRPCRouter({
     const photo = await ctx.prisma.photo.create({
       data: {
         filename: input.filename,
-        directory: ctx.currentUser,
         jobId: input.jobId
       }
     });
@@ -68,7 +63,7 @@ export const photoRouter = createTRPCRouter({
     const [filename ,extension] = input.name.split(".");
     const convertedFilename = filename + ".jpg";
 
-    const key = ctx.currentUser + "/" + input.type + "/" + convertedFilename;
+    const key = input.type + "/" + convertedFilename;
 
     const params = {
       Bucket: env.PHOTO_BUCKET_NAME,
@@ -98,7 +93,7 @@ export const photoRouter = createTRPCRouter({
       let url;
       // Make API call to function endpoint
       const endpoint = new URL('https://l8zsjwdvg4.execute-api.ap-southeast-2.amazonaws.com/dev');
-      const path = ctx.currentUser + "/" + "original" + "/" + input.name;
+      const path = "original" + "/" + input.name;
       const size = input.type 
       console.log("path is ", path);
       console.log("size is ", size);
@@ -147,10 +142,22 @@ export const photoRouter = createTRPCRouter({
   .query(async ({ ctx, input }) => {
     const photos = ctx.prisma.photo.findMany({
       where: {
-        jobId: input.jobId
+        jobId: input.jobId,
+
       }
   })
   return photos;
+  }),
+  getPhotosForJobAndRoom: privateProcedure
+  .input(z.object({ jobId: z.string(), roomId: z.string()}))
+  .query(async ({ ctx, input }) => {
+    const photos = ctx.prisma.photo.findMany({
+      where: {
+        jobId: input.jobId,
+        roomId: input.roomId
+      }
   })
+  return photos;
+  }),
   
 });
