@@ -7,7 +7,7 @@ import house from '../../../../images/demo-page/house-stock-image.png';
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
-import { ChangeEvent, ChangeEventHandler, useCallback, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import clsx from "clsx";
 import axios from "axios";
 
@@ -56,7 +56,7 @@ const UnassignedPhotos: React.FC<UnassignedPhotosProps> = ({ job }) => {
         console.log(photos);
         return(
             <div>
-                <Photos photos={photos} />
+                <Photos photos={photos} rooms={job.rooms} />
             </div>
         )
         
@@ -81,16 +81,16 @@ const RoomPhotos: React.FC<RoomPhotosProps> = ({ job, roomId }) => {
         console.log(photos);
         return(
             <>
-                <Photos photos={photos} />
+                <Photos photos={photos} rooms={job.rooms} />
             </>
         )
         
 
     }
     return(
-    <>
-        no photo
-    </>
+    <p>
+        no photos
+    </p>
     )
 }
 
