@@ -6,7 +6,7 @@ import Image from "next/image";
 import house from '../../../../images/demo-page/house-stock-image.png';
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
-import Photos from "~/components/Photos";
+import Photos from "~/components/JobPhotos";
 import { ChangeEvent, ChangeEventHandler, useCallback, useState } from "react";
 import clsx from "clsx";
 import axios from "axios";
@@ -55,9 +55,9 @@ const UnassignedPhotos: React.FC<UnassignedPhotosProps> = ({ job }) => {
     if (!!photos && photos.length>0) {
         console.log(photos);
         return(
-            <>
+            <div>
                 <Photos photos={photos} />
-            </>
+            </div>
         )
         
 

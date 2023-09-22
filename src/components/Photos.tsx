@@ -5,6 +5,7 @@ import { RouterOutputs, api } from '~/utils/api'
 import Popover from "./Popover";
 import { useEffect, useRef, useState } from "react";
 import { clearTimeout } from "timers";
+import ClickAwayListener from "./ClickAwayListener";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
@@ -15,8 +16,10 @@ type Props = {
 }
 
 const Photos: React.FC<Props> = ({ photos }) => {
+    const [assignMode, setAssignMode ] = useState(false);
 
     return(
+        
         <div className="flex flex-wrap gap-4 pt-8 justify-center">
             {photos.map((photo, index, photoArray) => {
                 return(
@@ -24,38 +27,12 @@ const Photos: React.FC<Props> = ({ photos }) => {
                 )
             })}
         </div>
+    
     )
 }
 
 export default Photos;
 
-const clickAndHold = (btnEl) => {
-
-    let timerId;
-
-    const onMouseDown =() => {
-        timerId = setTimeout(() => {
-            console.log("Photo Click held down");
-        }, 800);
-    };
-    
-    const clearTimer = () => {
-        timerId && clearTimeout(timerId);
-    }
-
-    btnEl.addEventListener("mousedown", onMouseDown);
-
-    btnEl.addEventListener("mouseup", clearTimer);
-
-    btnEl.addEventListener("mouseout", clearTimer);
-
-    return () => {
-        btnEl.removeEventListener("mousedown", onMouseDown)
-        btnEl.removeEventListener("mouseup", clearTimer)
-        btnEl.removeEventListener("mouseout", clearTimer)
-    }
-    
-}
 
 type PhotoProps = {
     photo: Photo
@@ -73,18 +50,25 @@ const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray }) => {
     
     const mouseDown = () => {
         console.log("Photo Click Started")
-        timerRef.current = window.setTimeout(() => {
-            console.log("Photo Click held down");
-            
+        const timerId = setTimeout(() => {
+            console.log("Photo Click held down", timerRef);
+            // Entering assign mode here, will select when timer ends
+            timerRef.current = 0;
         }, 400);
+        timerRef.current = Number(timerId);
+        console.log("timerId", Number(timerId))
+        //clearTimeout(timerRef.current);
+        console.log("timer after clear", timerRef.current);
     }
 
     const mouseUp = () => {
-        console.log("Photo Click Up", timerRef.current);
+        console.log("Photo Click Up", timerRef);
         if (timerRef.current){
-            console.log("select the photo, go to assign mode")
-        } else {
+            // If in assign mode then select image
+            console.log("GO TO FULL SIZE IMAGE")
             setFullSizePhotoOpen(true);
+        } else {
+           // If in assign
         }
         window.clearTimeout(timerRef.current || 0);
        
@@ -109,17 +93,13 @@ const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray }) => {
 
     console.log("get photo url ", url);
 
-    const clickHandler = ({ target }) => {
-        
-    }
-
     if (typeof url !== 'string') return <>Loading</>
     return(
         <>
             <Popover popoveropen={fullSizePhotoOpen} setPopoverOpen={setFullSizePhotoOpen}>
                 <FullSizePhoto index={index} photoArray={photoArray} />
             </Popover>
-            <button ref={photoRef} onClick={clickHandler}>
+            <button ref={photoRef} >
                 <Image src={url} width={220} height={220} alt="image" />
             </button>
         </>
