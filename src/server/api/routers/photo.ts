@@ -143,7 +143,7 @@ export const photoRouter = createTRPCRouter({
     const photos = ctx.prisma.photo.findMany({
       where: {
         jobId: input.jobId,
-
+        roomId: null
       }
   })
   return photos;
@@ -159,5 +159,18 @@ export const photoRouter = createTRPCRouter({
   })
   return photos;
   }),
+  movePhotoToRoom: privateProcedure
+  .input(z.object({ photoId: z.string(), roomId: z.string()}))
+  .mutation( async ({ ctx, input }) => {
+    const newPhoto = ctx.prisma.photo.update({
+      where: {
+        id: input.photoId
+      },
+      data: {
+        roomId: input.roomId
+      }
+    });
+    return newPhoto;
+  })
   
 });
