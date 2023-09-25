@@ -1,13 +1,14 @@
 import { useState, type PropsWithChildren } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
+import { SelectedJobs } from ".";
 
 
 type NavPopoverProps = {
-    selectedJob: IJob
+    selectedJobs: SelectedJobs
 }
 
-const JobPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ selectedJob, ...props }) => {
+const JobPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ selectedJobs, ...props }) => {
     const [isOpen, setIsOpen] = useState(false)
     return (
       <div className={clsx('inline')} {...props}>
@@ -21,7 +22,7 @@ const JobPopover: React.FC<PropsWithChildren<NavPopoverProps>> = ({ selectedJob,
               <svg fill="currentColor" viewBox="0 0 20 20" className="w-8 h-8">
                     <path x-show="!open" fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" ></path>
             </svg>
-            <p  className="border rounded border-teal-800 bg-teal-300 p-2" >{selectedJob.title}</p>
+            <p  className="border rounded border-teal-800 bg-teal-300 p-2" >{selectedJobs[0]?.title}</p>
           </button>
           <Dialog
               as="div"
