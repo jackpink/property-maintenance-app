@@ -18,8 +18,7 @@ type Props = {
 const Photos: React.FC<Props> = ({ photos }) => {
     const [assignMode, setAssignMode ] = useState(false);
 
-    return(
-        
+    return(  
         <div className="flex flex-wrap gap-4 pt-8 justify-center">
             {photos.map((photo, index, photoArray) => {
                 return(
@@ -27,7 +26,6 @@ const Photos: React.FC<Props> = ({ photos }) => {
                 )
             })}
         </div>
-    
     )
 }
 
@@ -113,7 +111,9 @@ type FullSizePhotoProps = {
 
 const FullSizePhoto: React.FC<FullSizePhotoProps> = ({ index, photoArray }) => {
     const [photoIndex, setPhotoIndex] = useState(index);
-    const {data: url} = api.photo.getPhoto.useQuery({name: photoArray.at(photoIndex)?.filename, type: "full"})
+    const photo = photoArray.at(photoIndex);
+    if (!photo) return <>Not found</>
+    const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "full"})
     if (typeof url !== 'string') return <>Loading</>
     return(
         <div>

@@ -258,7 +258,9 @@ type FullSizePhotoProps = {
 
 const FullSizePhoto: React.FC<FullSizePhotoProps> = ({ index, photoArray }) => {
     const [photoIndex, setPhotoIndex] = useState(index);
-    const {data: url} = api.photo.getPhoto.useQuery({name: photoArray.at(photoIndex)?.filename, type: "full"})
+    const photo = photoArray.at(photoIndex);
+    if (!photo) return <>Not found</>
+    const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "full"})
     if (typeof url !== 'string') return <>Loading</>
     return(
         <div>
