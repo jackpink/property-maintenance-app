@@ -28,7 +28,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
     const [jobTitleInput, setJobTitleInput] = useState('');
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date | undefined>(new Date());
 
     const router = useRouter();
 
@@ -48,7 +48,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
             const errorFormatted = checkAddJobInput.error.format()._errors.pop()
             if (!!errorFormatted) setErrorMessage(errorFormatted);
             setError(true);
-        } else {
+        } else if (!!date) {
             console.log("add job", jobTitleInput);
             createJob({
                 title: jobTitleInput,
