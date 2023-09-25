@@ -29,5 +29,5 @@
     "**/*.cjs",
     "**/*.mjs"
 , "src/pages/sign-in/[[...index]].[tsx]"  ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "aws"]
 }
