@@ -1,5 +1,6 @@
+import { RouterOutputs } from '~/utils/api';
 import RoomPopover from './RoomPopover';
-import { RoomSelectorOneLevel, RoomSelectorTwoLevel } from './RoomSelector';
+import { RoomSelectorLevel } from './RoomSelector';
 import { SetStateAction, Dispatch } from 'react';
 
 /* 
@@ -12,35 +13,41 @@ will need useState to track current room
 
 Then create a hidden version which is displayed on larger screen size
 */
-export type selectedRoom = {
-    level: string
-    room: string
+
+
+type Levels = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"];
+
+type Level = Levels[number];
+
+export type Room = Levels[number]["rooms"][number];
+
+export type SelectedRoom = {
+    room: Room | null,
+    level: Level | null
 }
 
-
 type Props = {
-    levels: ILevel[]
-    selectedRoom: selectedRoom
-    setSelectedRoom: Dispatch<SetStateAction<selectedRoom>>
+    levels: Levels
+    selectedRoom: SelectedRoom
+    setSelectedRoom: Dispatch<SetStateAction<SelectedRoom>>
 }
 
 const Rooms: React.FC<Props> = ({ levels, selectedRoom, setSelectedRoom }) => {
-const number_of_levels = levels.length;
-if (number_of_levels === 1) {
+
+    
     return(
         <RoomPopover selectedRoom={selectedRoom} >
-            <RoomSelectorOneLevel levels={levels} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+            <div  className="flex flex-wrap gap-3 justify-center">
+                {levels.map((level, index) => {
+                    return(
+                        <RoomSelectorLevel key={index} level={level} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+                    )}
+                )}
+                
+            </div>
+            
         </RoomPopover>
     )
-} else if (number_of_levels === 2) {
-    return(
-        <RoomPopover selectedRoom={selectedRoom} >
-            <RoomSelectorTwoLevel levels={levels} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
-        </RoomPopover>
-    )
-}
-    return (
-        <>Error: too many levels</>
-    )}
+} 
 
     export default Rooms;

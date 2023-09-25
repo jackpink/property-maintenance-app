@@ -6,49 +6,56 @@ in the original sql queries for speed
 */
 import type { SetStateAction, Dispatch } from 'react';
 import clsx from 'clsx';
-import type { selectedRoom } from '.';
+import type { SelectedRoom } from './index';
+import { RouterOutputs } from '~/utils/api';
+
+type Level = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number];
+
+type Room = Level["rooms"][number];
 
 type RoomButtonProps = {
     className: string
-    room: IRoom
-    level: ILevel
-    selectedRoom: selectedRoom
-    setSelectedRoom: Dispatch<SetStateAction<selectedRoom>>
+    room: Room
+    level: Level
+    selectedRoom: SelectedRoom
+    setSelectedRoom: Dispatch<SetStateAction<SelectedRoom>>
 }
 
 export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, level, selectedRoom, setSelectedRoom }) => {
     const ButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const newSelectedRoom: selectedRoom = {level: level.label, room: event.currentTarget.value}
+        const newSelectedRoom: SelectedRoom = {level: level, room: room};
+        console.log("new selected room", newSelectedRoom);
         setSelectedRoom(newSelectedRoom);
     }
-    if ( room.label === selectedRoom.room && level.label === selectedRoom.level ) {
+    if ( room.id === selectedRoom.room?.id ) {
         return(
-            <button value={room.label} className={clsx(className, "border-2 rounded border-teal-800 bg-teal-300 p-2")}  >{room.label}</button>
+            <button className={clsx(className, "border-2 rounded border-teal-800 bg-teal-300 p-2")}  >{room.label}</button>
         )
     }
     return(
-        <button value={room.label} onClick={ButtonClicked} className={clsx(className, "border rounded border-teal-800 p-2")} >{room.label}</button>
+        <button onClick={ButtonClicked} className={clsx(className, "border rounded border-teal-800 p-2")} >{room.label}</button>
     )
 }
 
+
+
 type Props = {
-    levels: ILevel[]
-    selectedRoom: selectedRoom
-    setSelectedRoom: Dispatch<SetStateAction<selectedRoom>>
+    level: Level
+    selectedRoom: SelectedRoom 
+    setSelectedRoom: Dispatch<SetStateAction<SelectedRoom>>
 }
 
-export const RoomSelectorOneLevel: React.FC<Props> = ({ levels, selectedRoom, setSelectedRoom }) => {
-    const level = levels[0];
+export const RoomSelectorLevel: React.FC<Props> = ({ level, selectedRoom, setSelectedRoom }) => {
     return(
         <div className="grid grid-cols-1 gap-2 text-center ">
-            <h1>{level?.label}</h1>
-            {level?.rooms.map((room, index) => 
-                <RoomButton className="sm:w-96 sm:justify-self-center" key={index} room={room} level={level} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
+            <h1>{level.label}</h1>
+            {level.rooms.map((room, index) => 
+                <RoomButton className=" w-96 justify-self-center" key={index} room={room} level={level} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}/>
             )}
         </div>
     )
 }
-
+/*
 export const RoomSelectorTwoLevel: React.FC<Props> = ({ levels, selectedRoom, setSelectedRoom }) => {
     const levelOne = levels[0];
     const levelTwo = levels[1];
@@ -69,3 +76,4 @@ export const RoomSelectorTwoLevel: React.FC<Props> = ({ levels, selectedRoom, se
         </div>
     )
 }
+*/
