@@ -103,10 +103,11 @@ export const jobRouter = createTRPCRouter({
     });
     type Levels = RouterOutputs["job"]["getJobForTradeUser"]["Property"]["levels"]
     const checkRoomIsInProperty = (levels: Levels, roomId: string) => {
-      for (var i = 0; i < levels.length; i++) {
-        var rooms = levels[i].rooms;
-        for (var j=0; j< rooms.length; j++) {
-          if (rooms[j].id === roomId) {
+
+      for (const level of levels) {
+          var rooms = level.rooms;
+        for (const room of rooms) {
+          if (room.id === roomId) {
             console.log("TRUE")
             return true;
           }
@@ -168,5 +169,18 @@ export const jobRouter = createTRPCRouter({
       }
     })
     return job;
+  }),
+  getJobsForRoom: privateProcedure
+  .input(z.object({roomId: z.string()}))
+  .query(async ({ctx, input}) => {
+    const room = await ctx.prisma.room.findFirstOrThrow({
+      where: {
+        id: input.roomId
+      },
+      include: {
+        jobs: true
+      }
+    })
+    return room.jobs;
   })
 });
