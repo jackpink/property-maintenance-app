@@ -42,15 +42,7 @@ const Photos: React.FC<Props> = ({ photos, rooms }) => {
         setSelectedPhotos(prevSelectedPhotos => [...prevSelectedPhotos, photoId]);
     }
 
-    const removeFromSelectedPhotos = (photoId: string) => {
-        const index = selectedPhotos.indexOf(photoId);
-        // This isnot working properyl
-        const newSelectedPhotos = selectedPhotos.filter(function(selectedPhotoId) {
-            return selectedPhotoId !== photoId 
-        })
-        console.log(newSelectedPhotos);
-        setSelectedPhotos(newSelectedPhotos);
-    }
+    
 
     const exitAssignMode = () => {
         setAssignMode(false);
@@ -87,7 +79,7 @@ const Photos: React.FC<Props> = ({ photos, rooms }) => {
             <div className="flex flex-wrap gap-4 pt-8 justify-center">
                 {photos.map((photo, index, photoArray) => {
                     return(
-                        <Photo key={index} photo={photo} index={index} photoArray={photoArray} assignMode={assignMode} setAssignMode={setAssignMode} addToSelectedPhotos={addToSelectedPhotos} removeFromSelectedPhotos={removeFromSelectedPhotos}/>
+                        <Photo key={index} photo={photo} index={index} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} photoArray={photoArray} assignMode={assignMode} setAssignMode={setAssignMode} addToSelectedPhotos={addToSelectedPhotos} />
                     )
                 })}
                 {(assignMode) ? (
@@ -109,35 +101,27 @@ export default Photos;
 type PhotoProps = {
     photo: Photo
     index: number,
+    selectedPhotos: string[],
+    setSelectedPhotos: Dispatch<SetStateAction<string[]>>,
     photoArray: Photo[],
     assignMode: boolean,
     setAssignMode: Dispatch<SetStateAction<boolean>>,
-    addToSelectedPhotos: (photoId: string) => void,
-    removeFromSelectedPhotos: (photoId: string) => void
+    addToSelectedPhotos: (photoId: string) => void
 }
 
 
-const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray, assignMode, setAssignMode, addToSelectedPhotos, removeFromSelectedPhotos }) => {
+const Photo: React.FC<PhotoProps> = ({ photo, index, selectedPhotos, setSelectedPhotos, photoArray, assignMode, setAssignMode, addToSelectedPhotos }) => {
     const [ fullSizePhotoOpen, setFullSizePhotoOpen] = useState(false);
-    const [ photoSelected, setPhotoSelected ] = useState(false);
+    
     
     const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "sm"})
     
     
     
 
-    useEffect(() => {
-        // if the assignMode if false, set photoSlected to false
-        if (!assignMode) setPhotoSelected(false);
+    
 
-
-    }, [assignMode])
-
-    const enableAssignMode = () => {
-        setAssignMode(true);
-        setPhotoSelected(true)
-        addToSelectedPhotos(photo.id);
-    }
+    
 
     
     
@@ -150,7 +134,7 @@ const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray, assignMode, set
             <Popover popoveropen={fullSizePhotoOpen} setPopoverOpen={setFullSizePhotoOpen}>
                 <FullSizePhoto index={index} photoArray={photoArray} />
             </Popover>
-            <SelectablePhoto photo={photo} url={url} photoSelected={photoSelected} setPhotoSelected={setPhotoSelected} assignMode={assignMode} enableAssignMode={enableAssignMode} addToSelectedPhotos={addToSelectedPhotos} removeFromSelectedPhotos={removeFromSelectedPhotos} setFullSizePhotoOpen={setFullSizePhotoOpen}/>
+            <SelectablePhoto photo={photo} url={url} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} assignMode={assignMode} setAssignMode={setAssignMode} addToSelectedPhotos={addToSelectedPhotos} setFullSizePhotoOpen={setFullSizePhotoOpen}/>
         </>
     )
 }
@@ -158,19 +142,26 @@ const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray, assignMode, set
 type SelectablePhotoProps = {
     photo: Photo,
     url: string,
-    photoSelected: boolean,
-    setPhotoSelected: Dispatch<SetStateAction<boolean>>,
     assignMode: boolean,
-    enableAssignMode: () => void,
+    selectedPhotos: string[],
+    setSelectedPhotos: Dispatch<SetStateAction<string[]>>,
+    setAssignMode: Dispatch<SetStateAction<boolean>>,
     addToSelectedPhotos: (photoId: string) => void,
-    removeFromSelectedPhotos: (photoId: string) => void,
     setFullSizePhotoOpen: Dispatch<SetStateAction<boolean>>
 }
 
-const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, photoSelected, setPhotoSelected, assignMode, enableAssignMode, addToSelectedPhotos, removeFromSelectedPhotos, setFullSizePhotoOpen}) => {
+const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, selectedPhotos, setSelectedPhotos, assignMode, setAssignMode, addToSelectedPhotos, setFullSizePhotoOpen}) => {
+    const [ photoSelected, setPhotoSelected ] = useState(false);
     const photoRef = useRef<HTMLButtonElement>(null);
     const timerRef = useRef<number>(0);
     
+    useEffect(() => {
+        // if the assignMode if false, set photoSlected to false
+        if (!assignMode) setPhotoSelected(false);
+
+
+    }, [assignMode])
+
     useEffect(() => {
         
         console.log("ADDDING EVEENT LISTENERS", photoRef.current)
@@ -188,8 +179,8 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, photoSelec
                 //element.removeEventListener("mouseout", mouseUp);
             }
         }
-    }, [assignMode, photoSelected])
-    const togglePhotoSelected = useCallback(() => {
+    }, [assignMode, photoSelected, selectedPhotos])
+    const togglePhotoSelected = () => {
         console.log("TOGGLE PHOTO SELECTED", photoSelected)
         if (photoSelected) {
             // deselect and remve
@@ -200,7 +191,24 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, photoSelec
             console.log("SELCT")
             addToSelectedPhotos(photo.id);
         }
-    },[photoSelected])
+    }
+
+    const enableAssignMode = () => {
+        setAssignMode(true);
+        setPhotoSelected(true)
+        addToSelectedPhotos(photo.id);
+    }
+    const removeFromSelectedPhotos = (photoId: string) => {
+        const index = selectedPhotos.indexOf(photoId);
+        console.log("selected photos", selectedPhotos)
+        // This isnot working properyl
+        const newSelectedPhotos = selectedPhotos.filter(function(selectedPhotoId) {
+
+            return selectedPhotoId !== photoId 
+        })
+        console.log(newSelectedPhotos);
+        setSelectedPhotos(newSelectedPhotos);
+    }
 
     const mouseDown = () => {
         const timerId = setTimeout(() => {
