@@ -143,6 +143,18 @@ export const jobRouter = createTRPCRouter({
   removeRoomFromJob: privateProcedure
   .input(z.object({jobId: z.string(), roomId: z.string()}))
   .mutation(async ({ctx, input}) => {
+    // Does the room have photos that are associated with this job attached
+    const photos = await ctx.prisma.photo.findMany({
+      where: {
+        jobId: input.jobId,
+        roomId: input.roomId
+      }
+    })
+    if (photos.length > 0) {
+      throw new TRPCError({
+        code: "BAD_REQUEST"
+      })
+    }
     const job = ctx.prisma.job.update({
       where: {
         id: input.jobId,
