@@ -7,7 +7,7 @@ import house from '../../../../images/demo-page/house-stock-image.png';
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
 import clsx from "clsx";
 import axios from "axios";
 
@@ -170,7 +170,8 @@ type RoomButtonProps = {
     className: string
     room: RoomFromLevels
     job: Job,
-    closePopover: () => void
+    closePopover: () => void,
+    setRemoveError: Dispatch<SetStateAction<boolean>>
 }
 
 const checkRoomIsSelectedRoom = (room: RoomFromLevels, selectedRooms: RoomFromLevels[]) => {
@@ -180,7 +181,7 @@ const checkRoomIsSelectedRoom = (room: RoomFromLevels, selectedRooms: RoomFromLe
     return result;
 }
 
-export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, job, closePopover }) => {
+export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, job, closePopover, setRemoveError }) => {
     
     const ctx = api.useContext()
 
@@ -197,10 +198,14 @@ export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, job, cl
     const { mutate: removeRoomFromJob } = api.job.removeRoomFromJob.useMutation({
         onSuccess: ( job ) => {
             // Refetch job for page
+            setRemoveError(false);
             void ctx.job.getJobForTradeUser.invalidate();
             // close popover
             closePopover();
             
+        }, onError: (error) => {
+            console.log(error);
+            setRemoveError(true);
         }
     });
     
@@ -229,15 +234,17 @@ type LevelProps = {
     level: Level,
     job: Job
     closePopover: () => void,
+    setRemoveError: Dispatch<SetStateAction<boolean>>
+
 }
 
-export const Level: React.FC<LevelProps> = ({ level, job, closePopover }) => {
+export const Level: React.FC<LevelProps> = ({ level, job, closePopover, setRemoveError }) => {
     return(
         <div className="text-center w-60">
             <h1>{level?.label}</h1>
             {level?.rooms.map((room, index) => 
                 <div className="grid grid-cols-1 gap-2 p-2">
-                    <RoomButton className="" key={index} room={room} job={job} closePopover={closePopover} />
+                    <RoomButton className="" key={index} room={room} job={job} closePopover={closePopover} setRemoveError={setRemoveError}/>
                 </div>
             )}
         </div>
@@ -251,12 +258,18 @@ type RoomSelectorProps = {
 }
 
 const RoomSelector: React.FC<RoomSelectorProps> = ({ job }) => {
-
+    const [removeError, setRemoveError] = useState(false);
     const [roomSelectorOpen, setRoomSelectorOpen] = useState(false);
+
+    useEffect(() => {
+        if (roomSelectorOpen === false) setRemoveError(false);
+    }, [roomSelectorOpen]);
 
     const closePopover = () => {
         setRoomSelectorOpen(false);
+        setRemoveError(false);
     }    
+
 
     return(
         <div className="grid">
@@ -265,10 +278,13 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({ job }) => {
                 <div className="flex flex-wrap gap-3 justify-center">
                 {job.Property.levels.map((level, index) => {
                     return(
-                        <Level level={level} key={index} job={job} closePopover={closePopover} />
+                        <Level level={level} key={index} job={job} closePopover={closePopover} setRemoveError={setRemoveError}/>
                     )
                 })}
                 </div>
+                {(removeError)?(
+                    <p className="text-red-500">⚠️ You cannot remove room which has photos linked to it, please remove photos first</p>
+                ):(<></>)}
             </Popover>
         </div>
     )
