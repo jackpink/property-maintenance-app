@@ -123,7 +123,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {      
         const files = event.target.files;
         if (files && files.length > 0) {
-            Array.from(files).forEach( async file => {
+            Array.from(files).forEach( async (file) => {
             //for (let i = 0; i < files.length; i++) {
                 console.log(job.Property.id)
                 // Need to check that file is correct type (ie jpeg/png/tif/etc)
@@ -176,7 +176,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, job, cl
     const ctx = api.useContext()
 
     const { mutate: addRoomToJob } = api.job.addRoomToJob.useMutation({
-        onSuccess: ( job ) => {
+        onSuccess: () => {
             // Refetch job for page
             void ctx.job.getJobForTradeUser.invalidate();
             // close popover
@@ -186,7 +186,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, job, cl
     });
 
     const { mutate: removeRoomFromJob } = api.job.removeRoomFromJob.useMutation({
-        onSuccess: ( job ) => {
+        onSuccess: () => {
             // Refetch job for page
             setRemoveError(false);
             void ctx.job.getJobForTradeUser.invalidate();
@@ -233,7 +233,7 @@ export const Level: React.FC<LevelProps> = ({ level, job, closePopover, setRemov
         <div className="text-center w-60">
             <h1>{level?.label}</h1>
             {level?.rooms.map((room, index) => 
-                <div className="grid grid-cols-1 gap-2 p-2">
+                <div key={index} className="grid grid-cols-1 gap-2 p-2">
                     <RoomButton className="" key={index} room={room} job={job} closePopover={closePopover} setRemoveError={setRemoveError}/>
                 </div>
             )}

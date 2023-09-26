@@ -36,7 +36,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
         onSuccess: ({ job }) => {
             // Redirect to new Job route
             console.log("redirect to job/", job.id);
-            router.push('/trade/beta/job/'+ job.id);
+            void router.push('/trade/beta/job/'+ job.id);
         }
     });
 

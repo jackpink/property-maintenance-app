@@ -1,13 +1,10 @@
-import { type NextPage } from "next";
 import { concatAddress } from "~/components/Properties/Property";
-import Rooms, {SelectedRoom } from "~/components/Rooms";
-import Jobs, { SelectedJobs } from "~/components/Jobs";
+import Rooms, { type SelectedRoom } from "~/components/Rooms";
+import Jobs, { type SelectedJobs } from "~/components/Jobs";
 import Documents from "~/components/Documents";
-
-import { Dispatch, SetStateAction, useState } from "react";
-import Photos from "~/components/Photos";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -27,9 +24,6 @@ const JobsForSelectedRoom:React.FC<JobsForSelectedRoomProps> = ({ selectedRoom, 
         <Jobs jobs={jobs.data} selectedJobs={selectedJobs} setSelectedJobs={setSelectedJobs}/>
     )
 }
-
-
-type Room = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number]["rooms"][number];
 
 type PropertyPhotoSearchPageWithParamsProps = {
     propertyId: string
@@ -54,7 +48,7 @@ const PropertyPhotoSearchPageWithParams: React.FC<PropertyPhotoSearchPageWithPar
                 <JobsForSelectedRoom selectedRoom={selectedRoom} selectedJobs={selectedJobs} setSelectedJobs={setSelectedJobs}/>
             </div>
             <div className="pt-8 text-slate-600 border-b-4 border-slate-600">Documents</div>
-            <Documents documents={[{name: "Invoice for "},{name: "Product in room " + selectedRoom.room}]} />
+            <Documents documents={[{name: "Invoice for "},{name: "Product in room " + selectedRoom.room?.label}]} />
             <div className="pt-8 text-slate-600 border-b-4 border-slate-600">Photos </div>
            
         </div>
