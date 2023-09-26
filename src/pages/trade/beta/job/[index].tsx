@@ -120,10 +120,11 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
         return result;
     }
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {      
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {      
         const files = event.target.files;
         if (files && files.length > 0) {
-            Array.from(files).forEach( async (file) => {
+            const fileArray = Array.from(files);
+            for (const file of fileArray) {
             //for (let i = 0; i < files.length; i++) {
                 console.log(job.Property.id)
                 // Need to check that file is correct type (ie jpeg/png/tif/etc)
@@ -134,13 +135,13 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
                 // if successful add photo record to db for lookup (relabelling photo?)
                 if (uploadSuccess) {
                     console.log("Add photo to db");
-                    createPhotoRecord({ filename: filename, jobId: job.id }).then(() => {
+                    void createPhotoRecord({ filename: filename, jobId: job.id }).then(() => {
                         // refetch of photos
                         void ctx.photo.getUnassignedPhotosForJob.invalidate();
                     });
                     
                 }
-            })
+            }
         }
     }
 
