@@ -6,7 +6,6 @@ import { env } from "../../../env.mjs";
 import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import { aws4Interceptor } from "aws4-axios";
-import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 
 
