@@ -104,7 +104,7 @@ export const jobRouter = createTRPCRouter({
     const checkRoomIsInProperty = (levels: Levels, roomId: string) => {
 
       for (const level of levels) {
-          let rooms = level.rooms;
+          const rooms = level.rooms;
         for (const room of rooms) {
           if (room.id === roomId) {
             console.log("TRUE")
