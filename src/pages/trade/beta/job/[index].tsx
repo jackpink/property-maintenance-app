@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import { concatAddress } from "~/components/Properties/Property";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,13 +7,9 @@ import house from '../../../../images/demo-page/house-stock-image.png';
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
+import { type ChangeEvent, type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import clsx from "clsx";
 import axios from "axios";
-
-
-type Rooms = RouterOutputs["job"]["getJobForTradeUser"]["rooms"];
-
 
 type PhotoViewerProps = {
     job: Job
@@ -31,7 +27,7 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({ job }) => {
                 <option value="UNASSIGNED">UNASSIGNED</option>
                 {job.rooms.map((room, index) => {
                     return(
-                        <option value={room.id}>{room.Level.label.toUpperCase() + "→" +room.label.toUpperCase()}</option>
+                        <option key={index} value={room.id}>{room.Level.label.toUpperCase() + "→" +room.label.toUpperCase()}</option>
                     )
                 })}
                 
@@ -100,7 +96,6 @@ type UploadPhotoButtonProps = {
 }
 
 const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
-    const [ presignedUploadUrl, setPresignedUploadUrl ] = useState('');
     
     const { mutateAsync: getPresignedUrl } = api.photo.getPhotoUploadPresignedUrl.useMutation();
 
@@ -125,16 +120,11 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
         return result;
     }
 
-    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-        
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {      
         const files = event.target.files;
         if (files && files.length > 0) {
             Array.from(files).forEach( async file => {
             //for (let i = 0; i < files.length; i++) {
-
-                
-            
-            
                 console.log(job.Property.id)
                 // Need to check that file is correct type (ie jpeg/png/tif/etc)
                 const { url, filename } = await getPresignedUrl({key: file.name, property: job.Property.id})
@@ -251,8 +241,6 @@ export const Level: React.FC<LevelProps> = ({ level, job, closePopover, setRemov
     )
 }
 
-type Room = RouterOutputs["job"]["getJobForTradeUser"]["rooms"][number];
-
 type RoomSelectorProps = {
     job: Job
 }
@@ -333,6 +321,7 @@ const TradeJobPageWithJob: React.FC<TradeJobPageWithJobProps> = ({ job }) => {
         <div className="grid justify-center">
             <p className="place-self-center">{job.date.toDateString()}</p>
             <h1 className="font-sans text-slate-900 font-extrabold text-4xl text-center py-8">{job.title}</h1>
+            <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">{address}</h2>
             <Property job={job} />
             <RoomSelector job={job} />
             <h2 className="font-sans text-slate-900 font-extrabold text-3xl text-center pb-4">Notes</h2>

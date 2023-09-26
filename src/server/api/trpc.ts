@@ -66,7 +66,6 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { User } from "@clerk/nextjs/dist/types/server";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,

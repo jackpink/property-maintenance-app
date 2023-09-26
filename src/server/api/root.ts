@@ -1,6 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { propertyRouter } from "./routers/property";
-import { exampleRouter } from "./routers/example";
 import { jobRouter } from "./routers/job";
 import { photoRouter } from "./routers/photo";
 

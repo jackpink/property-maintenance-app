@@ -1,9 +1,8 @@
 
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
-import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
-import { RouterOutputs } from "~/utils/api";
+import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
+import { type RouterOutputs } from "~/utils/api";
 
 export const jobRouter = createTRPCRouter({
   
@@ -105,14 +104,14 @@ export const jobRouter = createTRPCRouter({
     const checkRoomIsInProperty = (levels: Levels, roomId: string) => {
 
       for (const level of levels) {
-          var rooms = level.rooms;
+          let rooms = level.rooms;
         for (const room of rooms) {
           if (room.id === roomId) {
             console.log("TRUE")
             return true;
           }
         }
-      };
+      }
       return false;
     }
     

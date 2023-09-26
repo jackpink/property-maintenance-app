@@ -40,7 +40,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
         }
     });
 
-    const addJobClickEvent = (event: any) => {
+    const addJobClickEvent = () => {
         // Check The Room input for correctness
         const checkAddJobInput = ValidJobInput.safeParse(jobTitleInput);
         if (!checkAddJobInput.success) {

@@ -11,12 +11,14 @@ export const s3 = new S3({
   },
 });
 
-const sigv4 = new SignatureV4({
-  service: 'excute-api',
-  region: 'ap-souteast-2',
+export const signer = new SignatureV4({
+  service: 'execute-api',
+  region: 'ap-southeast-2',
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY_ID,
     secretAccessKey: env.AWS_SECRET_ACCESS_KEY
   },
   sha256: Sha256,
+  applyChecksum: false,
+  uriEscapePath: false,
 })

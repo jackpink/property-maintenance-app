@@ -1,12 +1,13 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
-import { S3RequestPresigner, getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectAclCommand, GetObjectAttributesCommand, GetObjectCommand, HeadBucketCommand, HeadObjectCommand, PutObjectCommand,  } from "@aws-sdk/client-s3";
+import {  getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectAclCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { env } from "../../../env.mjs";
 import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import { aws4Interceptor } from "aws4-axios";
+import { TRPCClientError } from "@trpc/client";
+import { TRPCError } from "@trpc/server";
 
 
 export const photoRouter = createTRPCRouter({
@@ -19,6 +20,7 @@ export const photoRouter = createTRPCRouter({
     // try change name here
     const filenameArray = input.key.split(".");
     const fileExtension = filenameArray[1];
+    if (!fileExtension) throw new TRPCError({code: "BAD_REQUEST"});
     const uuidName = uuidv4();
     const newFilename = input.property + "/" + uuidName + "." + fileExtension;
     console.log("new filename ", newFilename);
@@ -49,6 +51,7 @@ export const photoRouter = createTRPCRouter({
         jobId: input.jobId
       }
     });
+    return photo;
 
   }),
 
@@ -60,7 +63,8 @@ export const photoRouter = createTRPCRouter({
   
     const { s3 } = ctx
 
-    const [filename ,extension] = input.name.split(".");
+    const [ filename ] = input.name.split(".");
+    if (!filename) throw new TRPCError({code: "BAD_REQUEST"});
     const convertedFilename = filename + ".jpg";
 
     const key = input.type + "/" + convertedFilename;
@@ -90,7 +94,7 @@ export const photoRouter = createTRPCRouter({
 
     } catch (error) {
       console.log("Photo not found, must trigger a resize", params);
-      let url;
+      //let url;
       // Make API call to function endpoint
       const endpoint = new URL('https://l8zsjwdvg4.execute-api.ap-southeast-2.amazonaws.com/dev');
       const path = "original" + "/" + input.name;
@@ -117,7 +121,7 @@ export const photoRouter = createTRPCRouter({
       const client = axios.create();
       client.interceptors.request.use(interceptor);
       console.log("endpoint string", decodeURIComponent(endpoint.toString()));
-      url = await client.post(endpoint.toString(), body).then( async (res) => {
+      const url = await client.post(endpoint.toString(), body).then( async () => {
         console.log("AXIOS AWS4 RESPONSE");
         // Now get signed url from s3
         const getObjectCommand = new GetObjectCommand(params); 

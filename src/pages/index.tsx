@@ -1,15 +1,9 @@
 import { type NextPage } from "next";
 import Link from "next/link";
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { api } from "~/utils/api";
+import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 const Home: NextPage = () => {
-  const user1 = 'user_2Pm5uzeGIo3zDL8D38lLYxtyRad';
-  const otherUser = "user_2RaC5cXnpHxdTKDmbX2Tooj1dNT"
-  const jobs = api.job.getRecentJobsForTradeUser.useQuery({ user: otherUser});
-  console.log("jobs", jobs.data);
-  const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: otherUser});
-  console.log(propertiesWithJobs.data);
+  
 
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">

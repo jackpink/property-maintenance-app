@@ -93,6 +93,7 @@ export const propertyRouter = createTRPCRouter({
         levelId: input.levelId
       }
     })
+    return room;
   }),
   createLevelForProperty: privateProcedure
   .input(z.object({label: z.string(), propertyId: z.string()}))
@@ -104,6 +105,7 @@ export const propertyRouter = createTRPCRouter({
         propertyId: input.propertyId
       }
     })
+    return level;
   }),
   updateLevelLabel: privateProcedure
   .input(z.object({levelId: z.string(), newLabel: z.string()}))
@@ -131,5 +133,6 @@ export const propertyRouter = createTRPCRouter({
         label: input.newLabel,
       },
     })
+    return newRoom;
   }),
 });
