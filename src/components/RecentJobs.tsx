@@ -1,4 +1,4 @@
-import { RouterOutputs } from '~/utils/api'
+import { type RouterOutputs } from '~/utils/api'
 import { concatAddress } from './Properties/Property'
 import Link from 'next/link'
 

@@ -13,7 +13,7 @@ import ClickAwayListener from "./ClickAwayListener";
 // add new job ----> new job upload photos, assgin to rooms
 
 type AddRoomTextInputProps = {
-    ToggleTextboxOpen: any,
+    ToggleTextboxOpen: () => void,
     levelId: string
 }
 
@@ -36,7 +36,7 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({ ToggleTextboxOpen, 
         }
     });
 
-    const addRoomClickEvent = (event: any) => {
+    const addRoomClickEvent = () => {
         // Check The Room input for correctness
         const checkAddRoomInput = ValidRoomInput.safeParse(roomNameInput);
         if (!checkAddRoomInput.success) {
@@ -118,7 +118,7 @@ const Room: React.FC<RoomProps> = ({ room, editPropertyMode }) => {
         console.log("room label set to", room.label)
     }
 
-    const updateRoomClickEvent = (event: any) => {
+    const updateRoomClickEvent = () => {
         // Check The Room input for correctness
         const checkEditRoomInput = ValidRoomInput.safeParse(editLabelInput);
         if (!checkEditRoomInput.success) {
@@ -194,7 +194,7 @@ const Level: React.FC<LevelProps> = ({ level, editPropertyMode }) => {
         setError(false);
     }
 
-    const updateLevelClickEvent = (event: any) => {
+    const updateLevelClickEvent = () => {
         // Check The Room input for correctness
         const checkEditLevelInput = ValidLevelInput.safeParse(editLabelInput);
         if (!checkEditLevelInput.success) {
@@ -254,7 +254,7 @@ const Level: React.FC<LevelProps> = ({ level, editPropertyMode }) => {
 }
 
 type AddLevelTextInputProps = {
-    ToggleTextboxOpen: any,
+    ToggleTextboxOpen: () => void,
     propertyId: string
 }
 

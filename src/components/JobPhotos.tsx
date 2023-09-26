@@ -1,12 +1,10 @@
 /*
 Will need to add a full size image popover, which lets   */
 import Image from "next/image";
-import { RouterOutputs, api } from '~/utils/api'
+import { type RouterOutputs, api } from '~/utils/api'
 import Popover from "./Popover";
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
-import { clearTimeout } from "timers";
+import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
 import Button from "./Button";
-import ClickAwayListener from "./ClickAwayListener";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
@@ -26,7 +24,7 @@ const Photos: React.FC<Props> = ({ photos, rooms }) => {
 
     const ctx = api.useContext();
 
-    const { mutate: movePhotoToRoom, isLoading: isUpdatingPhoto } = api.photo.movePhotoToRoom.useMutation({
+    const { mutate: movePhotoToRoom } = api.photo.movePhotoToRoom.useMutation({
     onSuccess: () => {
         // disable assign mode
         setAssignMode(false);
@@ -162,54 +160,6 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, selectedPh
 
     }, [assignMode])
 
-    useEffect(() => {
-        
-        console.log("ADDDING EVEENT LISTENERS", photoRef.current)
-        if (!photoRef.current) return;
-
-        photoRef.current.addEventListener("mousedown", mouseDown)
-        photoRef.current.addEventListener("mouseup", mouseUp)
-        //element.addEventListener("mouseout", mouseUp)
-        
-
-        return () => {
-            if (!!photoRef.current) {
-                photoRef.current.removeEventListener("mousedown", mouseDown);
-                photoRef.current.removeEventListener("mouseup", mouseUp);
-                //element.removeEventListener("mouseout", mouseUp);
-            }
-        }
-    }, [assignMode, photoSelected, selectedPhotos])
-    const togglePhotoSelected = () => {
-        console.log("TOGGLE PHOTO SELECTED", photoSelected)
-        if (photoSelected) {
-            // deselect and remve
-            console.log("DESELECT")
-            removeFromSelectedPhotos(photo.id);
-            
-        } else {
-            console.log("SELCT")
-            addToSelectedPhotos(photo.id);
-        }
-    }
-
-    const enableAssignMode = () => {
-        setAssignMode(true);
-        setPhotoSelected(true)
-        addToSelectedPhotos(photo.id);
-    }
-    const removeFromSelectedPhotos = (photoId: string) => {
-        const index = selectedPhotos.indexOf(photoId);
-        console.log("selected photos", selectedPhotos)
-        // This isnot working properyl
-        const newSelectedPhotos = selectedPhotos.filter(function(selectedPhotoId) {
-
-            return selectedPhotoId !== photoId 
-        })
-        console.log(newSelectedPhotos);
-        setSelectedPhotos(newSelectedPhotos);
-    }
-
     const mouseDown = () => {
         const timerId = setTimeout(() => {
             // Entering assign mode here, will select when timer ends
@@ -238,6 +188,56 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, selectedPh
         window.clearTimeout(timerRef.current || 0);
         
     }
+
+    useEffect(() => {
+        const photoElement = photoRef.current;
+        
+        console.log("ADDDING EVEENT LISTENERS", photoElement)
+        if (!photoElement) return;
+
+        photoElement.addEventListener("mousedown", mouseDown)
+        photoElement.addEventListener("mouseup", mouseUp)
+        //element.addEventListener("mouseout", mouseUp)
+        
+
+        return () => {
+            if (!!photoElement) {
+                photoElement.removeEventListener("mousedown", mouseDown);
+                photoElement.removeEventListener("mouseup", mouseUp);
+                //element.removeEventListener("mouseout", mouseUp);
+            }
+        }
+    }, [assignMode, photoSelected, selectedPhotos, mouseDown, mouseUp])
+    const togglePhotoSelected = () => {
+        console.log("TOGGLE PHOTO SELECTED", photoSelected)
+        if (photoSelected) {
+            // deselect and remve
+            console.log("DESELECT")
+            removeFromSelectedPhotos(photo.id);
+            
+        } else {
+            console.log("SELCT")
+            addToSelectedPhotos(photo.id);
+        }
+    }
+
+    const enableAssignMode = () => {
+        setAssignMode(true);
+        setPhotoSelected(true)
+        addToSelectedPhotos(photo.id);
+    }
+    const removeFromSelectedPhotos = (photoId: string) => {
+        console.log("selected photos", selectedPhotos)
+        // This isnot working properyl
+        const newSelectedPhotos = selectedPhotos.filter(function(selectedPhotoId) {
+
+            return selectedPhotoId !== photoId 
+        })
+        console.log(newSelectedPhotos);
+        setSelectedPhotos(newSelectedPhotos);
+    }
+
+    
 
     return(
         <button ref={photoRef} className="relative">

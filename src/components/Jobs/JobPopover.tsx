@@ -1,7 +1,7 @@
 import { useState, type PropsWithChildren } from "react";
 import { Dialog } from '@headlessui/react';
 import clsx from 'clsx';
-import { SelectedJobs } from ".";
+import { type SelectedJobs } from ".";
 
 
 type NavPopoverProps = {

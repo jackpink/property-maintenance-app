@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Property from "./Property";
 import PropertySearch from "./PropertySearch";
-import { RouterOutputs } from "~/utils/api";
+import { type RouterOutputs } from "~/utils/api";
 
 type Properties = RouterOutputs["property"]["getPropertiesForTradeUser"]
 

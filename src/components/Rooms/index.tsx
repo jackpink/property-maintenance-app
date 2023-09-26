@@ -1,7 +1,7 @@
-import { RouterOutputs } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import RoomPopover from './RoomPopover';
 import { RoomSelectorLevel } from './RoomSelector';
-import { SetStateAction, Dispatch } from 'react';
+import type { SetStateAction, Dispatch } from 'react';
 
 /* 
 Need to create columns for the levels of the property, 

@@ -1,6 +1,6 @@
-import { RouterOutputs } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import JobPopover from './JobPopover';
-import { SetStateAction, Dispatch, PropsWithChildren, MouseEventHandler, useEffect } from 'react';
+import { type SetStateAction, type Dispatch, type PropsWithChildren, type MouseEventHandler, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 
 /* 
@@ -61,7 +61,7 @@ export default Jobs;
 
 interface SelectedEvent {
     id: string
-};
+}
 
 type SelectedEvents = SelectedEvent[];
 
@@ -88,12 +88,12 @@ const checkIfSelected = (jobId: string, selectedEvents: SelectedEvents) => {
 }
 
 const Element: React.FC<ElementProps> = (props) => {
+    const checked = useRef<boolean>(false)
 
     const { job, selectedEvents, onClick  } = props;
-    let checked = false;
     useEffect( () => {
         console.log("CHECKING EVENTS");
-        checked = checkIfSelected(job.id, selectedEvents);
+        checked.current = checkIfSelected(job.id, selectedEvents);
     }, [selectedEvents])
 
     
@@ -102,7 +102,7 @@ const Element: React.FC<ElementProps> = (props) => {
         <li className="table-cell relative text-sm">
             <div  className="flex flex-wrap" >
                 <span className="flex-1 whitespace-nowrap bg-black my-3"></span>
-                <button value={job.id} onClick={onClick} className={clsx("h-8", "w-8", "flex-none", "border-2", "border-solid", "border-black", "rounded-2xl", "whitespace-nowrap", {"bg-emerald-600":checked, "after:content-['✓']":checked})} id="element-radio"></button>
+                <button value={job.id} onClick={onClick} className={clsx("h-8", "w-8", "flex-none", "border-2", "border-solid", "border-black", "rounded-2xl", "whitespace-nowrap", {"bg-emerald-600":checked.current, "after:content-['✓']":checked.current})} id="element-radio"></button>
                 <span className="flex-1 whitespace-nowrap bg-black my-3"></span>
                 <span className="flex-1 basis-full w-0"></span>
                 <button value={job.id} onClick={onClick} className="px-4 basis-full top-24 min-w-max">

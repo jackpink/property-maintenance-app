@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react"
 import clsx from "clsx"
-import { Dispatch, PropsWithChildren, ReactNode, SetStateAction, useState } from "react"
+import { type Dispatch, type ReactNode, type SetStateAction } from "react"
 
 type PopoverProps = {
     popoveropen: boolean,

@@ -2,7 +2,7 @@ import { type ReactNode, useRef, useEffect } from "react"
 
 type ClickAwayListenerProps = {
     children: ReactNode,
-    clickOutsideAction: any
+    clickOutsideAction: () => void
 }
 
  const ClickAwayListener: React.FC<ClickAwayListenerProps> = ({ children, clickOutsideAction }) => {
@@ -20,7 +20,7 @@ type ClickAwayListenerProps = {
         return () => {
             document.removeEventListener('click', handleClickOutside, true);
         }
-    }, []);
+    }, [clickOutsideAction]);
 
     return(
         <div ref={ref} >

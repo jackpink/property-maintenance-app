@@ -1,11 +1,9 @@
 /*
     Will need to add a full size image popover, which lets   */
 import Image from "next/image";
-import { RouterOutputs, api } from '~/utils/api'
+import { type RouterOutputs, api } from '~/utils/api'
 import Popover from "./Popover";
 import { useEffect, useRef, useState } from "react";
-import { clearTimeout } from "timers";
-import ClickAwayListener from "./ClickAwayListener";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
@@ -16,7 +14,6 @@ type Props = {
 }
 
 const Photos: React.FC<Props> = ({ photos }) => {
-    const [assignMode, setAssignMode ] = useState(false);
 
     return(  
         <div className="flex flex-wrap gap-4 pt-8 justify-center">
@@ -41,7 +38,6 @@ type PhotoProps = {
 
 const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray }) => {
     const [ fullSizePhotoOpen, setFullSizePhotoOpen] = useState(false);
-    const [ heldDown, setHeldDown ] = useState(false)
     const photoRef = useRef<HTMLButtonElement>(null);
     const timerRef = useRef<number>(0);
     const {data: url} = api.photo.getPhoto.useQuery({name: photo.filename, type: "sm"})

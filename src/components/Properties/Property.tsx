@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import house from '../../images/demo-page/house-stock-image.png';
-import { RouterOutputs } from "~/utils/api";
+import { type RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/router";
 
 type PropertyWithoutJobs = RouterOutputs["job"]["getRecentJobsForTradeUser"][number]["Property"]

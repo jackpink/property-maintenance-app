@@ -7,7 +7,7 @@ in the original sql queries for speed
 import type { SetStateAction, Dispatch } from 'react';
 import clsx from 'clsx';
 import type { SelectedRoom } from './index';
-import { RouterOutputs } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 
 type Level = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number];
 
@@ -22,7 +22,7 @@ type RoomButtonProps = {
 }
 
 export const RoomButton: React.FC<RoomButtonProps> = ({ className, room, level, selectedRoom, setSelectedRoom }) => {
-    const ButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const ButtonClicked = () => {
         const newSelectedRoom: SelectedRoom = {level: level, room: room};
         console.log("new selected room", newSelectedRoom);
         setSelectedRoom(newSelectedRoom);
