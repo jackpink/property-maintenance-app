@@ -113,7 +113,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
                 console.log("Successfully Uploaded ", file.name);
                 return filename;
             })
-            .catch((err) => {
+            .catch((err: string) => {
                 console.log(err)
                 return err;
             });
