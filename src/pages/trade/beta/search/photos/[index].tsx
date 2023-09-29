@@ -4,7 +4,7 @@ import Jobs, { type SelectedJobs } from "~/components/Jobs";
 import Documents from "~/components/Documents";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
-import { type RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -48,7 +48,7 @@ const PropertyPhotoSearchPageWithParams: React.FC<PropertyPhotoSearchPageWithPar
                 <JobsForSelectedRoom selectedRoom={selectedRoom} selectedJobs={selectedJobs} setSelectedJobs={setSelectedJobs}/>
             </div>
             <div className="pt-8 text-slate-600 border-b-4 border-slate-600">Documents</div>
-            <Documents documents={[{name: "Invoice for "},{name: "Product in room " + selectedRoom.room?.label}]} />
+            <Documents documents={[{name: "Invoice for "},{name: "Product in room " }]} />
             <div className="pt-8 text-slate-600 border-b-4 border-slate-600">Photos </div>
            
         </div>

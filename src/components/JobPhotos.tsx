@@ -160,36 +160,37 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, selectedPh
 
     }, [assignMode])
 
-    const mouseDown = () => {
-        const timerId = setTimeout(() => {
-            // Entering assign mode here, will select when timer ends
-            enableAssignMode();
-            timerRef.current = 0;
-        }, 600);
-        timerRef.current = Number(timerId);
-        console.log("timerId", Number(timerId));
-        //clearTimeout(timerRef.current);
-        console.log("timer after clear", timerRef.current);
-    }
-
-    const mouseUp = () => {
-        console.log("Photo Click Up", assignMode);
-        if (timerRef.current && !assignMode){
-            // If not in assign mode then got to full size image
-            console.log("GO TO FULL SIZE IMAGE", assignMode);
-            setFullSizePhotoOpen(true);
-            
-        } else if (timerRef.current && assignMode) {
-            // If in assign, select image
-            togglePhotoSelected();
-            setPhotoSelected(!photoSelected);
-            console.log("DO NOT GO TO FULL SIZE IMAGE");
-        }
-        window.clearTimeout(timerRef.current || 0);
-        
-    }
 
     useEffect(() => {
+        
+        const mouseDown = () => {
+            const timerId = setTimeout(() => {
+                // Entering assign mode here, will select when timer ends
+                enableAssignMode();
+                timerRef.current = 0;
+            }, 600);
+            timerRef.current = Number(timerId);
+            console.log("timerId", Number(timerId));
+            //clearTimeout(timerRef.current);
+            console.log("timer after clear", timerRef.current);
+        }
+
+        const mouseUp = () => {
+            console.log("Photo Click Up", assignMode);
+            if (timerRef.current && !assignMode){
+                // If not in assign mode then got to full size image
+                console.log("GO TO FULL SIZE IMAGE", assignMode);
+                setFullSizePhotoOpen(true);
+                
+            } else if (timerRef.current && assignMode) {
+                // If in assign, select image
+                togglePhotoSelected();
+                setPhotoSelected(!photoSelected);
+                console.log("DO NOT GO TO FULL SIZE IMAGE");
+            }
+            window.clearTimeout(timerRef.current || 0);
+            
+        }
         const photoElement = photoRef.current;
         
         console.log("ADDDING EVEENT LISTENERS", photoElement)
@@ -207,7 +208,7 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({photo, url, selectedPh
                 //element.removeEventListener("mouseout", mouseUp);
             }
         }
-    }, [assignMode, photoSelected, selectedPhotos, mouseDown, mouseUp])
+    }, [assignMode, photoSelected, selectedPhotos])
     const togglePhotoSelected = () => {
         console.log("TOGGLE PHOTO SELECTED", photoSelected)
         if (photoSelected) {

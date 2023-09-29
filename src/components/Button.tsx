@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import { ReactNode } from "react"
+import { type ReactNode } from "react"
 
 type ButtonProps = {
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void,

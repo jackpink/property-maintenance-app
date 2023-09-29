@@ -94,7 +94,7 @@ const Element: React.FC<ElementProps> = (props) => {
     useEffect( () => {
         console.log("CHECKING EVENTS");
         checked.current = checkIfSelected(job.id, selectedEvents);
-    }, [selectedEvents])
+    }, [job.id, selectedEvents])
 
     
 

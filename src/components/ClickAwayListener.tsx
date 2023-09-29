@@ -10,8 +10,9 @@ type ClickAwayListenerProps = {
     const ref: React.RefObject<HTMLInputElement> = useRef(null);
 
     useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if( ref.current && !ref.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            
+            if(ref.current && !ref.current.contains(event.target as Node)) {
                 clickOutsideAction();
                 // toggle current
             }

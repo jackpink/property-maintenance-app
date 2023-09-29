@@ -1,4 +1,4 @@
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import clsx from 'clsx';
 import {  useState } from "react";
 import {  z } from 'zod';
@@ -178,7 +178,7 @@ const Level: React.FC<LevelProps> = ({ level, editPropertyMode }) => {
 
     const ctx = api.useContext();
 
-    const { mutate: updateLevel, isLoading: isUpdatingLevel } = api.property.updateLevelLabel.useMutation({
+    const { mutate: updateLevel } = api.property.updateLevelLabel.useMutation({
         onSuccess: () => {
             // toggle the textbox open
             setEditLabelMode(false);
@@ -279,7 +279,7 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({ ToggleTextboxOpen
         }
     });
 
-    const AddLevelClickEvent = (event: any) => {
+    const AddLevelClickEvent = () => {
         // Check The Room input for correctness
         const checkLevelInput = ValidLevelInput.safeParse(levelNameInput);
         if (!checkLevelInput.success) {
