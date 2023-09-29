@@ -140,7 +140,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
         (newPhoto) && (refetchPhotosAfterUpload());
     }
 
-    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {      
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {      
         const files = event.target.files;
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
@@ -148,7 +148,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
             for (const file of fileArray) {
                 promiseArray.push(uploadFile(file));
             }
-            await Promise.all(promiseArray);
+            Promise.all(promiseArray);
             
         }
     }
