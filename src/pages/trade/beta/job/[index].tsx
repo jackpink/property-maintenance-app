@@ -148,7 +148,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
             for (const file of fileArray) {
                 promiseArray.push(uploadFile(file));
             }
-            Promise.all(promiseArray);
+            void Promise.all(promiseArray);
             
         }
     }
