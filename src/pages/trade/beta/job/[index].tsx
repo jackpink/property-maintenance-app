@@ -103,7 +103,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
 
     const ctx = api.useContext();
 
-    const uploadPhotoToSignedURL = async (signedUrl :string, file: File ) => {
+    const uploadPhotoToSignedURL = async (signedUrl :string, file: File, filename: string ) => {
         const result = await axios 
             .put(signedUrl, file.slice(), {
                 headers: {"Content-Type": file.type},
@@ -111,37 +111,45 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
             .then((response) => {
                 console.log(response);
                 console.log("Successfully Uploaded ", file.name);
-                return true;
+                return filename;
             })
             .catch((err) => {
                 console.log(err)
-                return false;
+                return err;
             });
         return result;
+    }
+
+    const refetchPhotosAfterUpload = () => {
+        void ctx.photo.getPhotosForJobAndRoom.invalidate();
+        void ctx.photo.getUnassignedPhotosForJob.invalidate();
+    }
+
+    const uploadFile = async (file: File) => {
+        // Need to check that file is correct type (ie jpeg/png/tif/etc)
+        console.log("Getting Presigned URL for file ", file.name);
+        const { url, filename } = await getPresignedUrl({key: file.name, property: job.Property.id})
+        
+        console.log("Uploading Image to Presigned URL ", file.name, filename); 
+        const fileName = await uploadPhotoToSignedURL(url, file, filename);
+        
+        console.log("Creating Photo Record for DB ", file.name, fileName);
+        const newPhoto = await createPhotoRecord({ filename: fileName, jobId: job.id });
+        
+        console.log("Refetching Photos for Page", newPhoto);
+        (newPhoto) && (refetchPhotosAfterUpload());
     }
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {      
         const files = event.target.files;
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
+            const promiseArray = [] 
             for (const file of fileArray) {
-            //for (let i = 0; i < files.length; i++) {
-                console.log(job.Property.id)
-                // Need to check that file is correct type (ie jpeg/png/tif/etc)
-                const { url, filename } = await getPresignedUrl({key: file.name, property: job.Property.id})
-                console.log("URL", url)
-                // upload file
-                const uploadSuccess = await uploadPhotoToSignedURL(url, file);
-                // if successful add photo record to db for lookup (relabelling photo?)
-                if (uploadSuccess) {
-                    console.log("Add photo to db");
-                    void createPhotoRecord({ filename: filename, jobId: job.id }).then(() => {
-                        // refetch of photos
-                        void ctx.photo.getUnassignedPhotosForJob.invalidate();
-                    });
-                    
-                }
+                promiseArray.push(uploadFile(file));
             }
+            await Promise.all(promiseArray);
+            
         }
     }
 
