@@ -47,8 +47,8 @@ const ValidPasswordInput = z
   .string()
   .min(8, "Password must be minimum 8 characters")
   .regex(
-    new RegExp(`(?=.*[!@#$%^&*]+)(?=.*[A-Z])(?=.*[a-z]).*$`),
-    "Password must contain lowercase captial and number"
+    new RegExp(`(?=.*[A-Z])(?=.*[a-z]).*$`),
+    "Password must contain at least one lowercase, uppercase and number"
   );
 
 const HomeownerCreateAccountpage = () => {
