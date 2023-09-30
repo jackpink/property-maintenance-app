@@ -1,5 +1,11 @@
 import clsx from "clsx";
-import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useState,
+} from "react";
+import { useSignUp } from "@clerk/nextjs";
 import { z } from "zod";
 import Button from "~/components/Button";
 
@@ -35,12 +41,12 @@ const initialForm: Form = {
 
 const ValidNameInput = z
   .string()
-  .min(5, { message: "Must be 5 or more characters long" })
+  .min(1, { message: "Must be 5 or more characters long" })
   .max(30, { message: "Must be less than 30 characters" });
 
 const ValidEmailInput = z
   .string()
-  .min(5, { message: "Please enter your email" })
+  .min(1, { message: "Please enter your email" })
   .email("Please enter a valid email");
 
 const ValidPasswordInput = z
@@ -53,8 +59,11 @@ const ValidPasswordInput = z
 
 const HomeownerCreateAccountpage = () => {
   const [form, setForm] = useState(initialForm);
+  const [code, setCode] = useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const { isLoaded, signUp, setActive } = useSignUp();
 
-  const checkFirstNameInput = useCallback(() => {
+  const checkFirstNameInput = () => {
     let errorMessage = "";
     const checkFirstNameInputResult = ValidNameInput.safeParse(form.firstName);
     if (!checkFirstNameInputResult.success) {
@@ -68,7 +77,7 @@ const HomeownerCreateAccountpage = () => {
     } else {
       return { firstNameError: false, firstNameErrorMessage: errorMessage };
     }
-  }, [form]);
+  };
 
   const checkLastNameInput = () => {
     let errorMessage = "";
@@ -116,12 +125,11 @@ const HomeownerCreateAccountpage = () => {
       }
       return { passwordError: true, passwordErrorMessage: errorMessage };
     } else {
-      console.log("paswword is okay");
       return { passwordError: false, passwordErrorMessage: errorMessage };
     }
   };
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     // Check validity of form inputs
     const { firstNameError, firstNameErrorMessage } = checkFirstNameInput();
     const { lastNameError, lastNameErrorMessage } = checkLastNameInput();
@@ -139,10 +147,26 @@ const HomeownerCreateAccountpage = () => {
       passwordError: passwordError,
       passwordErrorMessage: passwordErrorMessage,
     });
-    const totalFormSuccess = firstNameError && lastNameError && emailError;
+    const totalFormSuccess =
+      !firstNameError && !lastNameError && !emailError && !passwordError;
     if (totalFormSuccess) {
       console.log("Form is good");
       // Send to Clerk
+      try {
+        await signUp?.create({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          emailAddress: form.email,
+          password: form.password,
+        });
+        // send the email
+        await signUp?.prepareEmailAddressVerification;
+
+        // change UI to pending verfication
+        setPendingVerification(true);
+      } catch (err) {
+        console.error(JSON.stringify(err, null, 2));
+      }
       // Send to Backend
     }
   }, [
@@ -156,14 +180,52 @@ const HomeownerCreateAccountpage = () => {
     form.passwordError,
   ]);
 
+  const Verify = async () => {
+    if (!isLoaded) {
+      return;
+    }
+
+    try {
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+      if (completeSignUp.status !== "complete") {
+        /*  investigate the response, to see if there was an error
+         or if the user needs to complete more steps.*/
+        console.log(JSON.stringify(completeSignUp, null, 2));
+      }
+      if (completeSignUp.status === "complete") {
+        await setActive({ session: completeSignUp.createdSessionId });
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
+  const onPressVerify = () => {
+    const verify = Verify();
+    Promise.all([verify]);
+  };
+
   return (
     <div>
-      <h1>Please enter your details</h1>
-      <FirstNameInput form={form} setForm={setForm} />
-      <LastNameInput form={form} setForm={setForm} />
-      <EmailInput form={form} setForm={setForm} />
-      <PasswordInput form={form} setForm={setForm} />
-      <Button onClick={onSubmit}>Submit</Button>
+      {!pendingVerification && (
+        <>
+          <h1>Please enter your details</h1>
+          <FirstNameInput form={form} setForm={setForm} />
+          <LastNameInput form={form} setForm={setForm} />
+          <EmailInput form={form} setForm={setForm} />
+          <PasswordInput form={form} setForm={setForm} />
+          <Button onClick={onSubmit}>Submit</Button>{" "}
+        </>
+      )}
+      {pendingVerification && (
+        <EmailVerificationInput
+          code={code}
+          setCode={setCode}
+          onPressVerify={onPressVerify}
+        />
+      )}
     </div>
   );
 };
@@ -275,6 +337,41 @@ const PasswordInput: React.FC<InputProps> = ({ form, setForm }) => {
       {form.passwordError && (
         <p className="text-red-500">⚠️ {form.passwordErrorMessage}</p>
       )}
+    </div>
+  );
+};
+
+type EmailVerificationInputProps = {
+  code: string;
+  setCode: Dispatch<SetStateAction<string>>;
+  onPressVerify: () => void;
+};
+
+const EmailVerificationInput: React.FC<EmailVerificationInputProps> = ({
+  code,
+  setCode,
+  onPressVerify,
+}) => {
+  return (
+    <div>
+      <label htmlFor="code">Enter verication code sent to your email:</label>
+      <input
+        value={code}
+        type="numeric"
+        name="code"
+        id="code"
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        onChange={(e) => setCode(e.target.value)}
+        className={clsx(
+          "w-full p-2 font-extrabold text-slate-900 outline-none",
+          {
+            "border border-2 border-red-500": false,
+          }
+        )}
+      />
+      {false && <p className="text-red-500">⚠️ Wrong Code</p>}
+      <Button onClick={onPressVerify}>Verify Email</Button>
     </div>
   );
 };
