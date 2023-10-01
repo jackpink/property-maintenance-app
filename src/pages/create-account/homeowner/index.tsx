@@ -61,6 +61,9 @@ const HomeownerCreateAccountpage = () => {
   const [form, setForm] = useState(initialForm);
   const [code, setCode] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
+  const [completeSignUpError, setCompleteSignUpError] = useState(false);
+  const [comleteSignUpErrorMessage, setCompleteSignUpErrorMessage] =
+    useState("");
   const { isLoaded, signUp, setActive } = useSignUp();
 
   const checkFirstNameInput = () => {
@@ -152,15 +155,20 @@ const HomeownerCreateAccountpage = () => {
     if (totalFormSuccess) {
       console.log("Form is good");
       // Send to Clerk
+      if (!isLoaded) {
+        return;
+      }
       try {
-        await signUp?.create({
+        await signUp.create({
           firstName: form.firstName,
           lastName: form.lastName,
           emailAddress: form.email,
           password: form.password,
         });
         // send the email
-        await signUp?.prepareEmailAddressVerification;
+        await signUp.prepareEmailAddressVerification({
+          strategy: "email_code",
+        });
 
         // change UI to pending verfication
         setPendingVerification(true);
@@ -198,7 +206,9 @@ const HomeownerCreateAccountpage = () => {
         await setActive({ session: completeSignUp.createdSessionId });
       }
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
+      setCompleteSignUpError(true);
+      setCompleteSignUpErrorMessage("Could not complete");
+      console.log(err);
     }
   };
 
@@ -224,6 +234,8 @@ const HomeownerCreateAccountpage = () => {
           code={code}
           setCode={setCode}
           onPressVerify={onPressVerify}
+          error={completeSignUpError}
+          errorMessage={comleteSignUpErrorMessage}
         />
       )}
     </div>
@@ -345,12 +357,16 @@ type EmailVerificationInputProps = {
   code: string;
   setCode: Dispatch<SetStateAction<string>>;
   onPressVerify: () => void;
+  error: boolean;
+  errorMessage: string;
 };
 
 const EmailVerificationInput: React.FC<EmailVerificationInputProps> = ({
   code,
   setCode,
   onPressVerify,
+  error,
+  errorMessage,
 }) => {
   return (
     <div>
@@ -366,11 +382,11 @@ const EmailVerificationInput: React.FC<EmailVerificationInputProps> = ({
         className={clsx(
           "w-full p-2 font-extrabold text-slate-900 outline-none",
           {
-            "border border-2 border-red-500": false,
+            "border border-2 border-red-500": error,
           }
         )}
       />
-      {false && <p className="text-red-500">⚠️ Wrong Code</p>}
+      {error && <p className="text-red-500">⚠️ {errorMessage}</p>}
       <Button onClick={onPressVerify}>Verify Email</Button>
     </div>
   );
