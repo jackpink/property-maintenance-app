@@ -4,19 +4,19 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-
 model Room {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-  label     String 
+  label     String
   order     Int?
-  Level     Level @relation(fields: [levelId], references: [id])
+  Level     Level    @relation(fields: [levelId], references: [id])
   levelId   String
   jobs      Job[]
   photos    Photo[]
@@ -25,50 +25,53 @@ model Room {
 }
 
 model Level {
-  id        String @id @default(cuid())
-  createdAt DateTime @default(now())
-  label     String
-  order     Int?
-  rooms     Room[]
-  Property Property @relation(fields: [propertyId], references: [id])
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  label      String
+  order      Int?
+  rooms      Room[]
+  Property   Property @relation(fields: [propertyId], references: [id])
   propertyId String
 
   @@index([propertyId])
 }
 
 model Property {
-  id            String @id @default(cuid())
-  createdAt     DateTime @default(now())
-  apartment     String?
-  streetNumber  String
-  street        String
-  suburb        String
-  postcode      String
-  state         String
-  country       String
-  levels        Level[]
-  jobs          Job[]
-  
+  id              String         @id @default(cuid())
+  createdAt       DateTime       @default(now())
+  apartment       String?
+  streetNumber    String
+  street          String
+  suburb          String
+  postcode        String
+  state           String
+  country         String
+  levels          Level[]
+  jobs            Job[]
+  homeownerUser   HomeownerUser? @relation(fields: [homeownerUserId], references: [id])
+  homeownerUserId String?
+
+  @@index([homeownerUserId])
 }
 
 model Document {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   filename  String
   url       String
-  Job       Job? @relation(fields: [jobId], references: [id])
+  Job       Job?     @relation(fields: [jobId], references: [id])
   jobId     String
 
   @@index([jobId])
 }
 
 model Photo {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   filename  String
-  Job       Job? @relation(fields: [jobId], references: [id])
+  Job       Job?     @relation(fields: [jobId], references: [id])
   jobId     String?
-  Room      Room? @relation(fields: [roomId], references: [id])
+  Room      Room?    @relation(fields: [roomId], references: [id])
   roomId    String?
 
   @@index([jobId])
@@ -76,16 +79,16 @@ model Photo {
 }
 
 model Job {
-  id        String @id @default(cuid())
-  createdAt DateTime @default(now())
-  title     String
-  Property  Property @relation(fields: [propertyId], references: [id])
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  title       String
+  Property    Property   @relation(fields: [propertyId], references: [id])
   propertyId  String
-  documents Document[]
-  photos    Photo[]
-  rooms     Room[]
-  date      DateTime
-  TradeUser TradeUser @relation(fields: [tradeUserId], references: [id])
+  documents   Document[]
+  photos      Photo[]
+  rooms       Room[]
+  date        DateTime
+  TradeUser   TradeUser  @relation(fields: [tradeUserId], references: [id])
   tradeUserId String
 
   @@index([propertyId])
@@ -93,8 +96,14 @@ model Job {
 }
 
 model TradeUser {
-  id        String @id
-  createdAt DateTime @default(now())
-  jobs      Job[]
+  id          String   @id
+  createdAt   DateTime @default(now())
+  jobs        Job[]
   companyName String
+}
+
+model HomeownerUser {
+  id         String     @id
+  createdAt  DateTime   @default(now())
+  properties Property[]
 }
