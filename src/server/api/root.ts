@@ -2,7 +2,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 import { propertyRouter } from "./routers/property";
 import { jobRouter } from "./routers/job";
 import { photoRouter } from "./routers/photo";
-
+import { userRouter } from "./routers/user";
 /**
  * This is the primary router for your server.
  *
@@ -10,7 +10,7 @@ import { photoRouter } from "./routers/photo";
  */
 export const appRouter = createTRPCRouter({
   property: propertyRouter,
-  example: propertyRouter,
+  user: userRouter,
   job: jobRouter,
   photo: photoRouter
 
