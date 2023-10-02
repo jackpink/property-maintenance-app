@@ -8,6 +8,8 @@ import React, {
 import { useSignUp } from "@clerk/nextjs";
 import { z } from "zod";
 import Button from "~/components/Button";
+import { useRouter } from "next/router";
+import { api } from "~/utils/api";
 
 type Form = {
   firstName: string;
@@ -65,6 +67,14 @@ const HomeownerCreateAccountpage = () => {
   const [comleteSignUpErrorMessage, setCompleteSignUpErrorMessage] =
     useState("");
   const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
+
+  const { mutate: createHomeowner } = api.user.createHomeowner.useMutation({
+    onSuccess: () => {
+      // Move to homeowner page
+      router.push("/homeowner");
+    },
+  });
 
   const checkFirstNameInput = () => {
     let errorMessage = "";
@@ -204,6 +214,9 @@ const HomeownerCreateAccountpage = () => {
       }
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
+        console.log("user id", completeSignUp.createdUserId);
+        if (!!completeSignUp.createdUserId)
+          createHomeowner({ user: completeSignUp.createdUserId });
       }
     } catch (err: any) {
       setCompleteSignUpError(true);
