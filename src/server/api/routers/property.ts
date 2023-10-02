@@ -61,6 +61,21 @@ export const propertyRouter = createTRPCRouter({
     })
     return relevantProperties;
   }),
+  getPropertiesForHomeownerUser: privateProcedure
+  .input(z.object({ user: z.string() }))
+  .query( async ({ ctx, input }) => {
+    const properties = await ctx.prisma.property.findMany({
+      where: {
+        homeownerUserId: input.user,
+        
+      },
+      include: {
+        jobs: true
+      }
+    });
+    
+    return properties;
+  }),
   getPropertiesForTradeUserRawSQL : publicProcedure
   .input(z.object( {user: z.string() }))
   .query(({ ctx, input }) => {
