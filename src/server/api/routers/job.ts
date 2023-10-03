@@ -22,6 +22,47 @@ export const jobRouter = createTRPCRouter({
         }
     });
   }),
+  getRecentJobsForHomeownerUser: privateProcedure
+  .input(z.object({ user: z.string() }))
+  .query( async ({ ctx, input }) => {
+    const propertiesForHomeownerUser = ctx.prisma.property.findMany({
+      where: {
+        homeownerUserId: input.user
+      },
+    });
+    
+
+    const homeownerPropertyIds: string[] = [];
+
+    for (const property in propertiesForHomeownerUser) {
+      homeownerPropertyIds.push(property);
+    }
+    
+    console.log("homewoner properties", homeownerPropertyIds);
+    
+    return ctx.prisma.job.findMany({
+ 
+        where: {
+            ...(homeownerPropertyIds ? {
+              AND: [
+                {id: {
+                  in: homeownerPropertyIds
+                }
+              },
+              
+              ]
+            }
+            : {})
+        },
+        orderBy: {
+            date: 'desc'
+        },
+        include: {
+            Property: true
+        },
+        take: 5
+    });
+  }),
   getRecentJobsForPropertyByTradeUser: privateProcedure
   .input(z.object({ propertyId: z.string() }))
   .query(({ ctx, input }) => {
