@@ -4,8 +4,15 @@ import house from "../../images/demo-page/house-stock-image.png";
 import { type RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/router";
 
-type PropertyWithoutJobs =
-  RouterOutputs["job"]["getRecentJobsForTradeUser"][number]["Property"];
+type PropertyWithoutJobs = {
+  streetNumber: string;
+  street: string;
+  suburb: string;
+  state: string;
+  country: string;
+  apartment: string | null;
+};
+//RouterOutputs["job"]["getRecentJobsForTradeUser"][number]["Property"];
 
 export const concatAddress = (property: PropertyWithoutJobs) => {
   console.log("property", property);
