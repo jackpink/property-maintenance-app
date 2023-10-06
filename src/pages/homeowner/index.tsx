@@ -1,7 +1,9 @@
 import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import React, { useState } from "react";
 import Button from "~/components/Button";
+import Popover from "~/components/Popover";
 import Properties from "~/components/Properties";
 import RecentJobs from "~/components/RecentJobs";
 import { api } from "~/utils/api";
@@ -49,9 +51,7 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
         ) : (
           <p className="text-center">You don't have any properties yet</p>
         )}
-        <Link href="/create-property">
-          <Button>Create Property</Button>
-        </Link>
+        <CreateProperty userId={userId} />
         <div className="mb-8 border-b-2 border-black pb-8"></div>
         <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
           Recents Jobs
@@ -60,6 +60,48 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
       </div>
     );
   } else return <>loading</>;
+};
+
+type CreatePropertyProps = {
+  userId: string;
+};
+
+const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
+  const [createPropertyPopover, setCreatePropertyPopover] = useState(false);
+
+  return (
+    <div className="grid justify-items-center">
+      <Button
+        onClick={() => setCreatePropertyPopover(true)}
+        className="mb-8 place-self-center"
+      >
+        Create Property
+      </Button>
+      <Popover
+        popoveropen={createPropertyPopover}
+        setPopoverOpen={setCreatePropertyPopover}
+      >
+        <CreatePropertyForm userId={userId} />
+      </Popover>
+    </div>
+  );
+};
+
+type CreatePropertyFormProps = {
+  userId: string;
+};
+
+const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
+  return (
+    <div className="grid justify-items-center">
+      <h1 className="block text-2xl font-medium text-gray-700">
+        Create Property
+      </h1>
+      <p>address search bar</p>
+      <p>Selected Address and info</p>
+      <Button>Create Property</Button>
+    </div>
+  );
 };
 
 export default HomeownerPage;
