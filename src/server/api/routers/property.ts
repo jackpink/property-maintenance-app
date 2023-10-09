@@ -1,5 +1,7 @@
 
+import axios from "axios";
 import { z } from "zod";
+import { env } from "../../../env.mjs";
 
 import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
 
@@ -150,4 +152,29 @@ export const propertyRouter = createTRPCRouter({
     })
     return newRoom;
   }),
+  addressValidation: privateProcedure
+  .input(z.object({ addressSearchString: z.string()}))
+  .mutation( async ({ctx, input}) => {
+    const client = axios.create();
+    const googleAddressValidationEndpoint = "https://addressvalidation.googleapis.com/v1:validateAddress?key=" +env.GOOGLE_MAPS_API_KEY;
+    const requestBody = {
+      "address": {
+        "regionCode" : "AU",
+        "addressLines": [input.addressSearchString]
+      }
+    }
+    const response = await client.post(googleAddressValidationEndpoint, requestBody)
+    console.log(response.data)
+    const validAddressDecomposed = {
+      addressString: response.data.result.address.formattedAddress
+    }
+
+    return validAddressDecomposed;
+        
+  }),
+  checkAddressStatus: privateProcedure
+  .input(z.object({ apartment: z.string(), streetNumber: z.string(), street: z.string(), postcode: z.string(), suburb: z.string(), state: z.string(), country: z.string()}))
+  .mutation(async ({ctx, input}) => {
+    // Need to check if address exists in system
+  })
 });
