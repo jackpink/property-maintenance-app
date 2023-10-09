@@ -128,14 +128,13 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
         onClickSearch={onClickSearch}
       />
       <p>{validAddress?.addressString}</p>
+      <PropertyPrompt />
       <Button>Create Property</Button>
     </div>
   );
 };
 
 import { type Dispatch, type SetStateAction } from "react";
-import axios from "axios";
-import { env } from "~/env.mjs";
 
 type Props = {
   setAddressSearchTerm: Dispatch<SetStateAction<string>>;
@@ -184,6 +183,12 @@ const AddressSearch: React.FC<Props> = ({
       </div>
     </div>
   );
+};
+
+const PropertyPrompt = () => {
+  // if query has returned [], have a create property button
+  // if query returned [property], then it will return an option to acquire this data
+  return <Button>Create Property</Button>;
 };
 
 export default HomeownerPage;
