@@ -86,27 +86,6 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
     </div>
   );
 };
-const getValidAddressViaGoogle = async (addressSearchString: string) => {
-  const client = axios.create();
-  const googleAddressValidationEndpoint =
-    "https://addressvalidation.googleapis.com/v1:validateAddress?key=" +
-    env.GOOGLE_MAPS_API_KEY;
-  const requestBody = {
-    address: {
-      regionCode: "AU",
-      addressLines: [addressSearchString],
-    },
-  };
-  const response = await client.post(
-    googleAddressValidationEndpoint,
-    requestBody
-  );
-
-  const validAddressDecomposed = {
-    addressString: response.result.address.formattedAddress,
-  };
-  return validAddressDecomposed;
-};
 
 type CreatePropertyFormProps = {
   userId: string;
@@ -122,14 +101,21 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
     addressString: "",
   });
 
-  const getValidAddress = useCallback(() => {
-    getValidAddressViaGoogle(addressSearchTerm).then((response) => {
-      setValidAddress((prev) => ({
-        ...prev,
-        addressString: response.addressString,
-      }));
-      console.log("valid address response", response);
+  const { mutate: getValidAddress, isLoading: isValidatingAddress } =
+    api.property.addressValidation.useMutation({
+      onSuccess: ({ addressString }) => {
+        // Redirect to new Job route
+        console.log("got address string", addressString);
+        setValidAddress((prev) => ({
+          ...prev,
+          addressString: addressString,
+        }));
+      },
     });
+
+  const onClickSearch = useCallback(() => {
+    console.log("search adddress");
+    void getValidAddress({ addressSearchString: addressSearchTerm });
   }, [addressSearchTerm]);
 
   return (
@@ -139,7 +125,7 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
       </h1>
       <AddressSearch
         setAddressSearchTerm={setAddressSearchTerm}
-        onClickSearch={getValidAddress}
+        onClickSearch={onClickSearch}
       />
       <p>{validAddress?.addressString}</p>
       <Button>Create Property</Button>
