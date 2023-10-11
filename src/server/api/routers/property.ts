@@ -5,6 +5,15 @@ import { env } from "../../../env.mjs";
 
 import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
 
+type IComponentName = {
+  text: string
+}
+
+type IAddressComponent = {
+  componentType: string,
+  componentName: IComponentName
+}
+
 const googleAPINameMappings = {
   "subpremise": "apartment",
   "street_number" : "streetNumber",
@@ -186,10 +195,18 @@ export const propertyRouter = createTRPCRouter({
 
     console.log(response.data)
 
-    const addressComponents = response.data.result.address.addressComponents;
+    const addressComponents: IAddressComponent[] = response.data.result.address.addressComponents;
 
+    const test = addressComponents[0]
+    addressComponents.forEach((addressComponent)=> {
+      console.log(addressComponent);
+      const componentType = addressComponent.componentType
+      const field = googleAPINameMappings[componentType];
+      const value = addressComponent.componentName.text;
+      //update AddressObj field with value
+    })
     for (const addressComponent in addressComponents) {
-      const componentType =addressComponent.componentType
+      const componentType = addressComponent.componentType
       const field = googleAPINameMappings[componentType];
       const value = addressComponent.componentName.text;
       //update AddressObj field with value
