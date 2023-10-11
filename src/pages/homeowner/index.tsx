@@ -6,7 +6,7 @@ import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Properties from "~/components/Properties";
 import RecentJobs from "~/components/RecentJobs";
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 
 const HomeownerPage = () => {
   const { userId } = useAuth();
@@ -92,8 +92,16 @@ type CreatePropertyFormProps = {
 };
 
 type ValidAddress = {
-  addressString: string;
+  apartment: string | null;
+  streetNumber: string;
+  street: string;
+  suburb: string;
+  postcode: string;
+  state: string;
+  country: string;
 };
+
+type ValidAddress2 = RouterOutputs["property"]["addressValidation"];
 
 const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
   const [addressSearchTerm, setAddressSearchTerm] = useState("");
@@ -186,6 +194,12 @@ const AddressSearch: React.FC<Props> = ({
 };
 
 const PropertyPrompt = () => {
+  const { data } = api.property.checkAddressStatus.useQuery({
+    apartment: null,
+    streetNumber: 47,
+    street: "Donnelly",
+    suburb: "Balmain",
+  });
   // if query has returned [], have a create property button
   // if query returned [property], then it will return an option to acquire this data
   return <Button>Create Property</Button>;
