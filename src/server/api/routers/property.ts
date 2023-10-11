@@ -5,6 +5,16 @@ import { env } from "../../../env.mjs";
 
 import { createTRPCRouter, publicProcedure, privateProcedure } from "~/server/api/trpc";
 
+const googleAPINameMappings = {
+  "subpremise": "apartment",
+  "street_number" : "streetNumber",
+  "route": "street",
+  "country": "country",
+  "locality": " suburb",
+  "administrative_area_level_1": "state",
+  "postal_code": "postcode"
+}
+
 export const propertyRouter = createTRPCRouter({
   
   getAll: publicProcedure
@@ -164,9 +174,29 @@ export const propertyRouter = createTRPCRouter({
       }
     }
     const response = await client.post(googleAddressValidationEndpoint, requestBody)
+    const AddressObj = {
+      apartment: null,
+      streetNumber: "",
+      street: "",
+      suburb: "",
+      postcode: "",
+      state: "",
+      country: "",
+    }
+
     console.log(response.data)
+
+    const addressComponents = response.data.result.address.addressComponents;
+
+    for (const addressComponent in addressComponents) {
+      const componentType =addressComponent.componentType
+      const field = googleAPINameMappings[componentType];
+      const value = addressComponent.componentName.text;
+      //update AddressObj field with value
+    }
+
     const validAddressDecomposed = {
-      addressString: response.data.result.address.formattedAddress
+      apartment: response.data.result.address.addressComponents
     }
 
     return validAddressDecomposed;
@@ -174,7 +204,22 @@ export const propertyRouter = createTRPCRouter({
   }),
   checkAddressStatus: privateProcedure
   .input(z.object({ apartment: z.string(), streetNumber: z.string(), street: z.string(), postcode: z.string(), suburb: z.string(), state: z.string(), country: z.string()}))
-  .mutation(async ({ctx, input}) => {
+  .query(async ({ctx, input}) => {
     // Need to check if address exists in system
+    const result = await ctx.prisma.property.findMany({
+      where:
+      {
+        apartment: input.apartment,
+        streetNumber: input.streetNumber,
+        street: input.street,
+        suburb: input.suburb,
+        postcode: input.postcode,
+        state: input.state,
+        country: input.country
+      }
+    });
+    // if result has none, return []
+    // if result has one or more return with homeowner status
+    console.log(result);
   })
 });
