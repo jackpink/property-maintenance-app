@@ -91,33 +91,26 @@ type CreatePropertyFormProps = {
   userId: string;
 };
 
-type ValidAddress = {
-  apartment: string | null;
-  streetNumber: string;
-  street: string;
-  suburb: string;
-  postcode: string;
-  state: string;
-  country: string;
-};
-
-type ValidAddress2 = RouterOutputs["property"]["addressValidation"];
+type ValidAddress = RouterOutputs["property"]["addressValidation"];
 
 const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
   const [addressSearchTerm, setAddressSearchTerm] = useState("");
   const [validAddress, setValidAddress] = useState<ValidAddress>({
-    addressString: "",
+    apartment: null,
+    streetNumber: "",
+    street: "",
+    suburb: "",
+    postcode: "",
+    state: "",
+    country: "",
   });
 
   const { mutate: getValidAddress, isLoading: isValidatingAddress } =
     api.property.addressValidation.useMutation({
-      onSuccess: ({ addressString }) => {
+      onSuccess: (AddressObj) => {
         // Redirect to new Job route
-        console.log("got address string", addressString);
-        setValidAddress((prev) => ({
-          ...prev,
-          addressString: addressString,
-        }));
+        console.log("got address string", AddressObj);
+        setValidAddress(AddressObj);
       },
     });
 
@@ -125,6 +118,8 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
     console.log("search adddress");
     void getValidAddress({ addressSearchString: addressSearchTerm });
   }, [addressSearchTerm]);
+
+  const addressString = concatAddress(validAddress);
 
   return (
     <div className="grid justify-items-center">
@@ -135,14 +130,15 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
         setAddressSearchTerm={setAddressSearchTerm}
         onClickSearch={onClickSearch}
       />
-      <p>{validAddress?.addressString}</p>
+      <p>{addressString === " , , , " ? "" : addressString}</p>{" "}
+      {/* seems a bit hacky*/}
       <PropertyPrompt />
-      <Button>Create Property</Button>
     </div>
   );
 };
 
 import { type Dispatch, type SetStateAction } from "react";
+import { concatAddress } from "~/components/Properties/Property";
 
 type Props = {
   setAddressSearchTerm: Dispatch<SetStateAction<string>>;
@@ -196,13 +192,21 @@ const AddressSearch: React.FC<Props> = ({
 const PropertyPrompt = () => {
   const { data } = api.property.checkAddressStatus.useQuery({
     apartment: null,
-    streetNumber: 47,
+    streetNumber: "47",
     street: "Donnelly",
     suburb: "Balmain",
+    postcode: "2041",
+    state: "NSW",
+    country: "Australia",
   });
   // if query has returned [], have a create property button
+
   // if query returned [property], then it will return an option to acquire this data
-  return <Button>Create Property</Button>;
+  return (
+    <>
+      {!!data && data.length === 0 ? <Button>Create Property</Button> : <></>}
+    </>
+  );
 };
 
 export default HomeownerPage;
