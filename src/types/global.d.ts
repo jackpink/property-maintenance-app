@@ -33,4 +33,13 @@ declare global {
     filename: string
     url: string
   }
+  interface IAddress {
+    apartment: string | null
+    streetNumber: string
+    street: string
+    suburb: string
+    postcode: string
+    state: string
+    country: string
+  }
 }
