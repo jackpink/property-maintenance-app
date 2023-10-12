@@ -19,9 +19,17 @@ const googleAPINameMappings = {
   "street_number" : "streetNumber",
   "route": "street",
   "country": "country",
-  "locality": " suburb",
+  "locality": "suburb",
   "administrative_area_level_1": "state",
   "postal_code": "postcode"
+}
+
+function isValidKeyOfGoogleMappings(key: string): key is keyof typeof googleAPINameMappings {
+  return key in googleAPINameMappings
+}
+
+function isKeyOfObject<T extends object>(key:string |number |symbol, object: T) : key is keyof T {
+  return key in object;
 }
 
 export const propertyRouter = createTRPCRouter({
@@ -183,7 +191,7 @@ export const propertyRouter = createTRPCRouter({
       }
     }
     const response = await client.post(googleAddressValidationEndpoint, requestBody)
-    const AddressObj = {
+    const AddressObj: IAddress = {
       apartment: null,
       streetNumber: "",
       street: "",
@@ -193,34 +201,22 @@ export const propertyRouter = createTRPCRouter({
       country: "",
     }
 
-    console.log(response.data)
 
     const addressComponents: IAddressComponent[] = response.data.result.address.addressComponents;
 
-    const test = addressComponents[0]
-    addressComponents.forEach((addressComponent)=> {
-      console.log(addressComponent);
+    for (const addressComponent of addressComponents) {
       const componentType = addressComponent.componentType
-      const field = googleAPINameMappings[componentType];
-      const value = addressComponent.componentName.text;
-      //update AddressObj field with value
-    })
-    for (const addressComponent in addressComponents) {
-      const componentType = addressComponent.componentType
-      const field = googleAPINameMappings[componentType];
-      const value = addressComponent.componentName.text;
-      //update AddressObj field with value
+      // check that the componentType is corect
+      if (isKeyOfObject(componentType, googleAPINameMappings)){
+        const field = googleAPINameMappings[componentType]
+        const value = addressComponent.componentName.text;
+        if (isKeyOfObject(field, AddressObj)) AddressObj[field] = value
+      }
     }
-
-    const validAddressDecomposed = {
-      apartment: response.data.result.address.addressComponents
-    }
-
-    return validAddressDecomposed;
-        
+    return AddressObj;
   }),
   checkAddressStatus: privateProcedure
-  .input(z.object({ apartment: z.string(), streetNumber: z.string(), street: z.string(), postcode: z.string(), suburb: z.string(), state: z.string(), country: z.string()}))
+  .input(z.object({ apartment: z.string().nullable(), streetNumber: z.string(), street: z.string(), postcode: z.string(), suburb: z.string(), state: z.string(), country: z.string()}))
   .query(async ({ctx, input}) => {
     // Need to check if address exists in system
     const result = await ctx.prisma.property.findMany({
@@ -238,5 +234,6 @@ export const propertyRouter = createTRPCRouter({
     // if result has none, return []
     // if result has one or more return with homeowner status
     console.log(result);
+    return result;
   })
 });
