@@ -73,7 +73,7 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
     <div className="grid justify-items-center">
       <Button
         onClick={() => setCreatePropertyPopover(true)}
-        className="mb-8 place-self-center"
+        className="mb-8 mt-6 place-self-center"
       >
         Create Property
       </Button>
@@ -81,7 +81,10 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
         popoveropen={createPropertyPopover}
         setPopoverOpen={setCreatePropertyPopover}
       >
-        <CreatePropertyForm userId={userId} />
+        <CreatePropertyForm
+          userId={userId}
+          setCreatePropertyPopover={setCreatePropertyPopover}
+        />
       </Popover>
     </div>
   );
@@ -89,11 +92,15 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
 
 type CreatePropertyFormProps = {
   userId: string;
+  setCreatePropertyPopover: Dispatch<SetStateAction<boolean>>;
 };
 
 type ValidAddress = RouterOutputs["property"]["addressValidation"];
 
-const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
+const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({
+  userId,
+  setCreatePropertyPopover,
+}) => {
   const [addressSearchTerm, setAddressSearchTerm] = useState("");
   const [validAddress, setValidAddress] = useState<ValidAddress>({
     apartment: null,
@@ -105,6 +112,8 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
     country: "",
   });
 
+  const ctx = api.useContext();
+
   const { mutate: getValidAddress, isLoading: isValidatingAddress } =
     api.property.addressValidation.useMutation({
       onSuccess: (AddressObj) => {
@@ -114,25 +123,62 @@ const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({ userId }) => {
       },
     });
 
+  const { mutate: createProperty, isLoading: isCreatingProperty } =
+    api.property.createPropertyForHomeownerUser.useMutation({
+      onSuccess: () => {
+        // refetch properties for page
+        console.log("New Property Created for Homeowner");
+        void ctx.property.getPropertiesForHomeownerUser.invalidate();
+        setCreatePropertyPopover(false);
+      },
+    });
+
   const onClickSearch = useCallback(() => {
     console.log("search adddress");
     void getValidAddress({ addressSearchString: addressSearchTerm });
   }, [addressSearchTerm]);
 
+  const onClickCreateProperty = () => {
+    console.log("Create property y", validAddress);
+    createProperty({
+      apartment: validAddress.apartment,
+      streetNumber: validAddress.streetNumber,
+      street: validAddress.street,
+      suburb: validAddress.suburb,
+      postcode: validAddress.postcode,
+      state: validAddress.state,
+      country: validAddress.country,
+    });
+  };
+
   const addressString = concatAddress(validAddress);
 
   return (
-    <div className="grid justify-items-center">
-      <h1 className="block text-2xl font-medium text-gray-700">
+    <div className="grid justify-items-center text-center">
+      <h1 className="block pb-6 text-2xl font-medium text-gray-700">
         Create Property
       </h1>
       <AddressSearch
         setAddressSearchTerm={setAddressSearchTerm}
         onClickSearch={onClickSearch}
       />
-      <p>{addressString === " , , , " ? "" : addressString}</p>{" "}
+      {addressString === " , , , " ? (
+        <></>
+      ) : (
+        <>
+          <p className="pb-2 text-lg font-bold">{addressString}</p>
+          <p className="pb-4 text-sm font-normal text-slate-600">
+            Is this the correct address? Please check carefully and if not
+            search again
+          </p>
+          <PropertyPrompt
+            addressObj={validAddress}
+            onClickCreateProperty={onClickCreateProperty}
+            isCreatingProperty={isCreatingProperty}
+          />
+        </>
+      )}
       {/* seems a bit hacky*/}
-      <PropertyPrompt />
     </div>
   );
 };
@@ -189,22 +235,40 @@ const AddressSearch: React.FC<Props> = ({
   );
 };
 
-const PropertyPrompt = () => {
-  const { data } = api.property.checkAddressStatus.useQuery({
-    apartment: null,
-    streetNumber: "47",
-    street: "Donnelly",
-    suburb: "Balmain",
-    postcode: "2041",
-    state: "NSW",
-    country: "Australia",
+type PropertyPromptProps = {
+  addressObj: IAddress;
+  onClickCreateProperty: () => void;
+  isCreatingProperty: boolean;
+};
+
+const PropertyPrompt: React.FC<PropertyPromptProps> = ({
+  addressObj,
+  onClickCreateProperty,
+  isCreatingProperty,
+}) => {
+  const { data, isLoading } = api.property.checkAddressStatus.useQuery({
+    apartment: addressObj.apartment,
+    streetNumber: addressObj.streetNumber,
+    street: addressObj.street,
+    suburb: addressObj.suburb,
+    postcode: addressObj.postcode,
+    state: addressObj.state,
+    country: addressObj.country,
   });
-  // if query has returned [], have a create property button
+
+  if (isLoading || isCreatingProperty) return <p>Loading</p>;
 
   // if query returned [property], then it will return an option to acquire this data
   return (
     <>
-      {!!data && data.length === 0 ? <Button>Create Property</Button> : <></>}
+      {!!data && data.length === 0 ? (
+        <Button onClick={onClickCreateProperty}>Create Property</Button>
+      ) : (
+        <p>
+          This property already exists in our system. You will be unable to
+          create it at this time.
+        </p>
+      )}
     </>
   );
 };
