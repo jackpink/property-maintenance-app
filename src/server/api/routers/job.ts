@@ -25,7 +25,7 @@ export const jobRouter = createTRPCRouter({
   getRecentJobsForHomeownerUser: privateProcedure
   .input(z.object({ user: z.string() }))
   .query( async ({ ctx, input }) => {
-    const propertiesForHomeownerUser = ctx.prisma.property.findMany({
+    const propertiesForHomeownerUser = await ctx.prisma.property.findMany({
       where: {
         homeownerUserId: input.user
       },
@@ -92,6 +92,17 @@ export const jobRouter = createTRPCRouter({
       }
     })
     return {job: job};
+  }),
+  createJobForPropertyByHomeowner: privateProcedure
+  .input(z.object({title: z.string(), date: z.date(), propertyId: z.string()}))
+  .mutation(async ({ctx, input}) => {
+    const job = await ctx.prisma.job.create({
+      data: {
+        title: input.title,
+        propertyId: input.propertyId,
+        date: input.date
+      }
+    })
   }),
   getJobForTradeUser: privateProcedure
   .input(z.object({ jobId: z.string() }))
