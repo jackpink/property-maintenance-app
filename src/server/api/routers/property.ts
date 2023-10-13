@@ -235,5 +235,22 @@ export const propertyRouter = createTRPCRouter({
     // if result has one or more return with homeowner status
     console.log(result);
     return result;
+  }),
+  createPropertyForHomeownerUser: privateProcedure
+  .input(z.object({ apartment: z.string().nullable(), streetNumber: z.string(), street: z.string(), postcode: z.string(), suburb: z.string(), state: z.string(), country: z.string()}))
+  .mutation(async ({ctx, input}) => {
+    const property = await ctx.prisma.property.create({
+      data: {
+        apartment: input.apartment,
+        streetNumber: input.streetNumber,
+        street: input.street,
+        suburb: input.suburb,
+        postcode: input.postcode,
+        state: input.state,
+        country: input.country,
+        homeownerUserId: ctx.currentUser
+      }
+    });
+    return property;
   })
 });
