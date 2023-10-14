@@ -1,6 +1,6 @@
 import { type RouterOutputs, api } from "~/utils/api";
 import clsx from "clsx";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
 import Button from "./Button";
@@ -19,7 +19,7 @@ type AddRoomTextInputProps = {
 
 const ValidRoomInput = z
   .string()
-  .min(5, { message: "Must be 5 or more characters long" })
+  .min(1, { message: "Must be 5 or more characters long" })
   .max(30, { message: "Must be less than 30 characters" });
 
 const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({
@@ -320,7 +320,7 @@ type AddLevelTextInputProps = {
 
 const ValidLevelInput = z
   .string()
-  .min(5, { message: "Must be 5 or more characters long" })
+  .min(1, { message: "Must be 5 or more characters long" })
   .max(30, { message: "Must be less than 30 characters" });
 
 const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({
@@ -409,15 +409,15 @@ const AddLevelButton: React.FC<AddLevelButtonProps> = ({ propertyId }) => {
   );
 };
 
-type Property = RouterOutputs["property"]["getPropertyForTradeUser"];
-
-type EditPropertyProps = {
-  property: Property;
+type EditPropertyModeButtonProps = {
+  editPropertyMode: boolean;
+  setEditPropertyMode: Dispatch<SetStateAction<boolean>>;
 };
 
-const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
-  const [editPropertyMode, setEditPropertyMode] = useState(false);
-
+const EditPropertyModeButton: React.FC<EditPropertyModeButtonProps> = ({
+  editPropertyMode,
+  setEditPropertyMode,
+}) => {
   return (
     <>
       {editPropertyMode ? (
@@ -440,6 +440,35 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
             <Image src="/edit_button.svg" alt="Edit" width={30} height={30} />
           </Button>
         </div>
+      )}
+    </>
+  );
+};
+
+type Property = RouterOutputs["property"]["getPropertyForTradeUser"];
+
+type EditPropertyProps = {
+  property: Property;
+};
+
+const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
+  const [editPropertyMode, setEditPropertyMode] = useState(false);
+  // Edit Property button should not show if property has no levels,
+  // instead a prompt to add levels and rooms to start building property
+  const propertyHasNoLevels = property.levels.length === 0;
+
+  return (
+    <>
+      {propertyHasNoLevels ? (
+        <p className="px-12 pb-4 text-center text-lg text-slate-700">
+          This Property currently has no levels or rooms, start by first adding
+          a level below
+        </p>
+      ) : (
+        <EditPropertyModeButton
+          editPropertyMode={editPropertyMode}
+          setEditPropertyMode={setEditPropertyMode}
+        />
       )}
       <div className="flex flex-wrap justify-center gap-3">
         {property.levels.map((level, index) => {
