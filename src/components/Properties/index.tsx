@@ -3,7 +3,7 @@ import Property from "./Property";
 import PropertySearch from "./PropertySearch";
 import { type RouterOutputs } from "~/utils/api";
 
-type Properties = RouterOutputs["property"]["getPropertiesForTradeUser"];
+type Properties = RouterOutputs["property"]["getPropertiesForHomeownerUser"];
 
 type Props = {
   properties: Properties;
