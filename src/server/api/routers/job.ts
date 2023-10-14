@@ -79,6 +79,22 @@ export const jobRouter = createTRPCRouter({
       }
     })
   }),
+  getRecentJobsForProperty: privateProcedure
+  .input(z.object({ propertyId: z.string()}))
+  .query(({ctx, input}) => {
+    return ctx.prisma.job.findMany({
+      where: {
+        propertyId: input.propertyId
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      include: {
+        Property: true,
+      },
+      take: 5
+    })
+  }),
   createJobForPropertyByTrade: privateProcedure
   .input(z.object({title: z.string(), date: z.date(), propertyId: z.string()}))
   .mutation(async ({ ctx, input }) => {
@@ -103,6 +119,7 @@ export const jobRouter = createTRPCRouter({
         date: input.date
       }
     })
+    return {job: job};
   }),
   getJobForTradeUser: privateProcedure
   .input(z.object({ jobId: z.string() }))
