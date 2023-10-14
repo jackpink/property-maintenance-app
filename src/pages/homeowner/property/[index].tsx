@@ -37,7 +37,7 @@ const HomeownerPropertyPageWithParams: React.FC<
   const property = api.property.getPropertyForTradeUser.useQuery({
     id: propertyId,
   });
-  const recentJobs = api.job.getRecentJobsForPropertyByTradeUser.useQuery({
+  const recentJobs = api.job.getRecentJobsForProperty.useQuery({
     propertyId: propertyId,
   });
   if (!property.data || !recentJobs.data) return <>Loading</>;
@@ -52,7 +52,7 @@ const HomeownerPropertyPageWithParams: React.FC<
 
       <EditProperty property={property.data} />
       <div className="mb-8 border-b-2 border-black pb-8"></div>
-      <div className="w-9/12 place-self-center md:w-8/12 lg:w-7/12 xl:w-128">
+      <div className="grid w-9/12 place-self-center md:w-8/12 lg:w-7/12 xl:w-128">
         <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
           Recents Jobs
         </h2>
@@ -76,8 +76,8 @@ const HomeownerPropertyPageWithParams: React.FC<
 
 const ValidJobInput = z
   .string()
-  .min(5, { message: "Must be 5 or more characters long" })
-  .max(30, { message: "Must be less than 30 characters" });
+  .min(2, { message: "Must be 2 or more characters long" })
+  .max(50, { message: "Must be less than 50 characters" });
 
 type CreateJobFormProps = {
   propertyId: string;
@@ -96,7 +96,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
       onSuccess: ({ job }) => {
         // Redirect to new Job route
         console.log("redirect to job/", job.id);
-        void router.push("/trade/beta/job/" + job.id);
+        void router.push("/homeowner/job/" + job.id);
       },
     });
 
@@ -104,8 +104,8 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
     // Check The Room input for correctness
     const checkAddJobInput = ValidJobInput.safeParse(jobTitleInput);
     if (!checkAddJobInput.success) {
-      console.log("throw error on input");
       const errorFormatted = checkAddJobInput.error.format()._errors.pop();
+      console.log("throw error on input", errorFormatted);
       if (!!errorFormatted) setErrorMessage(errorFormatted);
       setError(true);
     } else if (!!date) {
@@ -128,10 +128,15 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
         onChange={(e) => setJobTitleInput(e.target.value)}
         disabled={isCreatingJob}
         className={clsx(
-          "w-3/4 transform rounded rounded-lg border border-transparent bg-gray-50 p-2 text-base font-extrabold text-neutral-600 text-slate-900 placeholder-gray-300 ring-2 ring-white ring-offset-2 ring-offset-gray-300 transition duration-500 ease-in-out focus:border-transparent focus:outline-none md:w-96",
-          { "border border-2 border-red-500": error }
+          "w-3/4 transform rounded rounded-lg border bg-gray-50 p-2 text-base font-extrabold text-neutral-600 text-slate-900 placeholder-gray-300 ring-2 ring-white ring-offset-2 ring-offset-gray-300 transition duration-500 ease-in-out  md:w-96",
+          { "border border-2 border-red-500": error },
+          {
+            "border-transparent focus:border-transparent focus:outline-none":
+              !error,
+          }
         )}
       />
+      {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
       <label className="block text-sm font-medium text-gray-700">
         {" "}
         Job Date
