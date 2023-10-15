@@ -149,6 +149,34 @@ export const jobRouter = createTRPCRouter({
       })
     return job;
   }),
+  getJobForHomeowner: privateProcedure
+  .input(z.object({ jobId: z.string() }))
+  .query(async ({ ctx, input }) => {
+
+    const job = await ctx.prisma.job.findUniqueOrThrow({
+      where: {
+        id: input.jobId
+      },
+      include: {
+        photos: true,
+        rooms: {
+          include: {
+            Level: true
+          }
+        },
+        Property: {
+          include : {
+            levels: {
+              include: {
+                rooms: true
+                }
+              }
+            }
+          }
+        }
+      })
+    return job;
+  }),
   addRoomToJob: privateProcedure
   .input(z.object({ jobId: z.string(), roomId: z.string()}))
   .mutation(async ({ctx, input}) => {
@@ -250,5 +278,36 @@ export const jobRouter = createTRPCRouter({
       }
     })
     return room.jobs;
+  }),
+  updateDateForJob: privateProcedure
+  .input(z.object({jobId: z.string(), date: z.date()}))
+  .mutation( async ({ ctx, input }) => {
+
+    const newJob = await ctx.prisma.job.update({
+      where: {
+        id: input.jobId,
+      },
+      data: {
+        date: input.date,
+      },
+    })
+    return newJob;
+  }),
+  updateTradeContactForJob: privateProcedure
+  .input(z.object({jobId: z.string(), tradeName: z.string(), tradeEmail: z.string().optional(), tradePhone: z.string().optional()}))
+  .mutation( async({ ctx, input}) => {
+    const json = {
+      name: input.tradeName,
+      email: input.tradeEmail,
+      phone: input.tradePhone
+    }
+    const newJob = await ctx.prisma.job.update({
+      where: {
+        id: input.jobId
+      },
+      data: {
+        nonUserTradeInfo: json
+      }
+    })
   })
 });
