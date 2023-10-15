@@ -79,17 +79,19 @@ model Photo {
 }
 
 model Job {
-  id          String     @id @default(cuid())
-  createdAt   DateTime   @default(now())
-  title       String
-  Property    Property   @relation(fields: [propertyId], references: [id])
-  propertyId  String
-  documents   Document[]
-  photos      Photo[]
-  rooms       Room[]
-  date        DateTime
-  TradeUser   TradeUser? @relation(fields: [tradeUserId], references: [id])
-  tradeUserId String?
+  id               String     @id @default(cuid())
+  createdAt        DateTime   @default(now())
+  title            String
+  Property         Property   @relation(fields: [propertyId], references: [id])
+  propertyId       String
+  documents        Document[]
+  photos           Photo[]
+  rooms            Room[]
+  date             DateTime
+  TradeUser        TradeUser? @relation(fields: [tradeUserId], references: [id])
+  tradeUserId      String?
+  nonUserTradeName String?
+  nonUserTradeInfo Json?
 
   @@index([propertyId])
   @@index([tradeUserId])
