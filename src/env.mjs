@@ -13,6 +13,7 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: z.string(),
     PHOTO_BUCKET_NAME: z.string(),
     REGION: z.string(),
+    GOOGLE_MAPS_API_KEY: z.string()
   },
 
   /**
@@ -35,6 +36,7 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     PHOTO_BUCKET_NAME: process.env.PHOTO_BUCKET_NAME,
     REGION: process.env.REGION,
+    GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
 });
