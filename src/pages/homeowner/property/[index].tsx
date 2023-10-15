@@ -2,15 +2,16 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import { concatAddress } from "~/components/Properties/Property";
 import EditProperty from "~/components/EditProperty";
 import RecentJobs from "~/components/RecentJobs";
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import clsx from "clsx";
 import z from "zod";
-import "react-day-picker/dist/style.css";
+import Link from "next/link";
 // build the property page
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
@@ -34,23 +35,51 @@ const HomeownerPropertyPageWithParams: React.FC<
 > = ({ propertyId }) => {
   const [createJobPopoverOpen, setCreatejobPopoverOpen] = useState(false);
 
-  const property = api.property.getPropertyForTradeUser.useQuery({
+  const {
+    data: property,
+    error: propertyFetchError,
+    isFetching: propertyIsLoading,
+  } = api.property.getPropertyForTradeUser.useQuery({
     id: propertyId,
   });
-  const recentJobs = api.job.getRecentJobsForProperty.useQuery({
+  const {
+    data: recentJobs,
+    error: recentJobsFetchError,
+    isFetching: recentJobsAreLoading,
+  } = api.job.getRecentJobsForProperty.useQuery({
     propertyId: propertyId,
   });
-  if (!property.data || !recentJobs.data) return <>Loading</>;
 
-  const address = concatAddress(property.data);
+  if (!!propertyFetchError) toast("Failed to fetch property");
+  if (!!recentJobsFetchError) toast("Failed to fetch Recent Jobs");
+  let address = "";
+  if (!!property) address = concatAddress(property);
+
+  console.log("propertyIsLoading", propertyIsLoading);
+  console.log("propertyFetchError", propertyFetchError);
 
   return (
     <div className="grid grid-cols-1">
       <h1 className="py-8 text-center font-sans text-4xl font-extrabold text-slate-900">
         {address}
       </h1>
+      {propertyIsLoading ? (
+        <p className="px-12 pb-4 text-center text-lg text-slate-700">
+          Loading Property
+        </p>
+      ) : !property ? (
+        <div className="grid place-items-center">
+          <p className="px-12 pb-4 text-center text-lg text-slate-700">
+            {propertyFetchError?.message}
+          </p>
+          <Link href="/homeowner/">
+            <Button className="border-none"> {"< Back to Dashboard"}</Button>
+          </Link>
+        </div>
+      ) : (
+        <EditProperty property={property} />
+      )}
 
-      <EditProperty property={property.data} />
       <div className="mb-8 border-b-2 border-black pb-8"></div>
       <div className="grid w-9/12 place-self-center md:w-8/12 lg:w-7/12 xl:w-128">
         <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
@@ -66,11 +95,58 @@ const HomeownerPropertyPageWithParams: React.FC<
           popoveropen={createJobPopoverOpen}
           setPopoverOpen={setCreatejobPopoverOpen}
         >
-          <CreateJobForm propertyId={property.data.id} />
+          {propertyIsLoading || !property ? (
+            <p>Loading Property</p>
+          ) : (
+            <CreateJobForm propertyId={property.id} />
+          )}
         </Popover>
-        <RecentJobs recentJobs={recentJobs.data} />
+        {recentJobsAreLoading ? (
+          <p className="px-12 pb-4 text-center text-lg text-slate-700">
+            Loading Recent jobs
+          </p>
+        ) : !recentJobs ? (
+          <p className="px-12 pb-4 text-center text-lg text-slate-700">
+            {recentJobsFetchError?.message}
+          </p>
+        ) : (
+          <RecentJobs recentJobs={recentJobs} />
+        )}
       </div>
     </div>
+  );
+};
+
+// Async component not currently in use, could have potential though
+type AsyncComponentProps = {
+  Component: ReactNode;
+  loading: boolean;
+  loadingMessage: string;
+  error: boolean;
+  errorMessage: string | null;
+};
+
+const AsyncComponent: React.FC<AsyncComponentProps> = ({
+  Component,
+  loading,
+  loadingMessage,
+  error,
+  errorMessage,
+}) => {
+  return (
+    <>
+      {loading ? (
+        <p className="px-12 pb-4 text-center text-lg text-slate-700">
+          Loading {loadingMessage}
+        </p>
+      ) : error ? (
+        <p className="px-12 pb-4 text-center text-lg text-slate-700">
+          {errorMessage}
+        </p>
+      ) : (
+        { Component }
+      )}
+    </>
   );
 };
 
