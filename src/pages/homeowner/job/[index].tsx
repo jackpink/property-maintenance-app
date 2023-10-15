@@ -3,11 +3,11 @@ import { type RouterOutputs, api } from "~/utils/api";
 import { concatAddress } from "~/components/Properties/Property";
 import Link from "next/link";
 import Image from "next/image";
-import house from "../../../../images/demo-page/house-stock-image.png";
+import house from "../../../images/demo-page/house-stock-image.png";
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
-import {
+import React, {
   type ChangeEvent,
   type Dispatch,
   type SetStateAction,
@@ -16,6 +16,11 @@ import {
 } from "react";
 import clsx from "clsx";
 import axios from "axios";
+import { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
+import { toast } from "sonner";
+import { Prisma } from "@prisma/client";
+import { z } from "zod";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -33,10 +38,10 @@ type HomeownerJobPageWithParamsProps = {
 const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   id,
 }) => {
-  const job = api.job.getJobForTradeUser.useQuery({ jobId: id });
+  const job = api.job.getJobForHomeowner.useQuery({ jobId: id });
 
   if (!job.data) return <>Loading</>;
-
+  // have some logic here, if has trade user, then display without any action buttons
   return <HomeownerJobPageWithJob job={job.data} />;
 };
 
@@ -56,10 +61,9 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h1 className="py-8 text-center font-sans text-4xl font-extrabold text-slate-900">
         {job.title}
       </h1>
-      <JobDate />
-      <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
-        {address}
-      </h2>
+      <JobDate date={job.date} jobId={job.id} />
+      <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
+
       <Property job={job} />
       <RoomSelector job={job} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
@@ -77,11 +81,200 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   );
 };
 
-const JobDate = () => {
+type JobDateProps = {
+  date: Date;
+  jobId: string;
+};
+
+const JobDate: React.FC<JobDateProps> = ({ date, jobId }) => {
+  const [jobDayPickerOpen, setJobDayPickerOpen] = useState(false);
+  const [newDate, setNewDate] = useState<Date | undefined>(date);
+
+  const ctx = api.useContext();
+
+  const { mutate: updateDate } = api.job.updateDateForJob.useMutation({
+    onSuccess: () => {
+      // Refetch job for page
+      void ctx.job.getJobForHomeowner.invalidate();
+      // close popover
+      setJobDayPickerOpen(false);
+    },
+    onError: () => {
+      toast("Failed to update Date for Job");
+    },
+  });
+
+  const onClickUpdateDate = () => {
+    // aysnc update date
+    if (!!newDate) updateDate({ jobId: jobId, date: newDate });
+    else toast("Could not update date, selected Date error");
+  };
+
   return (
     <>
-      <p className="place-self-center">{job.date.toDateString()}</p>
+      <p className="place-self-center px-12 pb-4 text-center text-lg text-slate-700">
+        Job Completed On:{" "}
+        <button
+          onClick={() => setJobDayPickerOpen(true)}
+          className="rounded-md border-2 border-black p-1"
+        >
+          {date.toDateString()}
+        </button>
+      </p>
+
+      <Popover
+        popoveropen={jobDayPickerOpen}
+        setPopoverOpen={setJobDayPickerOpen}
+      >
+        <div className="grid place-items-center text-center">
+          <p className="block text-sm font-medium text-gray-700">
+            Current Job Date:
+            {date ? <> {format(date, "PPP")}</> : <></>}
+          </p>
+          <DayPicker
+            mode="single"
+            required
+            selected={newDate}
+            onSelect={setNewDate}
+          />
+
+          {!!newDate ? (
+            <Button onClick={onClickUpdateDate}>
+              Set New Date as {format(newDate, "PPP")}
+            </Button>
+          ) : (
+            <></>
+          )}
+        </div>
+      </Popover>
     </>
+  );
+};
+
+type Form = {
+  name: string;
+  nameError: boolean;
+  nameErrorMessage: string;
+  email: string;
+  emailError: boolean;
+  emailErrorMessage: string;
+  phone: string;
+  phoneError: boolean;
+  phoneErrorMessage: string;
+};
+
+const initialForm: Form = {
+  name: "",
+  nameError: false,
+  nameErrorMessage: "",
+  email: "",
+  emailError: false,
+  emailErrorMessage: "",
+  phone: "",
+  phoneError: false,
+  phoneErrorMessage: "",
+};
+
+const ValidNameInput = z
+  .string()
+  .min(1, { message: "Must be 5 or more characters long" })
+  .max(30, { message: "Must be less than 30 characters" });
+
+type JobCompletedByProps = {
+  tradeInfo: Prisma.JsonValue | null;
+  jobId: string;
+};
+
+function instanceOfTradeInfo(object: any): object is ITradeInfo {
+  return "name" in object && "email" in object && "phone" in object;
+}
+
+const JobCompletedBy: React.FC<JobCompletedByProps> = ({
+  tradeInfo,
+  jobId,
+}) => {
+  const [editTradeInfo, setEditTradeInfo] = useState(false);
+  const [form, setForm] = useState(initialForm);
+
+  const ctx = api.useContext();
+
+  const { mutate: updateTradeInfo } =
+    api.job.updateTradeContactForJob.useMutation({
+      onSuccess: () => {
+        // Refetch job for page
+        void ctx.job.getJobForHomeowner.invalidate();
+        // close popover
+        setEditTradeInfo(false);
+      },
+      onError: () => {
+        toast("Failed to update Trade information for Job");
+      },
+    });
+
+  const onClickUpdate = () => {
+    updateTradeInfo({
+      jobId: jobId,
+      tradeName: form.name,
+      tradeEmail: "",
+      tradePhone: "",
+    });
+  };
+  // Does job have a Trade User?
+  return (
+    <div className="grid place-items-center">
+      <span className="pb-1 text-center text-lg text-slate-700">
+        Job Completed By:{" "}
+      </span>
+      {!!tradeInfo && instanceOfTradeInfo(tradeInfo) ? (
+        <button className="mb-4 rounded-md border-2 border-black p-1">
+          <p className="pb-4 text-center text-lg text-slate-700">
+            {tradeInfo.name}
+          </p>
+        </button>
+      ) : (
+        <button
+          onClick={() => setEditTradeInfo(true)}
+          className="mb-6 rounded-md border-2 border-black p-1 text-center text-lg text-slate-700"
+        >
+          Add Information for Trade
+        </button>
+      )}
+      <Popover popoveropen={editTradeInfo} setPopoverOpen={setEditTradeInfo}>
+        <div className="grid place-items-center">
+          <h1>Edit Details for Trade</h1>
+          <label>Name</label>
+          <input
+            placeholder={
+              !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.name
+                ? tradeInfo.name
+                : ""
+            }
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <label>Email (Optional)</label>
+          <input
+            placeholder={
+              !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.email
+                ? tradeInfo.email
+                : ""
+            }
+            type="text"
+          />
+          <label>Phone Number (Optional)</label>
+          <input
+            placeholder={
+              !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.phone
+                ? tradeInfo.phone
+                : ""
+            }
+            type="text"
+          />
+          <Button onClick={onClickUpdate}>Update Job Trade Information</Button>
+        </div>
+      </Popover>
+    </div>
   );
 };
 
@@ -439,7 +632,7 @@ const Property: React.FC<PropertyProps> = ({ job }) => {
   const rooms = job.rooms;
   return (
     <Link
-      href={`/trade/beta/property/${job.Property.id}`}
+      href={`/homeowner/property/${job.Property.id}`}
       className="w-3/4 place-self-center md:w-1/2"
     >
       <div className="grid grid-cols-3 rounded-xl border-2 border-solid border-teal-800 hover:bg-black/20">
