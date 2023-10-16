@@ -179,8 +179,8 @@ const initialForm: Form = {
 
 const ValidNameInput = z
   .string()
-  .min(1, { message: "Must be 5 or more characters long" })
-  .max(30, { message: "Must be less than 30 characters" });
+  .min(1, { message: "Must be 1 or more characters long" })
+  .max(50, { message: "Must be less than 50 characters" });
 
 type JobCompletedByProps = {
   tradeInfo: Prisma.JsonValue | null;
@@ -233,6 +233,7 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
     });
 
   const onClickUpdate = () => {
+    // check inputs?
     updateTradeInfo({
       jobId: jobId,
       tradeName: form.name,
@@ -315,9 +316,22 @@ type DocumentViewerProps = {
 const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
   const [label, setLabel] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const { data: documents, isLoading: loading } =
+    api.document.getDocumentsForJob.useQuery({ jobId: job.id });
 
   return (
     <div className="grid place-items-center">
+      {!!documents ? (
+        <Documents documents={documents} />
+      ) : loading ? (
+        <p>Loading</p>
+      ) : (
+        <p>error</p>
+      )}
+
       <Button onClick={() => setUploadDocumentPopover(true)}>
         Upload Other Document
       </Button>
@@ -334,11 +348,49 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
             type="text"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            className="mb-4 rounded-md border-2 border-slate-400 p-1"
+            className={clsx("mb-4 rounded-md border-2 border-slate-400 p-1", {
+              "border border-2 border-red-500": error,
+            })}
           />
-          <UploadDocumentButton job={job} label={label} />
+          {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
+          <UploadDocumentButton
+            job={job}
+            label={label}
+            setError={setError}
+            setErrorMessage={setErrorMessage}
+            setUploadDocumentPopover={setUploadDocumentPopover}
+          />
         </div>
       </Popover>
+    </div>
+  );
+};
+
+type Documents = RouterOutputs["document"]["getDocumentsForJob"];
+
+type DocumentsProps = {
+  documents: Documents;
+};
+
+const Documents: React.FC<DocumentsProps> = ({ documents }) => {
+  return (
+    <div>
+      {documents.map((document, index) => (
+        <Document document={document} key={index} />
+      ))}
+    </div>
+  );
+};
+type Document = Documents[number];
+
+type DocumentProps = {
+  document: Document;
+};
+const Document: React.FC<DocumentProps> = ({ document }) => {
+  return (
+    <div>
+      <p>Icon</p>
+      <p>{document.label}</p>
     </div>
   );
 };
@@ -346,11 +398,17 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
 type UploadDocumentButtonProps = {
   job: Job;
   label: string;
+  setError: Dispatch<SetStateAction<boolean>>;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
+  setUploadDocumentPopover: Dispatch<SetStateAction<boolean>>;
 };
 
 const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
   job,
   label,
+  setError,
+  setErrorMessage,
+  setUploadDocumentPopover,
 }) => {
   const { mutateAsync: getPresignedUrl } =
     api.document.getDocumentUploadPresignedUrl.useMutation();
@@ -362,51 +420,65 @@ const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
 
   const uploadFile = async (file: File) => {
     // Need to check that file is correct type (ie jpeg/png/tif/etc)
-    console.log("Getting Presigned URL for file ", file.name);
-    const { url, filename } = await getPresignedUrl({
-      key: file.name,
-      property: job.Property.id,
-    });
+    try {
+      console.log("Getting Presigned URL for file ", file.name);
+      const { url, filename } = await getPresignedUrl({
+        key: file.name,
+        property: job.Property.id,
+      });
 
-    console.log("Uploading Image to Presigned URL ", file.name, filename);
-    const fileName = await uploadFileToSignedURL(url, file, filename);
+      console.log("Uploading Image to Presigned URL ", file.name);
+      const fileName = await uploadFileToSignedURL(url, file, filename);
 
-    console.log("Creating Photo Record for DB ", file.name, fileName);
-    const newPhoto = await createDocumentRecord({
-      filename: fileName,
-      label: label,
-      jobId: job.id,
-    });
+      console.log("Creating Photo Record for DB ", file.name, fileName);
+      const newPhoto = await createDocumentRecord({
+        filename: fileName,
+        label: label,
+        jobId: job.id,
+      });
 
-    console.log("Refetching Photos for Page", newPhoto);
-    newPhoto && void ctx.document.getDocumentsForJob.invalidate();
+      console.log("Refetching Documents for Page", newPhoto);
+      newPhoto && void ctx.document.getDocumentsForJob.invalidate();
+      newPhoto && setUploadDocumentPopover(false);
+    } catch (e) {
+      console.error("Could not upload file");
+      console.log(e);
+    }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      const promiseArray = [];
-      for (const file of fileArray) {
-        promiseArray.push(uploadFile(file));
+    // check label input
+    console.log("checking label", label);
+    const checkLabelInput = ValidNameInput.safeParse(label);
+    if (!checkLabelInput.success) {
+      console.log("throw error onm input");
+      const errorFormatted = checkLabelInput.error.format()._errors.pop();
+      if (!!errorFormatted) setErrorMessage(errorFormatted);
+      setError(true);
+    } else {
+      console.log("label is koay, upload file");
+      setError(false);
+      setErrorMessage("");
+      let file = null;
+      if (event.target.files) file = event.target.files[0];
+      if (file) {
+        void uploadFile(file);
       }
-      void Promise.all(promiseArray);
     }
   };
 
   return (
     <>
       <label
-        htmlFor="photo-upload-input"
+        htmlFor="document-upload-input"
         className="place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900"
       >
         Upload Document
       </label>
       <input
         onChange={handleFileChange}
-        multiple
         type="file"
-        id="photo-upload-input"
+        id="document-upload-input"
         className="opacity-0"
       />
     </>
