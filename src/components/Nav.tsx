@@ -9,10 +9,10 @@ const NavItems: React.FC = () => {
     <>
       <li>
         <Link
-          href="/trades"
+          href="/homeowner"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          Trades
+          Dashboard
         </Link>
       </li>
       <li>
