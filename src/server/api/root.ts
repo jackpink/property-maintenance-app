@@ -3,6 +3,7 @@ import { propertyRouter } from "./routers/property";
 import { jobRouter } from "./routers/job";
 import { photoRouter } from "./routers/photo";
 import { userRouter } from "./routers/user";
+import { documentRouter } from "./routers/document";
 /**
  * This is the primary router for your server.
  *
@@ -12,7 +13,8 @@ export const appRouter = createTRPCRouter({
   property: propertyRouter,
   user: userRouter,
   job: jobRouter,
-  photo: photoRouter
+  photo: photoRouter,
+  document: documentRouter
 
 });
 
