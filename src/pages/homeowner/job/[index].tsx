@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { uploadFileToSignedURL } from "../../../utils/upload";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -67,10 +68,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <Property job={job} />
       <RoomSelector job={job} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
-        Notes
-      </h2>
-      <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
+      </h2>
+      <DocumentViewer job={job} />
+      <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
+        Notes
       </h2>
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Photos
@@ -194,7 +196,26 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
   jobId,
 }) => {
   const [editTradeInfo, setEditTradeInfo] = useState(false);
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState({
+    name:
+      !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.name
+        ? tradeInfo.name
+        : "",
+    nameError: false,
+    nameErrorMessage: "",
+    email:
+      !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.email
+        ? tradeInfo.email
+        : "",
+    emailError: false,
+    emailErrorMessage: "",
+    phone:
+      !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.phone
+        ? tradeInfo.phone
+        : "",
+    phoneError: false,
+    phoneErrorMessage: "",
+  });
 
   const ctx = api.useContext();
 
@@ -215,8 +236,8 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
     updateTradeInfo({
       jobId: jobId,
       tradeName: form.name,
-      tradeEmail: "",
-      tradePhone: "",
+      tradeEmail: form.email,
+      tradePhone: form.phone,
     });
   };
   // Does job have a Trade User?
@@ -226,10 +247,23 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
         Job Completed By:{" "}
       </span>
       {!!tradeInfo && instanceOfTradeInfo(tradeInfo) ? (
-        <button className="mb-4 rounded-md border-2 border-black p-1">
-          <p className="pb-4 text-center text-lg text-slate-700">
+        <button
+          onClick={() => setEditTradeInfo(true)}
+          className="mb-4 rounded-md border-2 border-black p-1"
+        >
+          <p className="pb-4 text-center text-xl text-slate-700">
             {tradeInfo.name}
           </p>
+          <p className="text-left text-slate-600">
+            <span className="font-light">Email: </span>
+            {tradeInfo.email}
+          </p>
+
+          <p className="text-left text-slate-600">
+            <span className="font-light">Phone Number: {"   "}</span>
+            {tradeInfo.phone}
+          </p>
+          <span></span>
         </button>
       ) : (
         <button
@@ -241,40 +275,141 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
       )}
       <Popover popoveropen={editTradeInfo} setPopoverOpen={setEditTradeInfo}>
         <div className="grid place-items-center">
-          <h1>Edit Details for Trade</h1>
-          <label>Name</label>
+          <h1 className="pb-4 text-2xl text-slate-700">
+            Edit Details for Trade
+          </h1>
+          <label className="text-lg text-slate-700">Name</label>
           <input
-            placeholder={
-              !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.name
-                ? tradeInfo.name
-                : ""
-            }
             type="text"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="mb-4 rounded-md border-2 border-slate-400 p-1"
           />
-          <label>Email (Optional)</label>
+          <label className="text-lg text-slate-700">Email (Optional)</label>
           <input
-            placeholder={
-              !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.email
-                ? tradeInfo.email
-                : ""
-            }
             type="text"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="mb-4 rounded-md border-2 border-slate-400 p-1"
           />
-          <label>Phone Number (Optional)</label>
+          <label className="text-lg text-slate-700">
+            Phone Number (Optional)
+          </label>
           <input
-            placeholder={
-              !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.phone
-                ? tradeInfo.phone
-                : ""
-            }
             type="text"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            className="mb-4 rounded-md border-2 border-slate-400 p-1"
           />
           <Button onClick={onClickUpdate}>Update Job Trade Information</Button>
         </div>
       </Popover>
     </div>
+  );
+};
+
+type DocumentViewerProps = {
+  job: Job;
+};
+
+const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
+  const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
+  const [label, setLabel] = useState("");
+
+  return (
+    <div className="grid place-items-center">
+      <Button onClick={() => setUploadDocumentPopover(true)}>
+        Upload Other Document
+      </Button>
+      <Popover
+        popoveropen={uploadDocumentPopover}
+        setPopoverOpen={setUploadDocumentPopover}
+      >
+        <div className="grid place-items-center">
+          <h1 className="pb-4 text-2xl text-slate-700">
+            Add a label for the Document before uploading
+          </h1>
+          <label className="text-lg text-slate-700">Label </label>
+          <input
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            className="mb-4 rounded-md border-2 border-slate-400 p-1"
+          />
+          <UploadDocumentButton job={job} label={label} />
+        </div>
+      </Popover>
+    </div>
+  );
+};
+
+type UploadDocumentButtonProps = {
+  job: Job;
+  label: string;
+};
+
+const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
+  job,
+  label,
+}) => {
+  const { mutateAsync: getPresignedUrl } =
+    api.document.getDocumentUploadPresignedUrl.useMutation();
+
+  const { mutateAsync: createDocumentRecord } =
+    api.document.createDocumentRecord.useMutation();
+
+  const ctx = api.useContext();
+
+  const uploadFile = async (file: File) => {
+    // Need to check that file is correct type (ie jpeg/png/tif/etc)
+    console.log("Getting Presigned URL for file ", file.name);
+    const { url, filename } = await getPresignedUrl({
+      key: file.name,
+      property: job.Property.id,
+    });
+
+    console.log("Uploading Image to Presigned URL ", file.name, filename);
+    const fileName = await uploadFileToSignedURL(url, file, filename);
+
+    console.log("Creating Photo Record for DB ", file.name, fileName);
+    const newPhoto = await createDocumentRecord({
+      filename: fileName,
+      label: label,
+      jobId: job.id,
+    });
+
+    console.log("Refetching Photos for Page", newPhoto);
+    newPhoto && void ctx.document.getDocumentsForJob.invalidate();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files);
+      const promiseArray = [];
+      for (const file of fileArray) {
+        promiseArray.push(uploadFile(file));
+      }
+      void Promise.all(promiseArray);
+    }
+  };
+
+  return (
+    <>
+      <label
+        htmlFor="photo-upload-input"
+        className="place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900"
+      >
+        Upload Document
+      </label>
+      <input
+        onChange={handleFileChange}
+        multiple
+        type="file"
+        id="photo-upload-input"
+        className="opacity-0"
+      />
+    </>
   );
 };
 
@@ -364,27 +499,6 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
 
   const ctx = api.useContext();
 
-  const uploadPhotoToSignedURL = async (
-    signedUrl: string,
-    file: File,
-    filename: string
-  ) => {
-    const result = await axios
-      .put(signedUrl, file.slice(), {
-        headers: { "Content-Type": file.type },
-      })
-      .then((response) => {
-        console.log(response);
-        console.log("Successfully Uploaded ", file.name);
-        return filename;
-      })
-      .catch((err: string) => {
-        console.log(err);
-        return err;
-      });
-    return result;
-  };
-
   const refetchPhotosAfterUpload = () => {
     void ctx.photo.getPhotosForJobAndRoom.invalidate();
     void ctx.photo.getUnassignedPhotosForJob.invalidate();
@@ -399,7 +513,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
     });
 
     console.log("Uploading Image to Presigned URL ", file.name, filename);
-    const fileName = await uploadPhotoToSignedURL(url, file, filename);
+    const fileName = await uploadFileToSignedURL(url, file, filename);
 
     console.log("Creating Photo Record for DB ", file.name, fileName);
     const newPhoto = await createPhotoRecord({
