@@ -15,7 +15,6 @@ type PropertyWithoutJobs = {
 //RouterOutputs["job"]["getRecentJobsForTradeUser"][number]["Property"];
 
 export const concatAddress = (property: PropertyWithoutJobs) => {
-  console.log("property", property);
   let address =
     property.streetNumber +
     " " +
