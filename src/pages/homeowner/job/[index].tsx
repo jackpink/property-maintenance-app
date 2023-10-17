@@ -74,6 +74,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
+      <NotesViewer notes={job.notes} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Photos
       </h2>
@@ -374,7 +375,7 @@ type DocumentsProps = {
 
 const Documents: React.FC<DocumentsProps> = ({ documents }) => {
   return (
-    <div>
+    <div className="flex flex-wrap">
       {documents.map((document, index) => (
         <Document document={document} key={index} />
       ))}
@@ -387,10 +388,38 @@ type DocumentProps = {
   document: Document;
 };
 const Document: React.FC<DocumentProps> = ({ document }) => {
+  const [documentOpen, setDocumentOpen] = useState(false);
+  const { data: pdfUrl } = api.document.getDocument.useQuery({
+    filename: document.filename,
+  });
+  console.log("docuemnt url", pdfUrl);
   return (
     <div>
-      <p>Icon</p>
-      <p>{document.label}</p>
+      <button className="m-2 p-2" onClick={() => setDocumentOpen(true)}>
+        <svg width="60" viewBox="0 0 130 170">
+          <g id="layer1" transform="translate(-246.43 -187.36)">
+            <path
+              id="rect7452"
+              d="m246.43 187.36v170h130v-141.34l-28.625-28.656h-101.38zm97.5 5 27.5 27.531h-27.5v-27.531zm-72.5 61.188h80v7h-80v-7zm0 30.625h80v7h-80v-7zm0 30.656h80v7h-80v-7z"
+            />
+          </g>
+        </svg>
+        <p>{document.label}</p>
+      </button>
+      {!!pdfUrl && (
+        <Popover popoveropen={documentOpen} setPopoverOpen={setDocumentOpen}>
+          <div className="h-screen">
+            <object
+              data={pdfUrl}
+              type="application/pdf"
+              width="100%"
+              height="100%"
+            >
+              <a href={pdfUrl}>here</a>
+            </object>
+          </div>
+        </Popover>
+      )}
     </div>
   );
 };
@@ -485,6 +514,39 @@ const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
   );
 };
 
+type Notes = Job["notes"];
+
+type NotesViewerProps = {
+  notes: Notes;
+};
+
+const NotesViewer: React.FC<NotesViewerProps> = ({ notes }) => {
+  const [addNoteOpen, setAddNoteOpen] = useState(false);
+  const [newNote, setNewNote] = useState("");
+  return (
+    <div>
+      {!!notes &&
+        Array.isArray(notes) &&
+        notes.map((note, index) => <p key={index}>{note?.toString()}</p>)}
+      {addNoteOpen ? (
+        <div className={clsx("flex")}>
+          <input
+            disabled={false}
+            onChange={(e) => setNewNote(e.target.value)}
+            className={clsx(
+              "w-full p-2 font-extrabold text-slate-900 outline-none",
+              { "border border-2 border-red-500": false }
+            )}
+          />
+          <Button>+</Button>
+        </div>
+      ) : (
+        <Button onClick={() => setAddNoteOpen(true)}>Add Note</Button>
+      )}
+    </div>
+  );
+};
+
 type PhotoViewerProps = {
   job: Job;
 };
@@ -533,7 +595,7 @@ const UnassignedPhotos: React.FC<UnassignedPhotosProps> = ({ job }) => {
       </div>
     );
   }
-  return <>no photo</>;
+  return <p>no photo</p>;
 };
 
 type RoomPhotosProps = {
