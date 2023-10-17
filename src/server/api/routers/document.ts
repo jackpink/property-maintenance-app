@@ -64,7 +64,7 @@ export const documentRouter = createTRPCRouter({
     const key = input.filename;
 
     const params = {
-      Bucket: env.PHOTO_BUCKET_NAME,
+      Bucket: env.DOCUMENT_BUCKET_NAME,
       Key: key, 
     }
     
