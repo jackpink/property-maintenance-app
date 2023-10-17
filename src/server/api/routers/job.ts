@@ -1,4 +1,5 @@
 
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
@@ -300,7 +301,7 @@ export const jobRouter = createTRPCRouter({
       name: input.tradeName,
       email: input.tradeEmail,
       phone: input.tradePhone
-    }
+    } as Prisma.JsonObject
     const newJob = await ctx.prisma.job.update({
       where: {
         id: input.jobId
@@ -309,5 +310,6 @@ export const jobRouter = createTRPCRouter({
         nonUserTradeInfo: json
       }
     })
-  })
+  }),
+  
 });
