@@ -545,7 +545,11 @@ const NotesViewer: React.FC<NotesViewerProps> = ({ notes, jobId }) => {
   console.log(notes);
   return (
     <div className="grid w-full place-items-center px-4">
-      {!!notes && <div className="whitespace-pre-line">{notes.toString()}</div>}
+      {!!notes && (
+        <div className="w-96 whitespace-pre-line text-base text-slate-700">
+          {notes.toString()}
+        </div>
+      )}
       {addNoteOpen ? (
         <ClickAwayListener clickOutsideAction={() => setAddNoteOpen(false)}>
           <div className={clsx("flex")}>
