@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { uploadFileToSignedURL } from "../../../utils/upload";
+import ClickAwayListener from "~/components/ClickAwayListener";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -74,7 +75,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
-      <NotesViewer notes={job.notes} />
+      <NotesViewer notes={job.notes} jobId={job.id} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Photos
       </h2>
@@ -518,28 +519,49 @@ type Notes = Job["notes"];
 
 type NotesViewerProps = {
   notes: Notes;
+  jobId: string;
 };
 
-const NotesViewer: React.FC<NotesViewerProps> = ({ notes }) => {
+const NotesViewer: React.FC<NotesViewerProps> = ({ notes, jobId }) => {
   const [addNoteOpen, setAddNoteOpen] = useState(false);
-  const [newNote, setNewNote] = useState("");
+  const [newNote, setNewNote] = useState(notes || "");
+
+  const ctx = api.useContext();
+
+  const { mutate: createNote } = api.job.updateNotesForJob.useMutation({
+    onSuccess: () => {
+      setAddNoteOpen(false);
+      void ctx.job.getJobForHomeowner.invalidate();
+    },
+    onError: () => {
+      toast("Could Not Add Notes");
+    },
+  });
+
+  const onClickAddNotes = () => {
+    console.log("new Note", newNote);
+    createNote({ jobId: jobId, notes: newNote });
+  };
+  console.log(notes);
   return (
-    <div>
-      {!!notes &&
-        Array.isArray(notes) &&
-        notes.map((note, index) => <p key={index}>{note?.toString()}</p>)}
+    <div className="grid w-full place-items-center px-4">
+      {!!notes && <div className="whitespace-pre-line">{notes.toString()}</div>}
       {addNoteOpen ? (
-        <div className={clsx("flex")}>
-          <input
-            disabled={false}
-            onChange={(e) => setNewNote(e.target.value)}
-            className={clsx(
-              "w-full p-2 font-extrabold text-slate-900 outline-none",
-              { "border border-2 border-red-500": false }
-            )}
-          />
-          <Button>+</Button>
-        </div>
+        <ClickAwayListener clickOutsideAction={() => setAddNoteOpen(false)}>
+          <div className={clsx("flex")}>
+            <textarea
+              onChange={(e) => setNewNote(e.target.value)}
+              value={newNote}
+              cols={60}
+              rows={3}
+              className={clsx(
+                "border-1 w-full border border-slate-400 p-2 font-extrabold text-slate-900 outline-none",
+                { "border border-2 border-red-500": false }
+              )}
+            ></textarea>
+            <Button onClick={onClickAddNotes}>+</Button>
+          </div>
+        </ClickAwayListener>
       ) : (
         <Button onClick={() => setAddNoteOpen(true)}>Add Note</Button>
       )}
