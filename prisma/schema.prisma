@@ -90,7 +90,7 @@ model Job {
   date             DateTime
   TradeUser        TradeUser? @relation(fields: [tradeUserId], references: [id])
   tradeUserId      String?
-  notes            Json?
+  notes            String?    @db.VarChar(10000)
   nonUserTradeInfo Json?
 
   @@index([propertyId])
