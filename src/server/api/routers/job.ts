@@ -311,5 +311,18 @@ export const jobRouter = createTRPCRouter({
       }
     })
   }),
-  
+  updateNotesForJob:privateProcedure
+  .input(z.object({jobId: z.string(), notes: z.string()}))
+  .mutation(async ({ ctx, input }) => {
+    console.log(input.notes);
+    const notes = await ctx.prisma.job.update({
+      where: {
+        id: input.jobId
+      },
+      data: {
+        notes: input.notes
+      }
+    })
+    console.log(notes)
+  })
 });
