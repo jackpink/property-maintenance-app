@@ -30,6 +30,7 @@
     "react": "18.2.0",
     "react-day-picker": "^8.8.0",
     "react-dom": "18.2.0",
+    "sonner": "^1.0.3",
     "superjson": "^1.13.1",
     "tailwindcss-animate": "^1.0.6",
     "uuid": "^9.0.0",
