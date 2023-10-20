@@ -263,6 +263,9 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
 
     photoElement.addEventListener("mousedown", mouseDown);
     photoElement.addEventListener("mouseup", mouseUp);
+    photoElement.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+    });
     //element.addEventListener("mouseout", mouseUp)
 
     return () => {
