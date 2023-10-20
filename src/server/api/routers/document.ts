@@ -40,13 +40,15 @@ export const documentRouter = createTRPCRouter({
   }),
 
   createDocumentRecord: privateProcedure
-  .input(z.object({filename: z.string(), label:z.string(), jobId: z.string()}))
+  .input(z.object({filename: z.string(), label:z.string(), jobId: z.string().optional(), propertyId: z.string().optional()}))
   .mutation(async ({ ctx, input }) => {
     const document = await ctx.prisma.document.create({
       data: {
         filename: input.filename,
         label: input.label,
-        jobId: input.jobId
+        jobId: input.jobId ? input.jobId : null,
+        propertyId: input.propertyId ? input.propertyId : null
+
       }
     });
     return document;
@@ -92,4 +94,5 @@ export const documentRouter = createTRPCRouter({
   })
   return documents;
   }),
+  
 });

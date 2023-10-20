@@ -35,8 +35,8 @@ export const jobRouter = createTRPCRouter({
 
     const homeownerPropertyIds: string[] = [];
 
-    for (const property in propertiesForHomeownerUser) {
-      homeownerPropertyIds.push(property);
+    for (const property of propertiesForHomeownerUser) {
+      homeownerPropertyIds.push(property.id);
     }
     
     console.log("homewoner properties", homeownerPropertyIds);
