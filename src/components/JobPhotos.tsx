@@ -263,6 +263,8 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
 
     photoElement.addEventListener("mousedown", mouseDown);
     photoElement.addEventListener("mouseup", mouseUp);
+    photoElement.addEventListener("touchstart", mouseDown);
+    photoElement.addEventListener("touchend", mouseUp);
     photoElement.addEventListener("contextmenu", function (event) {
       event.preventDefault();
     });
@@ -272,6 +274,11 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
       if (!!photoElement) {
         photoElement.removeEventListener("mousedown", mouseDown);
         photoElement.removeEventListener("mouseup", mouseUp);
+        photoElement.removeEventListener("touchstart", mouseDown);
+        photoElement.removeEventListener("touchend", mouseUp);
+        photoElement.removeEventListener("contextmenu", function (event) {
+          event.preventDefault();
+        });
         //element.removeEventListener("mouseout", mouseUp);
       }
     };
