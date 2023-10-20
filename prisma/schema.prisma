@@ -102,10 +102,12 @@ model TradeUser {
   createdAt   DateTime @default(now())
   jobs        Job[]
   companyName String
+  dataStorage Int      @default(0) //in bytes
 }
 
 model HomeownerUser {
-  id         String     @id
-  createdAt  DateTime   @default(now())
-  properties Property[]
+  id          String     @id
+  createdAt   DateTime   @default(now())
+  properties  Property[]
+  dataStorage Int        @default(0) //in bytes
 }
