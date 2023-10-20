@@ -235,7 +235,7 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
         // Entering assign mode here, will select when timer ends
         enableAssignMode();
         timerRef.current = 0;
-      }, 600);
+      }, 1600);
       timerRef.current = Number(timerId);
       console.log("timerId", Number(timerId));
       //clearTimeout(timerRef.current);
