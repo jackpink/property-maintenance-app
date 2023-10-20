@@ -23,6 +23,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { uploadFileToSignedURL } from "../../../utils/upload";
 import ClickAwayListener from "~/components/ClickAwayListener";
+import UploadPhotoButton from "~/components/UploadPhoto";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -56,7 +57,14 @@ type HomeownerJobPageWithJobProps = {
 const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   job,
 }) => {
+  const ctx = api.useContext();
+
   const address = concatAddress(job.Property);
+
+  const refetchPhotosAfterUpload = () => {
+    void ctx.photo.getPhotosForJobAndRoom.invalidate();
+    void ctx.photo.getUnassignedPhotosForJob.invalidate();
+  };
 
   return (
     <div className="grid justify-center">
@@ -79,7 +87,13 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Photos
       </h2>
-      <UploadPhotoButton job={job} />
+      <UploadPhotoButton
+        jobId={job.id}
+        propertyId={job.Property.id}
+        multipleUploads={true}
+        refetchPageData={refetchPhotosAfterUpload}
+        userType="HOMEOWNER"
+      />
       <PhotoViewer job={job} />
     </div>
   );
@@ -644,76 +658,6 @@ const RoomPhotos: React.FC<RoomPhotosProps> = ({ job, roomId }) => {
     );
   }
   return <p>no photos</p>;
-};
-
-type UploadPhotoButtonProps = {
-  job: Job;
-};
-
-const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({ job }) => {
-  const { mutateAsync: getPresignedUrl } =
-    api.photo.getPhotoUploadPresignedUrl.useMutation();
-
-  const { mutateAsync: createPhotoRecord } =
-    api.photo.createPhotoRecord.useMutation();
-
-  const ctx = api.useContext();
-
-  const refetchPhotosAfterUpload = () => {
-    void ctx.photo.getPhotosForJobAndRoom.invalidate();
-    void ctx.photo.getUnassignedPhotosForJob.invalidate();
-  };
-
-  const uploadFile = async (file: File) => {
-    // Need to check that file is correct type (ie jpeg/png/tif/etc)
-    console.log("Getting Presigned URL for file ", file.name);
-    const { url, filename } = await getPresignedUrl({
-      key: file.name,
-      property: job.Property.id,
-    });
-
-    console.log("Uploading Image to Presigned URL ", file.name, filename);
-    const fileName = await uploadFileToSignedURL(url, file, filename);
-
-    console.log("Creating Photo Record for DB ", file.name, fileName);
-    const newPhoto = await createPhotoRecord({
-      filename: fileName,
-      jobId: job.id,
-    });
-
-    console.log("Refetching Photos for Page", newPhoto);
-    newPhoto && refetchPhotosAfterUpload();
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      const promiseArray = [];
-      for (const file of fileArray) {
-        promiseArray.push(uploadFile(file));
-      }
-      void Promise.all(promiseArray);
-    }
-  };
-
-  return (
-    <>
-      <label
-        htmlFor="photo-upload-input"
-        className="place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900"
-      >
-        Upload Photo
-      </label>
-      <input
-        onChange={handleFileChange}
-        multiple
-        type="file"
-        id="photo-upload-input"
-        className="opacity-0"
-      />
-    </>
-  );
 };
 
 type RoomFromLevels =
