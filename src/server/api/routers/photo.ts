@@ -41,19 +41,53 @@ export const photoRouter = createTRPCRouter({
 
   }),
 
-  createPhotoRecord: privateProcedure
-  .input(z.object({filename: z.string(), jobId: z.string()}))
+  createPhotoRecordForHomeowner: privateProcedure
+  .input(z.object({filename: z.string(), jobId: z.string(), fileSize: z.number()}))
   .mutation(async ({ ctx, input }) => {
+    /* Need to also update user storage based on file size  */
     const photo = await ctx.prisma.photo.create({
       data: {
         filename: input.filename,
         jobId: input.jobId
       }
     });
+    const user =  await ctx.prisma.homeownerUser.update({
+      where: {
+        id: ctx.currentUser
+      },
+      data: {
+        dataStorage: {
+          increment: input.fileSize
+        }
+      }
+    })
     return photo;
 
   }),
 
+  createPhotoRecordForTrade: privateProcedure
+  .input(z.object({filename: z.string(), jobId: z.string(), fileSize: z.number()}))
+  .mutation(async ({ ctx, input }) => {
+    /* Need to also update user storage based on file size  */
+    const photo = await ctx.prisma.photo.create({
+      data: {
+        filename: input.filename,
+        jobId: input.jobId
+      }
+    });
+    const user =  await ctx.prisma.tradeUser.update({
+      where: {
+        id: ctx.currentUser
+      },
+      data: {
+        dataStorage: {
+          increment: input.fileSize
+        }
+      }
+    })
+    return photo;
+
+  }),
   getPhoto: privateProcedure
   .input(z.object({ name: z.string(), type: z.enum(["sm","full"] as const)}))
   .query(async ({ ctx, input }) => {
