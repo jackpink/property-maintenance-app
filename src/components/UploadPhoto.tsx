@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { type ChangeEvent } from "react";
 import { api } from "~/utils/api";
 import { uploadFileToSignedURL } from "~/utils/upload";
 

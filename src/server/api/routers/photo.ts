@@ -51,16 +51,15 @@ export const photoRouter = createTRPCRouter({
         jobId: input.jobId
       }
     });
-    const user =  await ctx.prisma.homeownerUser.update({
+    console.log("     USER           ", ctx.currentUser)
+    /* Need to update storage
+    const user =  await ctx.prisma.homeownerUser.findFirst({
       where: {
         id: ctx.currentUser
       },
-      data: {
-        dataStorage: {
-          increment: input.fileSize
-        }
-      }
-    })
+     
+    }) */
+    
     return photo;
 
   }),
@@ -85,7 +84,7 @@ export const photoRouter = createTRPCRouter({
         }
       }
     })
-    return photo;
+    return [photo, user];
 
   }),
   getPhoto: privateProcedure
@@ -116,7 +115,7 @@ export const photoRouter = createTRPCRouter({
       //const response = await fetch(metaUrl); // We may need to getSignedUrl to make this request
       //console.log("Meta data for Object is ", response);
       const metaUrl = await s3.send(aclObjectCommand);
-      console.log("Photo Found, now getting signed url to return");
+      console.log("Photo Found, now getting signed url to return", metaUrl);
       const getObjectCommand = new GetObjectCommand(params); 
 
       const url = await getSignedUrl(s3, getObjectCommand); 

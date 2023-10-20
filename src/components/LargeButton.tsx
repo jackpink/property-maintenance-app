@@ -1,10 +1,3 @@
-import { ReactNode } from "react";
-
-type LargeButtonProps = {
-  LargeButtonTitle: ReactNode;
-  LargeButtonContent: ReactNode;
-};
-
 export const LargeButton: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {

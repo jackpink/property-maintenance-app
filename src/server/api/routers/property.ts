@@ -14,6 +14,18 @@ type IAddressComponent = {
   componentName: IComponentName
 }
 
+interface IGoogleApiData {
+  result: IGoogleApiResult
+}
+
+interface IGoogleApiResult {
+  address: IGoogleApiAddress
+}
+
+interface IGoogleApiAddress {
+  addressComponents: IAddressComponent[]
+}
+
 const googleAPINameMappings = {
   "subpremise": "apartment",
   "street_number" : "streetNumber",
@@ -77,7 +89,7 @@ export const propertyRouter = createTRPCRouter({
         state: true,
         country: true,
         id: true,
-        createdAt: true
+        createdAt: true,
         
       }
     });
@@ -198,7 +210,8 @@ export const propertyRouter = createTRPCRouter({
     }
 
 
-    const addressComponents = response.data.result.address.addressComponents as IAddressComponent[];
+    const returnData = response.data as IGoogleApiData
+    const addressComponents = returnData.result.address.addressComponents;
 
     for (const addressComponent of addressComponents) {
       const componentType = addressComponent.componentType

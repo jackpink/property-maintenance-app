@@ -1,6 +1,6 @@
 import { type RouterOutputs, api } from "~/utils/api";
 import clsx from "clsx";
-import { Dispatch, SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
 import Button from "./Button";

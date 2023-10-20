@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ChangeEvent, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import { api } from "~/utils/api";
 import { uploadFileToSignedURL } from "~/utils/upload";
 import Button from "./Button";
@@ -25,8 +25,6 @@ export const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
 
   const { mutateAsync: createDocumentRecord } =
     api.document.createDocumentRecord.useMutation();
-
-  const ctx = api.useContext();
 
   const uploadFile = async (file: File) => {
     // Need to check that file is correct type (ie jpeg/png/tif/etc)

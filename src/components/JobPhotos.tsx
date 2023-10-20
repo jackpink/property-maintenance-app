@@ -206,6 +206,24 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
   const photoRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<number>(0);
 
+  const enableAssignMode = () => {
+    setAssignMode(true);
+    setPhotoSelected(true);
+    addToSelectedPhotos(photo.id);
+  };
+
+  const togglePhotoSelected = () => {
+    console.log("TOGGLE PHOTO SELECTED", photoSelected);
+    if (photoSelected) {
+      // deselect and remve
+      console.log("DESELECT");
+      removeFromSelectedPhotos(photo.id);
+    } else {
+      console.log("SELCT");
+      addToSelectedPhotos(photo.id);
+    }
+  };
+
   useEffect(() => {
     // if the assignMode if false, set photoSlected to false
     if (!assignMode) setPhotoSelected(false);
@@ -254,24 +272,15 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
         //element.removeEventListener("mouseout", mouseUp);
       }
     };
-  }, [assignMode, photoSelected, selectedPhotos]);
-  const togglePhotoSelected = () => {
-    console.log("TOGGLE PHOTO SELECTED", photoSelected);
-    if (photoSelected) {
-      // deselect and remve
-      console.log("DESELECT");
-      removeFromSelectedPhotos(photo.id);
-    } else {
-      console.log("SELCT");
-      addToSelectedPhotos(photo.id);
-    }
-  };
+  }, [
+    assignMode,
+    photoSelected,
+    selectedPhotos,
+    enableAssignMode,
+    setFullSizePhotoOpen,
+    togglePhotoSelected,
+  ]);
 
-  const enableAssignMode = () => {
-    setAssignMode(true);
-    setPhotoSelected(true);
-    addToSelectedPhotos(photo.id);
-  };
   const removeFromSelectedPhotos = (photoId: string) => {
     console.log("selected photos", selectedPhotos);
     // This isnot working properyl
