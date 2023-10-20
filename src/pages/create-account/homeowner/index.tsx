@@ -10,6 +10,7 @@ import { z } from "zod";
 import Button from "~/components/Button";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
+import { toast } from "sonner";
 
 type Form = {
   firstName: string;
@@ -72,7 +73,10 @@ const HomeownerCreateAccountpage = () => {
   const { mutate: createHomeowner } = api.user.createHomeowner.useMutation({
     onSuccess: () => {
       // Move to homeowner page
-      router.push("/homeowner");
+      void router.push("/homeowner");
+    },
+    onError: () => {
+      toast("Could Not Create Homeowner User");
     },
   });
 
@@ -142,7 +146,26 @@ const HomeownerCreateAccountpage = () => {
     }
   };
 
-  const onSubmit = useCallback(async () => {
+  const SignUpWithClerk = async () => {
+    try {
+      if (!!isLoaded) {
+        await signUp.create({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          emailAddress: form.email,
+          password: form.password,
+        });
+        // send the email
+        await signUp.prepareEmailAddressVerification({
+          strategy: "email_code",
+        });
+      }
+    } catch {
+      toast("Could not create Account");
+    }
+  };
+
+  const onSubmit = useCallback(() => {
     // Check validity of form inputs
     const { firstNameError, firstNameErrorMessage } = checkFirstNameInput();
     const { lastNameError, lastNameErrorMessage } = checkLastNameInput();
@@ -168,24 +191,10 @@ const HomeownerCreateAccountpage = () => {
       if (!isLoaded) {
         return;
       }
-      try {
-        await signUp.create({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          emailAddress: form.email,
-          password: form.password,
-        });
-        // send the email
-        await signUp.prepareEmailAddressVerification({
-          strategy: "email_code",
-        });
+      void SignUpWithClerk();
 
-        // change UI to pending verfication
-        setPendingVerification(true);
-      } catch (err) {
-        console.error(JSON.stringify(err, null, 2));
-      }
-      // Send to Backend
+      // change UI to pending verfication
+      setPendingVerification(true);
     }
   }, [
     form.firstNameError,
@@ -196,6 +205,13 @@ const HomeownerCreateAccountpage = () => {
     form.emailError,
     form.password,
     form.passwordError,
+    SignUpWithClerk,
+    checkEmailInput,
+    checkFirstNameInput,
+    checkLastNameInput,
+    checkPasswordInput,
+    form,
+    isLoaded,
   ]);
 
   const Verify = async () => {
@@ -218,7 +234,7 @@ const HomeownerCreateAccountpage = () => {
         if (!!completeSignUp.createdUserId)
           createHomeowner({ user: completeSignUp.createdUserId });
       }
-    } catch (err: any) {
+    } catch (err) {
       setCompleteSignUpError(true);
       setCompleteSignUpErrorMessage("Could not complete");
       console.log(err);
@@ -226,8 +242,7 @@ const HomeownerCreateAccountpage = () => {
   };
 
   const onPressVerify = () => {
-    const verify = Verify();
-    Promise.all([verify]);
+    void Verify();
   };
 
   return (

@@ -1,12 +1,11 @@
 import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import React, { useCallback, useState } from "react";
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Properties from "~/components/Properties";
 import RecentJobs from "~/components/RecentJobs";
-import { RouterOutputs, api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 
 const HomeownerPage = () => {
   const { userId } = useAuth();
@@ -49,7 +48,7 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
         {properties.data.length > 0 ? (
           <Properties properties={properties.data} />
         ) : (
-          <p className="text-center">You don't have any properties yet</p>
+          <p className="text-center">You don&apos;t have any properties yet</p>
         )}
         <CreateProperty userId={userId} />
         <div className="mb-8 border-b-2 border-black pb-8"></div>
@@ -82,7 +81,6 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
         setPopoverOpen={setCreatePropertyPopover}
       >
         <CreatePropertyForm
-          userId={userId}
           setCreatePropertyPopover={setCreatePropertyPopover}
         />
       </Popover>
@@ -91,14 +89,12 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
 };
 
 type CreatePropertyFormProps = {
-  userId: string;
   setCreatePropertyPopover: Dispatch<SetStateAction<boolean>>;
 };
 
 type ValidAddress = RouterOutputs["property"]["addressValidation"];
 
 const CreatePropertyForm: React.FC<CreatePropertyFormProps> = ({
-  userId,
   setCreatePropertyPopover,
 }) => {
   const [addressSearchTerm, setAddressSearchTerm] = useState("");

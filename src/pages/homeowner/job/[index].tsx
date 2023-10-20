@@ -8,20 +8,17 @@ import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
 import React, {
-  type ChangeEvent,
   type Dispatch,
   type SetStateAction,
   useEffect,
   useState,
 } from "react";
 import clsx from "clsx";
-import axios from "axios";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { z } from "zod";
-import { uploadFileToSignedURL } from "../../../utils/upload";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
@@ -59,8 +56,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   job,
 }) => {
   const ctx = api.useContext();
-
-  const address = concatAddress(job.Property);
 
   const refetchPhotosAfterUpload = () => {
     void ctx.photo.getPhotosForJobAndRoom.invalidate();
@@ -181,23 +176,6 @@ type Form = {
   phoneError: boolean;
   phoneErrorMessage: string;
 };
-
-const initialForm: Form = {
-  name: "",
-  nameError: false,
-  nameErrorMessage: "",
-  email: "",
-  emailError: false,
-  emailErrorMessage: "",
-  phone: "",
-  phoneError: false,
-  phoneErrorMessage: "",
-};
-
-const ValidNameInput = z
-  .string()
-  .min(1, { message: "Must be 1 or more characters long" })
-  .max(50, { message: "Must be less than 50 characters" });
 
 type JobCompletedByProps = {
   tradeInfo: Prisma.JsonValue | null;
@@ -460,7 +438,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({ notes, jobId }) => {
     <div className="grid w-full place-items-center px-4">
       {!!notes && (
         <div className="w-96 whitespace-pre-line text-base text-slate-700">
-          {notes.toString()}
+          {notes}
         </div>
       )}
       {addNoteOpen ? (
