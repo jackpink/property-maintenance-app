@@ -24,10 +24,6 @@ const googleAPINameMappings = {
   "postal_code": "postcode"
 }
 
-function isValidKeyOfGoogleMappings(key: string): key is keyof typeof googleAPINameMappings {
-  return key in googleAPINameMappings
-}
-
 function isKeyOfObject<T extends object>(key:string |number |symbol, object: T) : key is keyof T {
   return key in object;
 }
@@ -181,7 +177,7 @@ export const propertyRouter = createTRPCRouter({
   }),
   addressValidation: privateProcedure
   .input(z.object({ addressSearchString: z.string()}))
-  .mutation( async ({ctx, input}) => {
+  .mutation( async ({ input }) => {
     const client = axios.create();
     const googleAddressValidationEndpoint = "https://addressvalidation.googleapis.com/v1:validateAddress?key=" +env.GOOGLE_MAPS_API_KEY;
     const requestBody = {
@@ -202,7 +198,7 @@ export const propertyRouter = createTRPCRouter({
     }
 
 
-    const addressComponents: IAddressComponent[] = response.data.result.address.addressComponents;
+    const addressComponents = response.data.result.address.addressComponents as IAddressComponent[];
 
     for (const addressComponent of addressComponents) {
       const componentType = addressComponent.componentType

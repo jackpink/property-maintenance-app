@@ -1,6 +1,10 @@
 import Image from "next/image";
 import file from "../images/demo-page/file-icon.jpg";
 
+interface IDocument {
+  name: string;
+}
+
 type DocumentProps = {
   document: IDocument;
 };
