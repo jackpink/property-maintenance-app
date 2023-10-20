@@ -48,6 +48,7 @@ model Property {
   country         String
   levels          Level[]
   jobs            Job[]
+  documents       Document[]
   homeownerUser   HomeownerUser? @relation(fields: [homeownerUserId], references: [id])
   homeownerUserId String?
 
@@ -55,14 +56,17 @@ model Property {
 }
 
 model Document {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  label     String
-  filename  String
-  Job       Job?     @relation(fields: [jobId], references: [id])
-  jobId     String
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  label      String
+  filename   String
+  Job        Job?      @relation(fields: [jobId], references: [id])
+  jobId      String?
+  Property   Property? @relation(fields: [propertyId], references: [id])
+  propertyId String?
 
   @@index([jobId])
+  @@index([propertyId])
 }
 
 model Photo {
