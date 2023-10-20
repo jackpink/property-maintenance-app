@@ -24,6 +24,7 @@ import { z } from "zod";
 import { uploadFileToSignedURL } from "../../../utils/upload";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
+import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -331,12 +332,16 @@ type DocumentViewerProps = {
 
 const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
-  const [label, setLabel] = useState("");
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const { data: documents, isLoading: loading } =
     api.document.getDocumentsForJob.useQuery({ jobId: job.id });
+
+  const ctx = api.useContext();
+
+  const refetchDataForPage = () => {
+    void ctx.document.getDocumentsForJob.invalidate();
+    setUploadDocumentPopover(false);
+  };
 
   return (
     <div className="grid place-items-center">
@@ -355,28 +360,12 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
         popoveropen={uploadDocumentPopover}
         setPopoverOpen={setUploadDocumentPopover}
       >
-        <div className="grid place-items-center">
-          <h1 className="pb-4 text-2xl text-slate-700">
-            Add a label for the Document before uploading
-          </h1>
-          <label className="text-lg text-slate-700">Label </label>
-          <input
-            type="text"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            className={clsx("mb-4 rounded-md border-2 border-slate-400 p-1", {
-              "border border-2 border-red-500": error,
-            })}
-          />
-          {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
-          <UploadDocumentButton
-            job={job}
-            label={label}
-            setError={setError}
-            setErrorMessage={setErrorMessage}
-            setUploadDocumentPopover={setUploadDocumentPopover}
-          />
-        </div>
+        <UploadDocumentWithLabelInput
+          uploadFor="JOB"
+          jobId={job.id}
+          refetchDataForPage={refetchDataForPage}
+          propertyId={job.Property.id}
+        />
       </Popover>
     </div>
   );
@@ -436,96 +425,6 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
         </Popover>
       )}
     </div>
-  );
-};
-
-type UploadDocumentButtonProps = {
-  job: Job;
-  label: string;
-  setError: Dispatch<SetStateAction<boolean>>;
-  setErrorMessage: Dispatch<SetStateAction<string>>;
-  setUploadDocumentPopover: Dispatch<SetStateAction<boolean>>;
-};
-
-const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
-  job,
-  label,
-  setError,
-  setErrorMessage,
-  setUploadDocumentPopover,
-}) => {
-  const { mutateAsync: getPresignedUrl } =
-    api.document.getDocumentUploadPresignedUrl.useMutation();
-
-  const { mutateAsync: createDocumentRecord } =
-    api.document.createDocumentRecord.useMutation();
-
-  const ctx = api.useContext();
-
-  const uploadFile = async (file: File) => {
-    // Need to check that file is correct type (ie jpeg/png/tif/etc)
-    try {
-      console.log("Getting Presigned URL for file ", file.name);
-      const { url, filename } = await getPresignedUrl({
-        key: file.name,
-        property: job.Property.id,
-      });
-
-      console.log("Uploading Image to Presigned URL ", file.name);
-      const fileName = await uploadFileToSignedURL(url, file, filename);
-
-      console.log("Creating Photo Record for DB ", file.name, fileName);
-      const newPhoto = await createDocumentRecord({
-        filename: fileName,
-        label: label,
-        jobId: job.id,
-      });
-
-      console.log("Refetching Documents for Page", newPhoto);
-      newPhoto && void ctx.document.getDocumentsForJob.invalidate();
-      newPhoto && setUploadDocumentPopover(false);
-    } catch (e) {
-      console.error("Could not upload file");
-      console.log(e);
-    }
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // check label input
-    console.log("checking label", label);
-    const checkLabelInput = ValidNameInput.safeParse(label);
-    if (!checkLabelInput.success) {
-      console.log("throw error onm input");
-      const errorFormatted = checkLabelInput.error.format()._errors.pop();
-      if (!!errorFormatted) setErrorMessage(errorFormatted);
-      setError(true);
-    } else {
-      console.log("label is koay, upload file");
-      setError(false);
-      setErrorMessage("");
-      let file = null;
-      if (event.target.files) file = event.target.files[0];
-      if (file) {
-        void uploadFile(file);
-      }
-    }
-  };
-
-  return (
-    <>
-      <label
-        htmlFor="document-upload-input"
-        className="place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900"
-      >
-        Upload Document
-      </label>
-      <input
-        onChange={handleFileChange}
-        type="file"
-        id="document-upload-input"
-        className="opacity-0"
-      />
-    </>
   );
 };
 
