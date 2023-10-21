@@ -6,6 +6,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import Photos from "~/components/Photos";
+import { Level, Room } from "@prisma/client";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -89,12 +90,14 @@ const PropertyPhotoSearchPageWithParams: React.FC<
       <div className="border-b-4 border-slate-600 pt-8 text-slate-600">
         Photos{" "}
       </div>
-      {selectedJobs.length > 0 && selectedRoom.room && (
-        <PhotoViewer
-          selectedRoom={selectedRoom}
-          selectedJobIds={selectedJobIds}
-        />
-      )}
+      {selectedJobs.length > 0 &&
+        !!selectedRoom.room &&
+        selectedRoom.room.id && (
+          <PhotoViewer
+            selectedRoomId={selectedRoom.room.id}
+            selectedJobIds={selectedJobIds}
+          />
+        )}
     </div>
   );
 };
@@ -109,17 +112,17 @@ const PropertyPhotoSearchPage = () => {
 };
 
 type PhotoViewerProps = {
-  selectedRoom: SelectedRoom;
+  selectedRoomId: string;
   selectedJobIds: string[];
 };
 
 const PhotoViewer: React.FC<PhotoViewerProps> = ({
-  selectedRoom,
+  selectedRoomId,
   selectedJobIds,
 }) => {
   const { data: photos } = api.photo.getPhotosForJobsAndRoom.useQuery({
     jobIds: selectedJobIds,
-    roomId: selectedRoom.room.id,
+    roomId: selectedRoomId,
   });
   return <>{!!photos && <Photos photos={photos} />}</>;
 };
