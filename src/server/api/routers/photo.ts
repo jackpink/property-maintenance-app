@@ -207,6 +207,19 @@ export const photoRouter = createTRPCRouter({
       }
     });
     return newPhoto;
+  }),
+  getPhotosForJobsAndRoom: privateProcedure
+  .input(z.object({ jobIds: z.array(z.string()), roomId: z.string()}))
+  .query(async ({ ctx, input }) => {
+    const photos = ctx.prisma.photo.findMany({
+      where: {
+        jobId: {
+          in: input.jobIds
+        },
+        roomId: input.roomId
+      }
   })
+  return photos;
+  }),
   
 });

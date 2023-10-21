@@ -5,6 +5,7 @@ import Documents from "~/components/Documents";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
+import Photos from "~/components/Photos";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -13,6 +14,14 @@ type JobsForSelectedRoomProps = {
   selectedRoom: SelectedRoom;
   selectedJobs: SelectedJobs;
   setSelectedJobs: Dispatch<SetStateAction<SelectedJobs>>;
+};
+
+const getSelectedJobsIds = (selectedJobs: SelectedJobs) => {
+  const jobIds: string[] = [];
+  for (const selectedJob of selectedJobs) {
+    jobIds.push(selectedJob.id);
+  }
+  return jobIds;
 };
 
 const JobsForSelectedRoom: React.FC<JobsForSelectedRoomProps> = ({
@@ -54,6 +63,8 @@ const PropertyPhotoSearchPageWithParams: React.FC<
 
   const address = concatAddress(property.data);
 
+  const selectedJobIds = getSelectedJobsIds(selectedJobs);
+
   return (
     <div className="flex grid w-9/12 grid-cols-1  flex-col md:w-8/12 lg:w-7/12 xl:w-128">
       <h1 className="py-8 text-center font-sans text-4xl font-extrabold text-slate-900">
@@ -76,14 +87,14 @@ const PropertyPhotoSearchPageWithParams: React.FC<
         />
       </div>
       <div className="border-b-4 border-slate-600 pt-8 text-slate-600">
-        Documents
-      </div>
-      <Documents
-        documents={[{ name: "Invoice for " }, { name: "Product in room " }]}
-      />
-      <div className="border-b-4 border-slate-600 pt-8 text-slate-600">
         Photos{" "}
       </div>
+      {selectedJobs.length > 0 && selectedRoom.room && (
+        <PhotoViewer
+          selectedRoom={selectedRoom}
+          selectedJobIds={selectedJobIds}
+        />
+      )}
     </div>
   );
 };
@@ -95,6 +106,22 @@ const PropertyPhotoSearchPage = () => {
   if (!id) return <>loading</>;
 
   return <PropertyPhotoSearchPageWithParams propertyId={id} />;
+};
+
+type PhotoViewerProps = {
+  selectedRoom: SelectedRoom;
+  selectedJobIds: string[];
+};
+
+const PhotoViewer: React.FC<PhotoViewerProps> = ({
+  selectedRoom,
+  selectedJobIds,
+}) => {
+  const { data: photos } = api.photo.getPhotosForJobsAndRoom.useQuery({
+    jobIds: selectedJobIds,
+    roomId: selectedRoom.room.id,
+  });
+  return <>{!!photos && <Photos photos={photos} />}</>;
 };
 
 export default PropertyPhotoSearchPage;

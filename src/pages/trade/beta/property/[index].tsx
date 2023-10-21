@@ -101,7 +101,7 @@ const TradePropertyPageWithParams: React.FC<
 > = ({ propertyId }) => {
   const [createJobPopoverOpen, setCreatejobPopoverOpen] = useState(false);
 
-  const property = api.property.getPropertyForTradeUser.useQuery({
+  const property = api.property.getPropertyForUser.useQuery({
     id: propertyId,
   });
   const recentJobs = api.job.getRecentJobsForPropertyByTradeUser.useQuery({

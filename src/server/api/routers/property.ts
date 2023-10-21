@@ -119,7 +119,7 @@ export const propertyRouter = createTRPCRouter({
     const props = ctx.prisma.$queryRaw`SELECT * from Property INNER JOIN Job ON Property.id=Job.propertyId WHERE tradeUserId=${input.user}`;
     return props
   }),
-  getPropertyForTradeUser: privateProcedure
+  getPropertyForUser: privateProcedure
   .input(z.object({ id: z.string() }))
   .query( async ({ ctx, input }) => {
     const property =  ctx.prisma.property.findUniqueOrThrow({

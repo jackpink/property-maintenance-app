@@ -12,6 +12,11 @@ import { ReactNode, useState } from "react";
 import clsx from "clsx";
 import z from "zod";
 import Link from "next/link";
+import {
+  LargeButton,
+  LargeButtonContent,
+  LargeButtonTitle,
+} from "~/components/LargeButton";
 // build the property page
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
@@ -39,7 +44,7 @@ const HomeownerPropertyPageWithParams: React.FC<
     data: property,
     error: propertyFetchError,
     isFetching: propertyIsLoading,
-  } = api.property.getPropertyForTradeUser.useQuery({
+  } = api.property.getPropertyForUser.useQuery({
     id: propertyId,
   });
   const {
@@ -49,6 +54,8 @@ const HomeownerPropertyPageWithParams: React.FC<
   } = api.job.getRecentJobsForProperty.useQuery({
     propertyId: propertyId,
   });
+
+  const router = useRouter();
 
   if (!!propertyFetchError) toast("Failed to fetch property");
   if (!!recentJobsFetchError) toast("Failed to fetch Recent Jobs");
@@ -77,7 +84,20 @@ const HomeownerPropertyPageWithParams: React.FC<
           </Link>
         </div>
       ) : (
-        <EditProperty property={property} />
+        <>
+          <Link
+            href={"/homeowner/search/" + property.id}
+            className="mb-6 grid place-items-center"
+          >
+            <LargeButton>
+              <LargeButtonTitle>Search</LargeButtonTitle>
+              <LargeButtonContent>
+                Search Photos of the property by room and job
+              </LargeButtonContent>
+            </LargeButton>
+          </Link>
+          <EditProperty property={property} />
+        </>
       )}
 
       <div className="mb-8 border-b-2 border-black pb-8"></div>
