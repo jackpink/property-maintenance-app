@@ -40,7 +40,7 @@ const Home: NextPage = () => {
       <div className="grid grid-cols-1 gap-4 ">
         <Link
           className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30"
-          href="/demo"
+          href="/"
         >
           <h3 className="text-2xl font-bold">Demo →</h3>
           <div className="text-lg">
