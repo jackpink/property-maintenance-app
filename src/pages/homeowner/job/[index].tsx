@@ -18,7 +18,6 @@ import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { type Prisma } from "@prisma/client";
-import { z } from "zod";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
@@ -397,12 +396,10 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
               width="100%"
               height="100%"
             >
-              <embed src="http://yoursite.com/the.pdf" type="application/pdf">
-                <p>
-                  This browser does not support PDFs. Please download the PDF to
-                  view it: <a href={pdfUrl}>Download PDF</a>.
-                </p>
-              </embed>
+              <p>
+                This browser does not support PDFs. Please download the PDF to
+                view it: <a href={pdfUrl}>Download PDF</a>.
+              </p>
             </object>
           </div>
         </Popover>
@@ -575,7 +572,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
   const { mutate: addRoomToJob } = api.job.addRoomToJob.useMutation({
     onSuccess: () => {
       // Refetch job for page
-      void ctx.job.getJobForTradeUser.invalidate();
+      void ctx.job.getJobForHomeowner.invalidate();
       // close popover
       closePopover();
     },
@@ -585,7 +582,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
     onSuccess: () => {
       // Refetch job for page
       setRemoveError(false);
-      void ctx.job.getJobForTradeUser.invalidate();
+      void ctx.job.getJobForHomeowner.invalidate();
       // close popover
       closePopover();
     },
