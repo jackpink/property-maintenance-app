@@ -7,7 +7,6 @@ await import("./src/env.mjs");
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
-  unoptimized: true,
 
   /**
    * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config
@@ -26,6 +25,9 @@ const config = {
         hostname: '**property-maintenance-app-photos.s3.ap-southeast-2.amazonaws.com'
       },
     ],
+    domains: [
+      "https://property-maintenance-app.vercel.app/"
+    ]
   },
 };
 export default config;
