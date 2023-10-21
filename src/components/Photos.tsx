@@ -1,6 +1,5 @@
 /*
     Will need to add a full size image popover, which lets   */
-import Image from "next/image";
 import { type RouterOutputs, api } from "~/utils/api";
 import Popover from "./Popover";
 import { useEffect, useRef, useState } from "react";
@@ -101,7 +100,7 @@ const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray }) => {
         <FullSizePhoto index={index} photoArray={photoArray} />
       </Popover>
       <button ref={photoRef}>
-        <Image src={url} width={220} height={220} alt="image" />
+        <img src={url} width={220} height={220} alt="image" />
       </button>
     </>
   );
@@ -190,7 +189,7 @@ const FullSizePhoto: React.FC<FullSizePhotoProps> = ({ index, photoArray }) => {
             </g>
           </svg>
         </button>
-        <Image
+        <img
           src={url}
           width="0"
           height="0"
