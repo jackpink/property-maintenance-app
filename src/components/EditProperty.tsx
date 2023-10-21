@@ -38,7 +38,7 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({
         // toggle the textbox open
         ToggleTextboxOpen();
         // refetch our property
-        void ctx.property.getPropertyForTradeUser.invalidate();
+        void ctx.property.getPropertyForUser.invalidate();
       },
     });
 
@@ -100,7 +100,7 @@ const AddRoomButton: React.FC<AddRoomButtonProps> = ({ levelId }) => {
   return <Button onClick={ToggleTextboxOpen}>+ Add Room</Button>;
 };
 type Room =
-  RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number]["rooms"][number];
+  RouterOutputs["property"]["getPropertyForUser"]["levels"][number]["rooms"][number];
 
 type RoomProps = {
   room: Room;
@@ -122,7 +122,7 @@ const Room: React.FC<RoomProps> = ({ room, editPropertyMode }) => {
         // toggle the textbox open
         setEditLabelMode(false);
         // refetch our property
-        void ctx.property.getPropertyForTradeUser.invalidate();
+        void ctx.property.getPropertyForUser.invalidate();
       },
     });
 
@@ -201,8 +201,7 @@ const Room: React.FC<RoomProps> = ({ room, editPropertyMode }) => {
   );
 };
 
-type Level =
-  RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number];
+type Level = RouterOutputs["property"]["getPropertyForUser"]["levels"][number];
 
 type LevelProps = {
   level: Level;
@@ -223,7 +222,7 @@ const Level: React.FC<LevelProps> = ({ level, editPropertyMode }) => {
       // toggle the textbox open
       setEditLabelMode(false);
       // refetch our property
-      void ctx.property.getPropertyForTradeUser.invalidate();
+      void ctx.property.getPropertyForUser.invalidate();
     },
   });
 
@@ -339,7 +338,7 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({
         // toggle the textbox open
         ToggleTextboxOpen();
         // refetch our property
-        void ctx.property.getPropertyForTradeUser.invalidate();
+        void ctx.property.getPropertyForUser.invalidate();
       },
     });
 
@@ -445,7 +444,7 @@ const EditPropertyModeButton: React.FC<EditPropertyModeButtonProps> = ({
   );
 };
 
-type Property = RouterOutputs["property"]["getPropertyForTradeUser"];
+type Property = RouterOutputs["property"]["getPropertyForUser"];
 
 type EditPropertyProps = {
   property: Property;
