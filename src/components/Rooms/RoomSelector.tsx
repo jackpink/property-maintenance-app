@@ -9,8 +9,7 @@ import clsx from "clsx";
 import type { SelectedRoom } from "./index";
 import { type RouterOutputs } from "~/utils/api";
 
-type Level =
-  RouterOutputs["property"]["getPropertyForTradeUser"]["levels"][number];
+type Level = RouterOutputs["property"]["getPropertyForUser"]["levels"][number];
 
 type Room = Level["rooms"][number];
 

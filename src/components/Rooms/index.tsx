@@ -14,7 +14,7 @@ will need useState to track current room
 Then create a hidden version which is displayed on larger screen size
 */
 
-type Levels = RouterOutputs["property"]["getPropertyForTradeUser"]["levels"];
+type Levels = RouterOutputs["property"]["getPropertyForUser"]["levels"];
 
 type Level = Levels[number];
 
