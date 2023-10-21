@@ -88,6 +88,7 @@ export const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
       <input
         onChange={handleFileChange}
         type="file"
+        accept="application/pdf"
         id="document-upload-input"
         className="opacity-0"
       />

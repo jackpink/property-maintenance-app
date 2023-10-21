@@ -83,6 +83,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({
         onChange={handleFileChange}
         multiple={multipleUploads}
         type="file"
+        accept="capture=camera,image/*"
         id="photo-upload-input"
         className="opacity-0"
       />
