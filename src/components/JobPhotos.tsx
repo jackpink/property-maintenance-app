@@ -303,7 +303,7 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
 
   return (
     <button ref={photoRef} className="relative">
-      <Image className="" src={url} width={220} height={220} alt="image" />
+      <img className="" src={url} width={220} height={220} alt="image" />
       {photoSelected ? (
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-sky-500/50"></div>
       ) : (
