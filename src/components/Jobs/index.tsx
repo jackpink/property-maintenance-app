@@ -7,6 +7,7 @@ import {
   type MouseEventHandler,
   useEffect,
   useRef,
+  useState,
 } from "react";
 import clsx from "clsx";
 
@@ -45,7 +46,12 @@ const Jobs: React.FC<Props> = ({ jobs, selectedJobs, setSelectedJobs }) => {
     const newSelectedJobID: string = event.currentTarget.value;
     console.log("button clicked", newSelectedJobID);
     const newSelectedJob = getByID(newSelectedJobID, jobs);
-    if (!!newSelectedJob) setSelectedJobs((j) => [...j, newSelectedJob]);
+    if (!!newSelectedJob) {
+      const elementSelected = checkIfSelected(newSelectedJob.id, selectedJobs);
+      if (elementSelected) setSelectedJobs([]);
+      //remove from selected jobs
+      else setSelectedJobs((j) => [...j, newSelectedJob]);
+    }
   };
 
   return (
@@ -90,19 +96,20 @@ return argument;
 */
 
 const checkIfSelected = (jobId: string, selectedEvents: SelectedEvents) => {
-  selectedEvents.forEach((selectedEvent) => {
+  for (const selectedEvent of selectedEvents) {
     if (selectedEvent.id === jobId) return true;
-  });
+  }
   return false;
 };
 
 const Element: React.FC<ElementProps> = (props) => {
-  const checked = useRef<boolean>(false);
+  const [checked, setChecked] = useState(false);
 
   const { job, selectedEvents, onClick } = props;
   useEffect(() => {
-    console.log("CHECKING EVENTS");
-    checked.current = checkIfSelected(job.id, selectedEvents);
+    const checkElement = checkIfSelected(job.id, selectedEvents);
+    console.log("CHECKING EVENTS", checkElement, job.id, selectedEvents);
+    setChecked(checkIfSelected(job.id, selectedEvents));
   }, [job.id, selectedEvents]);
 
   return (
@@ -122,8 +129,8 @@ const Element: React.FC<ElementProps> = (props) => {
             "rounded-2xl",
             "whitespace-nowrap",
             {
-              "bg-emerald-600": checked.current,
-              "after:content-['✓']": checked.current,
+              "bg-emerald-600": checked,
+              "after:content-['✓']": checked,
             }
           )}
           id="element-radio"
