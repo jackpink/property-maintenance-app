@@ -397,7 +397,12 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
               width="100%"
               height="100%"
             >
-              <a href={pdfUrl}>here</a>
+              <embed src="http://yoursite.com/the.pdf" type="application/pdf">
+                <p>
+                  This browser does not support PDFs. Please download the PDF to
+                  view it: <a href={pdfUrl}>Download PDF</a>.
+                </p>
+              </embed>
             </object>
           </div>
         </Popover>
