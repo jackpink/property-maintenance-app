@@ -15,6 +15,8 @@ type DocumentsProps = {
 };
 // jobId should not be undefined if uploadFor is JOB
 
+// Add a search bar eventually
+
 const DocumentViewer: React.FC<DocumentsProps> = ({
   documents,
   uploadFor,

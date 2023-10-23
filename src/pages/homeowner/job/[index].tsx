@@ -220,11 +220,11 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
   );
 };
 
-type DocumentViewerProps = {
+type DocumentProps = {
   job: Job;
 };
 
-const Documents: React.FC<DocumentViewerProps> = ({ job }) => {
+const Documents: React.FC<DocumentProps> = ({ job }) => {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
 
   const { data: documents, isLoading: loading } =
