@@ -2,17 +2,41 @@ import { Document } from "@prisma/client";
 import { useState } from "react";
 import Popover from "./Popover";
 import { api } from "~/utils/api";
+import Button from "./Button";
+import { UploadDocumentButton, UploadFor } from "./UploadDocument";
 
 type DocumentsProps = {
   documents: Document[];
+  uploadFor: UploadFor;
+  propertyId: string;
+  refetchDataForPage: () => void;
+  defaultDocuments: string[];
 };
 
-const DocumentViewer: React.FC<DocumentsProps> = ({ documents }) => {
+const DocumentViewer: React.FC<DocumentsProps> = ({
+  documents,
+  uploadFor,
+  propertyId,
+  refetchDataForPage,
+  defaultDocuments,
+}) => {
   return (
-    <div className="flex flex-wrap">
-      {documents.map((document, index) => (
-        <Document document={document} key={index} />
-      ))}
+    <div className="relative  w-full overflow-x-auto">
+      <div className="mx-12 flex">
+        {defaultDocuments.map((defaultDocumentLabel, index) => (
+          <AddDefaultDocumentButton
+            label={defaultDocumentLabel}
+            uploadFor={uploadFor}
+            propertyId={propertyId}
+            refetchDataForPage={refetchDataForPage}
+            key={index}
+          />
+        ))}
+
+        {documents.map((document, index) => (
+          <Document document={document} key={index} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -27,7 +51,7 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
   });
   console.log("docuemnt url", pdfUrl);
   return (
-    <div>
+    <div className="mx-auto flex-none">
       <button className="m-2 p-2" onClick={() => setDocumentOpen(true)}>
         <svg width="60" viewBox="0 0 130 170">
           <g id="layer1" transform="translate(-246.43 -187.36)">
@@ -57,6 +81,34 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
         </Popover>
       )}
     </div>
+  );
+};
+
+type AddDefaultDocumentButtonProps = {
+  label: string;
+  uploadFor: UploadFor;
+  propertyId: string;
+  refetchDataForPage: () => void;
+};
+
+const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
+  label,
+  uploadFor,
+  propertyId,
+  refetchDataForPage,
+}) => {
+  return (
+    <UploadDocumentButton
+      label={label}
+      uploadFor={uploadFor}
+      propertyId={propertyId}
+      refetchDataForPage={refetchDataForPage}
+    >
+      <Button className="mx-2 mb-12 mt-2 h-auto border border-2 border-black text-center">
+        <p className="p-2">Add {label}</p>
+        <p>+</p>
+      </Button>
+    </UploadDocumentButton>
   );
 };
 export default DocumentViewer;

@@ -5,21 +5,19 @@ import { uploadFileToSignedURL } from "~/utils/upload";
 import Button from "./Button";
 import { z } from "zod";
 
+export type UploadFor = "JOB" | "PROPERTY";
+
 type UploadDocumentButtonProps = {
   label: string;
-  uploadFor: "JOB" | "PROPERTY";
+  uploadFor: UploadFor;
   refetchDataForPage: () => void;
   propertyId: string;
   jobId?: string;
 };
 
-export const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
-  label,
-  uploadFor,
-  refetchDataForPage,
-  propertyId,
-  jobId,
-}) => {
+export const UploadDocumentButton: React.FC<
+  React.PropsWithChildren<UploadDocumentButtonProps>
+> = ({ label, uploadFor, refetchDataForPage, propertyId, jobId, children }) => {
   const { mutateAsync: getPresignedUrl } =
     api.document.getDocumentUploadPresignedUrl.useMutation();
 
@@ -80,16 +78,16 @@ export const UploadDocumentButton: React.FC<UploadDocumentButtonProps> = ({
   return (
     <>
       <label
-        htmlFor="document-upload-input"
-        className="cursor-pointer place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900"
+        htmlFor={label + "-document-upload-input"}
+        className="cursor-pointer place-self-center "
       >
-        Upload Document
+        {children}
       </label>
       <input
         onChange={handleFileChange}
         type="file"
         accept="application/pdf"
-        id="document-upload-input"
+        id={label + "-document-upload-input"}
         className="opacity-0"
       />
     </>
@@ -170,7 +168,9 @@ export const UploadDocumentWithLabelInput: React.FC<
             refetchDataForPage={refetchDataForPage}
             jobId={jobId}
             propertyId={propertyId}
-          />
+          >
+            <Button>Upload Document</Button>
+          </UploadDocumentButton>
         </>
       )}
     </div>
