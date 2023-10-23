@@ -232,6 +232,16 @@ const Documents: React.FC<DocumentViewerProps> = ({ job }) => {
 
   const ctx = api.useContext();
 
+  const defaultDocumentsForJob = ["Invoice"]; //If documents label matches, then remove
+  if (!!documents) {
+    for (const document of documents) {
+      const index = defaultDocumentsForJob.indexOf(document.label);
+      console.log("INDEX", index);
+      if (index >= 0) defaultDocumentsForJob.splice(index, 1);
+    }
+  }
+  console.log("defaul;t docs", defaultDocumentsForJob);
+
   const refetchDataForPage = () => {
     void ctx.document.getDocumentsForJob.invalidate();
     setUploadDocumentPopover(false);
@@ -240,7 +250,14 @@ const Documents: React.FC<DocumentViewerProps> = ({ job }) => {
   return (
     <div className="grid place-items-center">
       {!!documents ? (
-        <DocumentViewer documents={documents} />
+        <DocumentViewer
+          documents={documents}
+          uploadFor="JOB"
+          propertyId={job.Property.id}
+          jobId={job.id}
+          refetchDataForPage={refetchDataForPage}
+          defaultDocuments={defaultDocumentsForJob}
+        />
       ) : loading ? (
         <p>Loading</p>
       ) : (
