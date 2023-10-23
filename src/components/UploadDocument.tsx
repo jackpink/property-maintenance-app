@@ -33,19 +33,26 @@ export const UploadDocumentButton: React.FC<
         property: propertyId,
       });
 
-      console.log("Uploading Image to Presigned URL ", file.name);
+      console.log("Uploading Document to Presigned URL ", file.name);
       const fileName = await uploadFileToSignedURL(url, file, filename);
 
-      console.log("Creating Photo Record for DB ", file.name, fileName);
-      let newPhoto;
+      console.log(
+        "Creating Document Record for DB ",
+        file.name,
+        fileName,
+        uploadFor
+      );
+      let newDocument;
       if (uploadFor === "JOB" && jobId) {
-        newPhoto = await createDocumentRecord({
+        console.log("creating document record for JOB");
+        newDocument = await createDocumentRecord({
           filename: fileName,
           label: label,
           jobId: jobId,
         });
       } else if (uploadFor === "PROPERTY") {
-        newPhoto = await createDocumentRecord({
+        console.log("creating document record for JOB");
+        newDocument = await createDocumentRecord({
           filename: fileName,
           label: label,
           propertyId: propertyId,
@@ -57,8 +64,8 @@ export const UploadDocumentButton: React.FC<
           productId: productId 
         });*/
 
-      console.log("Refetching Documents for Page", newPhoto);
-      newPhoto && refetchDataForPage();
+      console.log("Refetching Documents for Page", newDocument);
+      newDocument && refetchDataForPage();
     } catch (e) {
       console.error("Could not upload file");
       console.log(e);

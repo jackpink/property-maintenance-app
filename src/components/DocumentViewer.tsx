@@ -9,14 +9,17 @@ type DocumentsProps = {
   documents: Document[];
   uploadFor: UploadFor;
   propertyId: string;
+  jobId?: string;
   refetchDataForPage: () => void;
   defaultDocuments: string[];
 };
+// jobId should not be undefined if uploadFor is JOB
 
 const DocumentViewer: React.FC<DocumentsProps> = ({
   documents,
   uploadFor,
   propertyId,
+  jobId,
   refetchDataForPage,
   defaultDocuments,
 }) => {
@@ -28,6 +31,7 @@ const DocumentViewer: React.FC<DocumentsProps> = ({
             label={defaultDocumentLabel}
             uploadFor={uploadFor}
             propertyId={propertyId}
+            jobId={jobId}
             refetchDataForPage={refetchDataForPage}
             key={index}
           />
@@ -88,6 +92,7 @@ type AddDefaultDocumentButtonProps = {
   label: string;
   uploadFor: UploadFor;
   propertyId: string;
+  jobId?: string;
   refetchDataForPage: () => void;
 };
 
@@ -96,18 +101,21 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
   uploadFor,
   propertyId,
   refetchDataForPage,
+  jobId,
 }) => {
+  console.log("add default", uploadFor, label);
   return (
     <UploadDocumentButton
       label={label}
       uploadFor={uploadFor}
       propertyId={propertyId}
+      jobId={jobId}
       refetchDataForPage={refetchDataForPage}
     >
-      <Button className="mx-2 mb-12 mt-2 h-auto border border-2 border-black text-center">
+      <div className="mx-2 mb-12 mt-2 h-auto border border-2 border-black text-center">
         <p className="p-2">Add {label}</p>
         <p>+</p>
-      </Button>
+      </div>
     </UploadDocumentButton>
   );
 };
