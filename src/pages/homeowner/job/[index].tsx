@@ -25,6 +25,7 @@ import EditDatePopover from "~/components/EditDatePopover";
 import AddTradePopover, {
   instanceOfTradeInfo,
 } from "~/components/AddTradePopover";
+import DocumentViewer from "~/components/DocumentViewer";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -78,7 +79,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
       </h2>
-      <DocumentViewer job={job} />
+      <Documents job={job} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
@@ -223,7 +224,7 @@ type DocumentViewerProps = {
   job: Job;
 };
 
-const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
+const Documents: React.FC<DocumentViewerProps> = ({ job }) => {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
 
   const { data: documents, isLoading: loading } =
@@ -239,7 +240,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
   return (
     <div className="grid place-items-center">
       {!!documents ? (
-        <Documents documents={documents} />
+        <DocumentViewer documents={documents} />
       ) : loading ? (
         <p>Loading</p>
       ) : (
@@ -260,66 +261,6 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ job }) => {
           propertyId={job.Property.id}
         />
       </Popover>
-    </div>
-  );
-};
-
-type Documents = RouterOutputs["document"]["getDocumentsForJob"];
-
-type DocumentsProps = {
-  documents: Documents;
-};
-
-const Documents: React.FC<DocumentsProps> = ({ documents }) => {
-  return (
-    <div className="flex flex-wrap">
-      {documents.map((document, index) => (
-        <Document document={document} key={index} />
-      ))}
-    </div>
-  );
-};
-type Document = Documents[number];
-
-type DocumentProps = {
-  document: Document;
-};
-const Document: React.FC<DocumentProps> = ({ document }) => {
-  const [documentOpen, setDocumentOpen] = useState(false);
-  const { data: pdfUrl } = api.document.getDocument.useQuery({
-    filename: document.filename,
-  });
-  console.log("docuemnt url", pdfUrl);
-  return (
-    <div>
-      <button className="m-2 p-2" onClick={() => setDocumentOpen(true)}>
-        <svg width="60" viewBox="0 0 130 170">
-          <g id="layer1" transform="translate(-246.43 -187.36)">
-            <path
-              id="rect7452"
-              d="m246.43 187.36v170h130v-141.34l-28.625-28.656h-101.38zm97.5 5 27.5 27.531h-27.5v-27.531zm-72.5 61.188h80v7h-80v-7zm0 30.625h80v7h-80v-7zm0 30.656h80v7h-80v-7z"
-            />
-          </g>
-        </svg>
-        <p>{document.label}</p>
-      </button>
-      {!!pdfUrl && (
-        <Popover popoveropen={documentOpen} setPopoverOpen={setDocumentOpen}>
-          <div className="h-screen">
-            <object
-              data={pdfUrl}
-              type="application/pdf"
-              width="100%"
-              height="100%"
-            >
-              <p>
-                This browser does not support PDFs. Please download the PDF to
-                view it: <a href={pdfUrl}>Download PDF</a>.
-              </p>
-            </object>
-          </div>
-        </Popover>
-      )}
     </div>
   );
 };
