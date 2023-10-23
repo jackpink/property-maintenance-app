@@ -21,6 +21,7 @@ import { type Prisma } from "@prisma/client";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
+import EditDatePopover from "~/components/EditDatePopover";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -124,43 +125,26 @@ const JobDate: React.FC<JobDateProps> = ({ date, jobId }) => {
   };
 
   return (
-    <>
-      <p className="place-self-center px-12 pb-4 text-center text-lg text-slate-700">
+    <div className="mb-4 flex justify-center">
+      <span className="place-self-center px-12 text-center text-lg text-slate-700 ">
         Job Completed On:{" "}
-        <button
-          onClick={() => setJobDayPickerOpen(true)}
-          className="rounded-md border-2 border-black p-1"
-        >
-          {date.toDateString()}
-        </button>
-      </p>
-
-      <Popover
-        popoveropen={jobDayPickerOpen}
-        setPopoverOpen={setJobDayPickerOpen}
+      </span>
+      <EditDatePopover
+        currentDate={date}
+        newDate={newDate}
+        setNewDate={setNewDate}
+        jobDayPickerOpen={jobDayPickerOpen}
+        setJobDayPickerOpen={setJobDayPickerOpen}
       >
-        <div className="grid place-items-center text-center">
-          <p className="block text-sm font-medium text-gray-700">
-            Current Job Date:
-            {date ? <> {format(date, "PPP")}</> : <></>}
-          </p>
-          <DayPicker
-            mode="single"
-            required
-            selected={newDate}
-            onSelect={setNewDate}
-          />
-
-          {!!newDate ? (
-            <Button onClick={onClickUpdateDate}>
-              Set New Date as {format(newDate, "PPP")}
-            </Button>
-          ) : (
-            <></>
-          )}
-        </div>
-      </Popover>
-    </>
+        {!!newDate ? (
+          <Button onClick={onClickUpdateDate}>
+            Set New Date as {format(newDate, "PPP")}
+          </Button>
+        ) : (
+          <></>
+        )}
+      </EditDatePopover>
+    </div>
   );
 };
 
