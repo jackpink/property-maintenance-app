@@ -22,6 +22,9 @@ import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
 import EditDatePopover from "~/components/EditDatePopover";
+import AddTradePopover, {
+  instanceOfTradeInfo,
+} from "~/components/AddTradePopover";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -148,51 +151,29 @@ const JobDate: React.FC<JobDateProps> = ({ date, jobId }) => {
   );
 };
 
-type Form = {
-  name: string;
-  nameError: boolean;
-  nameErrorMessage: string;
-  email: string;
-  emailError: boolean;
-  emailErrorMessage: string;
-  phone: string;
-  phoneError: boolean;
-  phoneErrorMessage: string;
-};
-
 type JobCompletedByProps = {
   tradeInfo: Prisma.JsonValue | null;
   jobId: string;
 };
 
-function instanceOfTradeInfo(object: any): object is ITradeInfo {
-  return "name" in object && "email" in object && "phone" in object;
-}
-
 const JobCompletedBy: React.FC<JobCompletedByProps> = ({
   tradeInfo,
   jobId,
 }) => {
-  const [editTradeInfo, setEditTradeInfo] = useState(false);
+  const [editTradeInfoOpen, setEditTradeInfoOpen] = useState(false);
   const [form, setForm] = useState({
     name:
       !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.name
         ? tradeInfo.name
         : "",
-    nameError: false,
-    nameErrorMessage: "",
     email:
       !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.email
         ? tradeInfo.email
         : "",
-    emailError: false,
-    emailErrorMessage: "",
     phone:
       !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.phone
         ? tradeInfo.phone
         : "",
-    phoneError: false,
-    phoneErrorMessage: "",
   });
 
   const ctx = api.useContext();
@@ -203,7 +184,7 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
         // Refetch job for page
         void ctx.job.getJobForHomeowner.invalidate();
         // close popover
-        setEditTradeInfo(false);
+        setEditTradeInfoOpen(false);
       },
       onError: () => {
         toast("Failed to update Trade information for Job");
@@ -225,64 +206,15 @@ const JobCompletedBy: React.FC<JobCompletedByProps> = ({
       <span className="pb-1 text-center text-lg text-slate-700">
         Job Completed By:{" "}
       </span>
-      {!!tradeInfo && instanceOfTradeInfo(tradeInfo) ? (
-        <button
-          onClick={() => setEditTradeInfo(true)}
-          className="mb-4 rounded-md border-2 border-black p-1"
-        >
-          <p className="pb-4 text-center text-xl text-slate-700">
-            {tradeInfo.name}
-          </p>
-          <p className="text-left text-slate-600">
-            <span className="font-light">Email: </span>
-            {tradeInfo.email}
-          </p>
 
-          <p className="text-left text-slate-600">
-            <span className="font-light">Phone Number: {"   "}</span>
-            {tradeInfo.phone}
-          </p>
-          <span></span>
-        </button>
-      ) : (
-        <button
-          onClick={() => setEditTradeInfo(true)}
-          className="mb-6 rounded-md border-2 border-black p-1 text-center text-lg text-slate-700"
-        >
-          Add Information for Trade
-        </button>
-      )}
-      <Popover popoveropen={editTradeInfo} setPopoverOpen={setEditTradeInfo}>
-        <div className="grid place-items-center">
-          <h1 className="pb-4 text-2xl text-slate-700">
-            Edit Details for Trade
-          </h1>
-          <label className="text-lg text-slate-700">Name</label>
-          <input
-            type="text"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="mb-4 rounded-md border-2 border-slate-400 p-1"
-          />
-          <label className="text-lg text-slate-700">Email (Optional)</label>
-          <input
-            type="text"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="mb-4 rounded-md border-2 border-slate-400 p-1"
-          />
-          <label className="text-lg text-slate-700">
-            Phone Number (Optional)
-          </label>
-          <input
-            type="text"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className="mb-4 rounded-md border-2 border-slate-400 p-1"
-          />
-          <Button onClick={onClickUpdate}>Update Job Trade Information</Button>
-        </div>
-      </Popover>
+      <AddTradePopover
+        tradeInfo={tradeInfo}
+        editPopoverOpen={editTradeInfoOpen}
+        setEditPopoverOpen={setEditTradeInfoOpen}
+        form={form}
+        setForm={setForm}
+        onClickUpdate={onClickUpdate}
+      />
     </div>
   );
 };
