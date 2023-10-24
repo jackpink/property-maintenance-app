@@ -119,13 +119,19 @@ model HomeownerUser {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  label       String
-  notes       String?  @db.VarChar(10000)
-  Room        Room?    @relation(fields: [roomId], references: [id])
-  roomId      String?
-  Job         Job?     @relation(fields: [jobId], references: [id])
-  jobId       String?
-  installDate DateTime
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  label          String
+  notes          String?  @db.VarChar(10000)
+  Room           Room?    @relation(fields: [roomId], references: [id])
+  roomId         String?
+  Job            Job?     @relation(fields: [jobId], references: [id])
+  jobId          String?
+  installDate    DateTime
+  warrantyPeriod Int?
+  manufacturer   String?
+  model          String?
+
+  @@index([roomId])
+  @@index([jobId])
 }
