@@ -1,9 +1,6 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
-import { concatAddress } from "~/components/Properties/Property";
-import Link from "next/link";
-import Image from "next/image";
-import house from "../../../images/demo-page/house-stock-image.png";
+
 import Button from "~/components/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
@@ -14,10 +11,9 @@ import React, {
   useState,
 } from "react";
 import clsx from "clsx";
-import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { type Prisma } from "@prisma/client";
+import { Room, type Prisma } from "@prisma/client";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
@@ -26,6 +22,7 @@ import AddTradePopover, {
   instanceOfTradeInfo,
 } from "~/components/AddTradePopover";
 import DocumentViewer from "~/components/DocumentViewer";
+import PropertyHeroWithSelectedRooms from "~/components/PropertyHeroWithSelectedRooms";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -50,7 +47,7 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   return <HomeownerJobPageWithJob job={job.data} />;
 };
 
-type Job = RouterOutputs["job"]["getJobForTradeUser"];
+type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
 type HomeownerJobPageWithJobProps = {
   job: Job;
@@ -74,7 +71,10 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <JobDate date={job.date} jobId={job.id} />
       <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
 
-      <Property job={job} />
+      <PropertyHeroWithSelectedRooms
+        Property={job.Property}
+        rooms={job.rooms}
+      />
       <RoomSelector job={job} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
@@ -589,44 +589,5 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({ job }) => {
         )}
       </Popover>
     </div>
-  );
-};
-
-type Property = RouterOutputs["job"]["getJobForTradeUser"]["Property"];
-
-type PropertyProps = {
-  job: Job;
-};
-
-const Property: React.FC<PropertyProps> = ({ job }) => {
-  const address = concatAddress(job.Property);
-  const rooms = job.rooms;
-  return (
-    <Link
-      href={`/homeowner/property/${job.Property.id}`}
-      className="w-3/4 place-self-center md:w-1/2"
-    >
-      <div className="grid grid-cols-3 rounded-xl border-2 border-solid border-teal-800 hover:bg-black/20">
-        <Image
-          alt="House Stock Image"
-          src={house}
-          className="min-w-xl rounded-xl p-3"
-        />
-        <div className="relative col-span-2">
-          <h1 className="p-3 text-lg font-extrabold text-slate-900 lg:text-2xl">
-            {address}
-          </h1>
-          {rooms.map((room, index) => {
-            return (
-              <p className="text-xs font-light text-slate-600" key={index}>
-                {room.Level.label.toUpperCase() +
-                  "→" +
-                  room.label.toUpperCase()}
-              </p>
-            );
-          })}
-        </div>
-      </div>
-    </Link>
   );
 };
