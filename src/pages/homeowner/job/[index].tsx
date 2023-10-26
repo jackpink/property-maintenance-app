@@ -9,6 +9,7 @@ import React, {
   type SetStateAction,
   useEffect,
   useState,
+  useCallback,
 } from "react";
 import clsx from "clsx";
 import { format } from "date-fns";
@@ -23,6 +24,7 @@ import AddTradePopover, {
 } from "~/components/AddTradePopover";
 import DocumentViewer from "~/components/DocumentViewer";
 import PropertyHeroWithSelectedRooms from "~/components/PropertyHeroWithSelectedRooms";
+import RoomSelector, { RoomFromLevels } from "~/components/RoomSelector";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -75,11 +77,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         Property={job.Property}
         rooms={job.rooms}
       />
-      <RoomSelector
-        job={job}
-        errorMessage="You cannot remove room which has photos linked to it, please
-            remove photos first"
-      />
+      <RoomSelectorForJob job={job} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
       </h2>
@@ -422,6 +420,10 @@ type RoomSelectorForJobProps = {
 };
 
 const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({ job }) => {
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(
+    "You cannot remove room which has photos linked to it, please remove photos first"
+  );
   const ctx = api.useContext();
 
   const { mutate: addRoomToJob } = api.job.addRoomToJob.useMutation({
@@ -436,14 +438,14 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({ job }) => {
   const { mutate: removeRoomFromJob } = api.job.removeRoomFromJob.useMutation({
     onSuccess: () => {
       // Refetch job for page
-      setRemoveError(false);
+      setError(false);
       void ctx.job.getJobForHomeowner.invalidate();
       // close popover
       // closePopover();
     },
     onError: (error) => {
       console.log(error);
-      setRemoveError(true);
+      setError(true);
     },
   });
 
@@ -456,272 +458,25 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({ job }) => {
     removeRoomFromJob({ jobId: job.id, roomId: roomId });
   };
 
+  const checkRoomIsSelectedRoom = useCallback(
+    (room: RoomFromLevels) => {
+      const result = job.rooms.find(
+        (selectedRoom) => selectedRoom.id === room.id
+      );
+      return !!result;
+    },
+    [job.rooms]
+  );
+
   return (
     <RoomSelector
       property={job.Property}
-      errorMessage="error"
+      error={error}
+      setError={setError}
+      errorMessage={errorMessage}
       onClickRoomAdd={onClickRoomAdd}
+      onClickRoomRemove={onClickRoomRemove}
+      checkRoomSelected={checkRoomIsSelectedRoom}
     />
-  );
-};
-
-type PropertyWithLevelAndRooms = Job["Property"];
-
-type RoomSelectorProps = {
-  property: PropertyWithLevelAndRooms;
-  errorMessage: string;
-  onClickRoomAdd: (roomId: string) => void;
-  onClickRoomRemove: (roomId: string) => void;
-  checkRoomSelected: (
-    room: RoomFromLevels,
-    selectedRooms: RoomFromLevels[]
-  ) => boolean;
-};
-
-const RoomSelector: React.FC<RoomSelectorProps> = ({
-  property,
-  errorMessage,
-  onClickRoomAdd,
-  onClickRoomRemove,
-  checkRoomSelected,
-}) => {
-  const [removeError, setRemoveError] = useState(false);
-  const [roomSelectorOpen, setRoomSelectorOpen] = useState(false);
-
-  useEffect(() => {
-    if (roomSelectorOpen === false) setRemoveError(false);
-  }, [roomSelectorOpen]);
-
-  const closePopover = () => {
-    setRoomSelectorOpen(false);
-    setRemoveError(false);
-  };
-
-  return (
-    <div className="grid">
-      <Button
-        onClick={() => setRoomSelectorOpen(true)}
-        className="my-6 w-48 place-self-center"
-      >
-        Select Rooms
-      </Button>
-      <Popover
-        popoveropen={roomSelectorOpen}
-        setPopoverOpen={setRoomSelectorOpen}
-      >
-        <div className="flex flex-wrap justify-center gap-3">
-          {property.levels.map((level, index) => {
-            return (
-              <Level
-                level={level}
-                key={index}
-                onClickRoomAdd={onClickRoomAdd}
-                onClickRoomRemove={onClickRoomRemove}
-                checkRoomSelected={checkRoomSelected}
-                closePopover={closePopover}
-                setRemoveError={setRemoveError}
-              />
-            );
-          })}
-        </div>
-        {removeError ? (
-          <p className="text-red-500">⚠️ {errorMessage}</p>
-        ) : (
-          <></>
-        )}
-      </Popover>
-    </div>
-  );
-};
-
-type Level =
-  RouterOutputs["job"]["getJobForTradeUser"]["Property"]["levels"][number];
-
-type LevelProps = {
-  level: Level;
-  onClickRoomAdd: (roomId: string) => void;
-  onClickRoomRemove: (roomId: string) => void;
-  checkRoomSelected: (
-    room: RoomFromLevels,
-    selectedRooms: RoomFromLevels[]
-  ) => boolean;
-  closePopover: () => void;
-  setRemoveError: Dispatch<SetStateAction<boolean>>;
-};
-
-export const Level: React.FC<LevelProps> = ({
-  level,
-  onClickRoomAdd,
-  onClickRoomRemove,
-  checkRoomSelected,
-  closePopover,
-  setRemoveError,
-}) => {
-  return (
-    <div className="w-60 text-center">
-      <h1>{level?.label}</h1>
-      {level?.rooms.map((room, index) => (
-        <div key={index} className="grid grid-cols-1 gap-2 p-2">
-          <RoomButton
-            className=""
-            key={index}
-            room={room}
-            onClickRoomAdd={onClickRoomAdd}
-            onClickRoomRemove={onClickRoomRemove}
-            checkRoomSelected={checkRoomSelected}
-            closePopover={closePopover}
-            setRemoveError={setRemoveError}
-          />
-        </div>
-      ))}
-    </div>
-  );
-};
-
-type RoomFromLevels =
-  RouterOutputs["job"]["getJobForTradeUser"]["Property"]["levels"][number]["rooms"][number];
-
-type RoomButtonProps = {
-  className: string;
-  room: RoomFromLevels;
-  onClickRoomAdd: (roomId: string) => void;
-  onClickRoomRemove: (roomId: string) => void;
-  checkRoomSelected: (
-    room: RoomFromLevels,
-    selectedRooms: RoomFromLevels[]
-  ) => boolean;
-  closePopover: () => void;
-  setRemoveError: Dispatch<SetStateAction<boolean>>;
-};
-
-const checkRoomIsSelectedRoom = (
-  room: RoomFromLevels,
-  selectedRooms: RoomFromLevels[]
-) => {
-  const result = selectedRooms.find(
-    (selectedRoom) => selectedRoom.id === room.id
-  );
-  return result;
-};
-
-export const RoomButton2: React.FC<RoomButtonProps> = ({
-  className,
-  room,
-  onClickRoomButton,
-  checkRoomSelected,
-  closePopover,
-  setRemoveError,
-}) => {
-  const ctx = api.useContext();
-
-  const { mutate: addRoomToJob } = api.job.addRoomToJob.useMutation({
-    onSuccess: () => {
-      // Refetch job for page
-      void ctx.job.getJobForHomeowner.invalidate();
-      // close popover
-      //closePopover();
-    },
-  });
-
-  const { mutate: removeRoomFromJob } = api.job.removeRoomFromJob.useMutation({
-    onSuccess: () => {
-      // Refetch job for page
-      setRemoveError(false);
-      void ctx.job.getJobForHomeowner.invalidate();
-      // close popover
-      // closePopover();
-    },
-    onError: (error) => {
-      console.log(error);
-      setRemoveError(true);
-    },
-  });
-
-  const addRoomButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Add room to job mutation
-    addRoomToJob({ jobId: job.id, roomId: event.currentTarget.value });
-    console.log("new room added to job");
-  };
-  const removeRoomButtonClicked = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    // Add room to job mutation
-    removeRoomFromJob({ jobId: job.id, roomId: event.currentTarget.value });
-  };
-
-  if (checkRoomIsSelectedRoom(room, job.rooms)) {
-    return (
-      <button
-        onClick={removeRoomButtonClicked}
-        value={room.id}
-        className={clsx(
-          className,
-          "rounded border-2 border-teal-800 bg-teal-300 p-2"
-        )}
-      >
-        {room.label}
-      </button>
-    );
-  }
-  return (
-    <button
-      value={room.id}
-      onClick={addRoomButtonClicked}
-      className={clsx(className, "rounded border border-teal-800 p-2")}
-    >
-      {room.label}
-    </button>
-  );
-};
-
-export const RoomButton: React.FC<RoomButtonProps> = ({
-  className,
-  room,
-  onClickRoomAdd,
-  onClickRoomRemove,
-  checkRoomSelected,
-  closePopover,
-  setRemoveError,
-}) => {
-  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const roomId = event.currentTarget.value;
-    const roomIsSelected = checkRoomSelected(roomId);
-    if (roomIsSelected) onClickRoomAdd(roomId);
-    else onClickRoomRemove(roomId);
-  };
-
-  const addRoomButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Add room to job mutation
-    addRoomToJob({ jobId: job.id, roomId: event.currentTarget.value });
-    console.log("new room added to job");
-  };
-  const removeRoomButtonClicked = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    // Add room to job mutation
-    removeRoomFromJob({ jobId: job.id, roomId: event.currentTarget.value });
-  };
-  if (checkRoomIsSelectedRoom(room, job.rooms)) {
-    return (
-      <button
-        onClick={removeRoomButtonClicked}
-        value={room.id}
-        className={clsx(
-          className,
-          "rounded border-2 border-teal-800 bg-teal-300 p-2"
-        )}
-      >
-        {room.label}
-      </button>
-    );
-  }
-  return (
-    <button
-      value={room.id}
-      onClick={addRoomButtonClicked}
-      className={clsx(className, "rounded border border-teal-800 p-2")}
-    >
-      {room.label}
-    </button>
   );
 };
