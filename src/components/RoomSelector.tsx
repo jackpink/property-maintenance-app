@@ -19,10 +19,12 @@ type RoomSelectorProps = {
   errorMessage: string;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
-  checkRoomSelected: (room: RoomFromLevels) => boolean;
+  checkRoomSelected: (roomId: string) => boolean;
+  roomSelectorOpen: boolean;
+  setRoomSelectorOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const RoomSelector: React.FC<RoomSelectorProps> = ({
+const RoomSelector: React.FC<React.PropsWithChildren<RoomSelectorProps>> = ({
   property,
   error,
   setError,
@@ -33,21 +35,17 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({
   onClickRoomAdd,
   onClickRoomRemove,
   checkRoomSelected,
+  roomSelectorOpen,
+  setRoomSelectorOpen,
+  children,
 }) => {
-  const [roomSelectorOpen, setRoomSelectorOpen] = useState(false);
-
   useEffect(() => {
     if (roomSelectorOpen === false) setError(false);
   }, [roomSelectorOpen]);
 
   return (
     <div className="grid">
-      <Button
-        onClick={() => setRoomSelectorOpen(true)}
-        className="my-6 w-48 place-self-center"
-      >
-        Select Rooms
-      </Button>
+      {children}
       <Popover
         popoveropen={roomSelectorOpen}
         setPopoverOpen={setRoomSelectorOpen}
@@ -81,7 +79,7 @@ type LevelProps = {
   level: Level;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
-  checkRoomSelected: (room: RoomFromLevels) => boolean;
+  checkRoomSelected: (roomId: string) => boolean;
   jobLoading: boolean;
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
@@ -129,7 +127,7 @@ type RoomButtonProps = {
   setLoading: Dispatch<SetStateAction<boolean>>;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
-  checkRoomSelected: (room: RoomFromLevels) => boolean;
+  checkRoomSelected: (roomId: string) => boolean;
 };
 
 export const RoomButton: React.FC<RoomButtonProps> = ({
@@ -154,7 +152,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
     setLoading(true);
     onClickRoomRemove(event.currentTarget.value);
   };
-  if (checkRoomSelected(room)) {
+  if (checkRoomSelected(room.id)) {
     return (
       <Button
         onClick={removeRoomButtonClicked}

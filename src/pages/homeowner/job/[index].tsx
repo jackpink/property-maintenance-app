@@ -46,8 +46,6 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
 
   const jobLoading = job.isFetching || job.isLoading;
 
-  console.log("jobLoading", jobLoading);
-
   if (!job.data) return <>Loading</>;
   // have some logic here, if has trade user, then display without any action buttons
   return <HomeownerJobPageWithJob job={job.data} jobLoading={jobLoading} />;
@@ -435,6 +433,7 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({
     "You cannot remove room which has photos linked to it, please remove photos first"
   );
   const [loading, setLoading] = useState(false);
+  const [roomSelectorOpen, setRoomSelectorOpen] = useState(false);
 
   const ctx = api.useContext();
 
@@ -475,16 +474,14 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({
   };
 
   const checkRoomIsSelectedRoom = useCallback(
-    (room: RoomFromLevels) => {
+    (roomId: string) => {
       const result = job.rooms.find(
-        (selectedRoom) => selectedRoom.id === room.id
+        (selectedRoom) => selectedRoom.id === roomId
       );
       return !!result;
     },
     [job.rooms]
   );
-
-  console.log("job is loading", jobLoading);
 
   return (
     <RoomSelector
@@ -498,6 +495,15 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({
       onClickRoomAdd={onClickRoomAdd}
       onClickRoomRemove={onClickRoomRemove}
       checkRoomSelected={checkRoomIsSelectedRoom}
-    />
+      roomSelectorOpen={roomSelectorOpen}
+      setRoomSelectorOpen={setRoomSelectorOpen}
+    >
+      <Button
+        onClick={() => setRoomSelectorOpen(true)}
+        className="my-6 w-48 place-self-center"
+      >
+        Select Rooms
+      </Button>
+    </RoomSelector>
   );
 };
