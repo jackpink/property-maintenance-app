@@ -3,6 +3,7 @@ import { RouterOutputs } from "~/utils/api";
 import Popover from "./Popover";
 import Button from "./Button";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { set } from "date-fns";
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
@@ -12,6 +13,9 @@ type RoomSelectorProps = {
   property: PropertyWithLevelAndRooms;
   error: boolean;
   setError: Dispatch<SetStateAction<boolean>>;
+  jobLoading?: boolean;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   errorMessage: string;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
@@ -23,6 +27,9 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({
   error,
   setError,
   errorMessage,
+  jobLoading,
+  loading,
+  setLoading,
   onClickRoomAdd,
   onClickRoomRemove,
   checkRoomSelected,
@@ -32,11 +39,6 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({
   useEffect(() => {
     if (roomSelectorOpen === false) setError(false);
   }, [roomSelectorOpen]);
-
-  const closePopover = () => {
-    setRoomSelectorOpen(false);
-    setError(false);
-  };
 
   return (
     <div className="grid">
@@ -59,6 +61,9 @@ const RoomSelector: React.FC<RoomSelectorProps> = ({
                 onClickRoomAdd={onClickRoomAdd}
                 onClickRoomRemove={onClickRoomRemove}
                 checkRoomSelected={checkRoomSelected}
+                jobLoading={jobLoading ? true : false}
+                loading={loading}
+                setLoading={setLoading}
               />
             );
           })}
@@ -77,6 +82,9 @@ type LevelProps = {
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
   checkRoomSelected: (room: RoomFromLevels) => boolean;
+  jobLoading: boolean;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const Level: React.FC<LevelProps> = ({
@@ -84,6 +92,9 @@ export const Level: React.FC<LevelProps> = ({
   onClickRoomAdd,
   onClickRoomRemove,
   checkRoomSelected,
+  jobLoading,
+  loading,
+  setLoading,
 }) => {
   return (
     <div className="w-60 text-center">
@@ -97,6 +108,9 @@ export const Level: React.FC<LevelProps> = ({
             onClickRoomAdd={onClickRoomAdd}
             onClickRoomRemove={onClickRoomRemove}
             checkRoomSelected={checkRoomSelected}
+            jobLoading={jobLoading}
+            loading={loading}
+            setLoading={setLoading}
           />
         </div>
       ))}
@@ -110,6 +124,9 @@ export type RoomFromLevels =
 type RoomButtonProps = {
   className: string;
   room: RoomFromLevels;
+  jobLoading: boolean;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
   checkRoomSelected: (room: RoomFromLevels) => boolean;
@@ -118,42 +135,46 @@ type RoomButtonProps = {
 export const RoomButton: React.FC<RoomButtonProps> = ({
   className,
   room,
+  jobLoading,
+  loading,
+  setLoading,
   onClickRoomAdd,
   onClickRoomRemove,
   checkRoomSelected,
 }) => {
   const addRoomButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
     // Add room to job mutation
+    setLoading(true);
     onClickRoomAdd(event.currentTarget.value);
   };
   const removeRoomButtonClicked = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     // Add room to job mutation
+    setLoading(true);
     onClickRoomRemove(event.currentTarget.value);
   };
   if (checkRoomSelected(room)) {
     return (
-      <button
+      <Button
         onClick={removeRoomButtonClicked}
         value={room.id}
-        className={clsx(
-          className,
-          "rounded border-2 border-teal-800 bg-teal-300 p-2"
-        )}
+        className={clsx(className, "border-2")}
+        loading={loading || jobLoading}
       >
         {room.label}
-      </button>
+      </Button>
     );
   }
   return (
-    <button
+    <Button
       value={room.id}
       onClick={addRoomButtonClicked}
-      className={clsx(className, "rounded border border-teal-800 p-2")}
+      className={clsx(className, "bg-white")}
+      loading={loading || jobLoading}
     >
       {room.label}
-    </button>
+    </Button>
   );
 };
 

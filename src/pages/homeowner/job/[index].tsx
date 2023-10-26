@@ -44,19 +44,25 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
 }) => {
   const job = api.job.getJobForHomeowner.useQuery({ jobId: id });
 
+  const jobLoading = job.isFetching || job.isLoading;
+
+  console.log("jobLoading", jobLoading);
+
   if (!job.data) return <>Loading</>;
   // have some logic here, if has trade user, then display without any action buttons
-  return <HomeownerJobPageWithJob job={job.data} />;
+  return <HomeownerJobPageWithJob job={job.data} jobLoading={jobLoading} />;
 };
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
 type HomeownerJobPageWithJobProps = {
   job: Job;
+  jobLoading: boolean;
 };
 
 const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   job,
+  jobLoading,
 }) => {
   const ctx = api.useContext();
 
@@ -77,7 +83,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         Property={job.Property}
         rooms={job.rooms}
       />
-      <RoomSelectorForJob job={job} />
+      <RoomSelectorForJob job={job} jobLoading={jobLoading} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
       </h2>
@@ -417,19 +423,27 @@ const RoomPhotos: React.FC<RoomPhotosProps> = ({ job, roomId }) => {
 
 type RoomSelectorForJobProps = {
   job: Job;
+  jobLoading: boolean;
 };
 
-const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({ job }) => {
+const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({
+  job,
+  jobLoading,
+}) => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
     "You cannot remove room which has photos linked to it, please remove photos first"
   );
+  const [loading, setLoading] = useState(false);
+
   const ctx = api.useContext();
 
   const { mutate: addRoomToJob } = api.job.addRoomToJob.useMutation({
     onSuccess: () => {
       // Refetch job for page
+      setError(false);
       void ctx.job.getJobForHomeowner.invalidate();
+      setLoading(false);
       // close popover
       //closePopover();
     },
@@ -440,12 +454,14 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({ job }) => {
       // Refetch job for page
       setError(false);
       void ctx.job.getJobForHomeowner.invalidate();
+      setLoading(false);
       // close popover
       // closePopover();
     },
     onError: (error) => {
       console.log(error);
       setError(true);
+      setLoading(false);
     },
   });
 
@@ -468,12 +484,17 @@ const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({ job }) => {
     [job.rooms]
   );
 
+  console.log("job is loading", jobLoading);
+
   return (
     <RoomSelector
       property={job.Property}
       error={error}
       setError={setError}
       errorMessage={errorMessage}
+      jobLoading={jobLoading}
+      loading={loading}
+      setLoading={setLoading}
       onClickRoomAdd={onClickRoomAdd}
       onClickRoomRemove={onClickRoomRemove}
       checkRoomSelected={checkRoomIsSelectedRoom}

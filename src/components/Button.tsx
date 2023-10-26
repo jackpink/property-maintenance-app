@@ -6,6 +6,8 @@ type ButtonProps = {
   children: ReactNode;
   className?: string;
   value?: string;
+  disabled?: boolean;
+  loading?: boolean;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -13,6 +15,8 @@ const Button: React.FC<ButtonProps> = ({
   children,
   className,
   value,
+  disabled,
+  loading,
 }) => {
   return (
     <button
@@ -20,7 +24,9 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={clsx(
         "rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold text-slate-900",
-        className
+        className,
+        disabled && "cursor-not-allowed opacity-50",
+        loading && "animate-pulse cursor-wait"
       )}
     >
       {children}
