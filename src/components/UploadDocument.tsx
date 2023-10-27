@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import { uploadFileToSignedURL } from "~/utils/upload";
 import Button from "./Button";
 import { z } from "zod";
+import TextInputWithError from "./TextInput";
 
 export type UploadFor = "JOB" | "PROPERTY";
 
@@ -147,16 +148,15 @@ export const UploadDocumentWithLabelInput: React.FC<
           <h1 className="pb-4 text-2xl text-slate-700">
             Add a label for the Document before uploading
           </h1>
-          <label className="text-lg text-slate-700">Label </label>
-          <input
-            type="text"
+
+          <TextInputWithError
+            label="Label"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            className={clsx("mb-4 rounded-md border-2 border-slate-400 p-1", {
-              "border border-2 border-red-500": error,
-            })}
+            error={error}
+            errorMessage={errorMessage}
+            type="text"
           />
-          {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
           <Button onClick={onClickNext}>Next</Button>
         </>
       ) : (
