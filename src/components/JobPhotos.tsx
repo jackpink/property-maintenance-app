@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import Button from "./Button";
+import LoadingSpinner from "./LoadingSpinner";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
@@ -157,25 +158,34 @@ const Photo: React.FC<PhotoProps> = ({
 
   console.log("get photo url ", url);
 
-  if (typeof url !== "string") return <div className="">Loading</div>; ///THIS Is why ref is null, look into lazy loading with next
+  const photoLoading = typeof url !== "string";
+  //if (typeof url !== "string") return <div className="">Loading</div>; ///THIS Is why ref is null, look into lazy loading with next
   return (
     <>
-      <Popover
-        popoveropen={fullSizePhotoOpen}
-        setPopoverOpen={setFullSizePhotoOpen}
-      >
-        <FullSizePhoto index={index} photoArray={photoArray} />
-      </Popover>
-      <SelectablePhoto
-        photo={photo}
-        url={url}
-        selectedPhotos={selectedPhotos}
-        setSelectedPhotos={setSelectedPhotos}
-        assignMode={assignMode}
-        setAssignMode={setAssignMode}
-        addToSelectedPhotos={addToSelectedPhotos}
-        setFullSizePhotoOpen={setFullSizePhotoOpen}
-      />
+      {photoLoading ? (
+        <div className="h-52 w-52">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          <Popover
+            popoveropen={fullSizePhotoOpen}
+            setPopoverOpen={setFullSizePhotoOpen}
+          >
+            <FullSizePhoto index={index} photoArray={photoArray} />
+          </Popover>
+          <SelectablePhoto
+            photo={photo}
+            url={url}
+            selectedPhotos={selectedPhotos}
+            setSelectedPhotos={setSelectedPhotos}
+            assignMode={assignMode}
+            setAssignMode={setAssignMode}
+            addToSelectedPhotos={addToSelectedPhotos}
+            setFullSizePhotoOpen={setFullSizePhotoOpen}
+          />
+        </>
+      )}
     </>
   );
 };
@@ -302,7 +312,7 @@ const SelectablePhoto: React.FC<SelectablePhotoProps> = ({
 
   return (
     <button ref={photoRef} className="relative">
-      <img className="" src={url} width={220} height={220} alt="image" />
+      <img className="" src={url} width={208} height={208} alt="image" />
       {photoSelected ? (
         <div className="absolute bottom-0 left-0 right-0 top-0 bg-sky-500/50"></div>
       ) : (

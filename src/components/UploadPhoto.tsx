@@ -1,4 +1,5 @@
-import { type ChangeEvent } from "react";
+import clsx from "clsx";
+import { useState, type ChangeEvent } from "react";
 import { api } from "~/utils/api";
 import { uploadFileToSignedURL } from "~/utils/upload";
 
@@ -19,6 +20,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({
   multipleUploads,
   refetchPageData,
 }) => {
+  const [loading, setLoading] = useState(false);
   const { mutateAsync: getPresignedUrl } =
     api.photo.getPhotoUploadPresignedUrl.useMutation();
 
@@ -30,6 +32,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({
 
   const uploadFile = async (file: File) => {
     // Need to check that file is correct type (ie jpeg/png/tif/etc)
+    setLoading(true);
     console.log("Getting Presigned URL for file ", file.name);
     const { url, filename } = await getPresignedUrl({
       key: file.name,
@@ -57,6 +60,7 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({
     }
     console.log("Refetching Photos for Page", newPhoto);
     newPhoto && refetchPageData();
+    newPhoto && setLoading(false);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +79,11 @@ const UploadPhotoButton: React.FC<UploadPhotoButtonProps> = ({
     <>
       <label
         htmlFor="photo-upload-input"
-        className="place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900"
+        className={clsx(
+          "place-self-center rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold  text-slate-900",
+          false && "cursor-not-allowed opacity-50",
+          loading && "animate-pulse cursor-wait"
+        )}
       >
         Upload Photo
       </label>

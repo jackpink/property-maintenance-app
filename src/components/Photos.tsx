@@ -3,6 +3,7 @@
 import { type RouterOutputs, api } from "~/utils/api";
 import Popover from "./Popover";
 import { useEffect, useRef, useState } from "react";
+import LoadingSpinner from "./LoadingSpinner";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
@@ -90,18 +91,27 @@ const Photo: React.FC<PhotoProps> = ({ photo, index, photoArray }) => {
 
   console.log("get photo url ", url);
 
-  if (typeof url !== "string") return <>Loading</>;
+  const photoLoading = typeof url !== "string";
+  //if (typeof url !== "string") return <>Loading</>;
   return (
     <>
-      <Popover
-        popoveropen={fullSizePhotoOpen}
-        setPopoverOpen={setFullSizePhotoOpen}
-      >
-        <FullSizePhoto index={index} photoArray={photoArray} />
-      </Popover>
-      <button ref={photoRef}>
-        <img src={url} width={220} height={220} alt="image" />
-      </button>
+      {photoLoading ? (
+        <div className="h-52 w-52">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          <Popover
+            popoveropen={fullSizePhotoOpen}
+            setPopoverOpen={setFullSizePhotoOpen}
+          >
+            <FullSizePhoto index={index} photoArray={photoArray} />
+          </Popover>
+          <button ref={photoRef}>
+            <img src={url} width={208} height={208} alt="image" />
+          </button>
+        </>
+      )}
     </>
   );
 };
