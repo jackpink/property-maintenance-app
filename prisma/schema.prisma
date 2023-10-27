@@ -96,7 +96,8 @@ model Job {
   date             DateTime
   TradeUser        TradeUser? @relation(fields: [tradeUserId], references: [id])
   tradeUserId      String?
-  notes            String?    @db.VarChar(10000)
+  notes            String?    @db.VarChar(2000)
+  tradeNotes       String?    @db.VarChar(2000)
   nonUserTradeInfo Json?
 
   @@index([propertyId])
@@ -122,7 +123,8 @@ model Product {
   id             String   @id @default(cuid())
   createdAt      DateTime @default(now())
   label          String
-  notes          String?  @db.VarChar(10000)
+  notes          String?  @db.VarChar(2000)
+  tradeNotes     String?  @db.VarChar(2000)
   Room           Room?    @relation(fields: [roomId], references: [id])
   roomId         String?
   Job            Job?     @relation(fields: [jobId], references: [id])
