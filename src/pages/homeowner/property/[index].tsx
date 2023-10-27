@@ -17,6 +17,7 @@ import {
   LargeButtonContent,
   LargeButtonTitle,
 } from "~/components/LargeButton";
+import TextInputWithError from "~/components/TextInput";
 // build the property page
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
@@ -216,23 +217,15 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
 
   return (
     <div className="grid justify-items-center">
-      <label className="block text-sm font-medium text-gray-700">
-        {" "}
-        Enter Job Title{" "}
-      </label>
-      <input
+      <TextInputWithError
+        label="Enter Job Title"
+        value={jobTitleInput}
         onChange={(e) => setJobTitleInput(e.target.value)}
+        error={error}
+        errorMessage={errorMessage}
         disabled={isCreatingJob}
-        className={clsx(
-          "w-3/4 transform rounded rounded-lg border bg-gray-50 p-2 text-base font-extrabold text-neutral-600 text-slate-900 placeholder-gray-300 ring-2 ring-white ring-offset-2 ring-offset-gray-300 transition duration-500 ease-in-out  md:w-96",
-          { "border border-2 border-red-500": error },
-          {
-            "border-transparent focus:border-transparent focus:outline-none":
-              !error,
-          }
-        )}
       />
-      {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
+
       <label className="block text-sm font-medium text-gray-700">
         {" "}
         Job Date
