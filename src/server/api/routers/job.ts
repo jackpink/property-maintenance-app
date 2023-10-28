@@ -4,6 +4,26 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import { type RouterOutputs } from "~/utils/api";
+import { updateJobHistory } from "../mongoDB/jobHistory";
+type JSONValue = 
+ | string
+ | number
+ | boolean
+ | null
+ | JSONValue[]
+ | {[key: string]: JSONValue}
+
+interface JSONObject {
+  [k: string]: JSONValue
+}
+
+interface updateJson {
+  $push: JSONObject
+}
+
+interface JSONArray extends Array<JSONValue> {}
+
+
 
 export const jobRouter = createTRPCRouter({
   
@@ -314,15 +334,52 @@ export const jobRouter = createTRPCRouter({
   updateNotesForJob:privateProcedure
   .input(z.object({jobId: z.string(), notes: z.string()}))
   .mutation(async ({ ctx, input }) => {
-    console.log(input.notes);
-    const notes = await ctx.prisma.job.update({
+    // first check that the user is a trade user and that the job is assigned to them
+
+    const job = await ctx.prisma.job.findUniqueOrThrow({
       where: {
         id: input.jobId
       },
-      data: {
-        notes: input.notes
+      include: {
+        Property: true
       }
     })
-    console.log(notes)
+    const isTradeUser =  (job.tradeUserId === ctx.currentUser)
+    const isHomeownerUser = (job.Property.homeownerUserId === ctx.currentUser)
+    if (!isTradeUser && !isHomeownerUser) {
+      throw new TRPCError({
+        code: "FORBIDDEN"
+      })
+    }
+    // Update history of notes on MongoDB
+    const update = {$push: { homeownerNotes: {notes: input.notes, date: new Date() } }};
+    await updateJobHistory(update, input.jobId);
+      
+    
+
+    // if they are a trade user, update the trade notes, if they are a homeowner user, update the homeowner notes
+
+    let notes;
+    if (isHomeownerUser) {
+      console.log(input.notes);
+      notes = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          notes: input.notes
+        }
+    })} else {
+      notes = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          tradeNotes: input.notes
+        }
+      })
+    }
+    console.log(notes);
+    return notes;
   })
 });
