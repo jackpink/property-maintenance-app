@@ -14,7 +14,10 @@ export const env = createEnv({
     PHOTO_BUCKET_NAME: z.string(),
     REGION: z.string(),
     GOOGLE_MAPS_API_KEY: z.string(),
-    DOCUMENT_BUCKET_NAME: z.string()
+    DOCUMENT_BUCKET_NAME: z.string(),
+    MONGODB_URI: z.string(),
+    MONGODB_DB: z.string(),
+  
   },
 
   /**
@@ -38,7 +41,9 @@ export const env = createEnv({
     PHOTO_BUCKET_NAME: process.env.PHOTO_BUCKET_NAME,
     REGION: process.env.REGION,
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
-    DOCUMENT_BUCKET_NAME: process.env.DOCUMENT_BUCKET_NAME
+    DOCUMENT_BUCKET_NAME: process.env.DOCUMENT_BUCKET_NAME,
+    MONGODB_URI: process.env.MONGODB_URI,
+    MONGODB_DB: process.env.MONGODB_DB,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
 });
