@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import { type RouterOutputs } from "~/utils/api";
-import { updateJobHistory } from "../mongoDB/jobHistory";
+import { getJobHistory, updateJobHistory } from "../mongoDB/jobHistory";
 type JSONValue = 
  | string
  | number
@@ -381,5 +381,26 @@ export const jobRouter = createTRPCRouter({
     }
     console.log(notes);
     return notes;
-  })
+  }),
+  getHistoryForJob: privateProcedure
+  .input(z.object({jobId: z.string()}))
+  .query(async ({ctx, input}) => {
+    const job = await ctx.prisma.job.findUniqueOrThrow({
+      where: {
+        id: input.jobId
+      },
+      include: {
+        Property: true
+      }
+    })
+    const isTradeUser =  (job.tradeUserId === ctx.currentUser)
+    const isHomeownerUser = (job.Property.homeownerUserId === ctx.currentUser)
+    if (!isTradeUser && !isHomeownerUser) {
+      throw new TRPCError({
+        code: "FORBIDDEN"
+      })
+    }
+    const history = getJobHistory(input.jobId);
+    return history;
+  }),
 });

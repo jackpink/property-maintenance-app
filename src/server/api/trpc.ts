@@ -18,6 +18,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "~/server/db";
 import { s3 } from "../aws/s3";
+import { mongoClient } from "./mongoDB/jobHistory";
 type CreateContextOptions = Record<string, string | null>;
 
 /**
@@ -37,7 +38,8 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     prisma,
     currentUser: user,
-    s3
+    s3,
+    mongoClient
   };
 };
 

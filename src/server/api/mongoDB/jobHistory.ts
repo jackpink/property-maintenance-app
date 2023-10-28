@@ -31,6 +31,19 @@ export async function updateJobHistory(update: UpdateFilter<Document>, jobId: st
 }
 
 
+export async function getJobHistory(jobId: string) {
+    try {
+        await mongoClient.connect();
+        const jobsCol = mongoClient.db(dbName).collection("jobs")
+        const query = { id: jobId };
+        const col = await jobsCol.findOne(query); 
+        console.log("Got Job histopry from MongoDB", col);
+        return col;
+    } finally {
+        await mongoClient.close();
+    }
+}
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
