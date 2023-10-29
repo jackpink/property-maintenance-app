@@ -43,12 +43,24 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   id,
 }) => {
   const job = api.job.getJobForHomeowner.useQuery({ jobId: id });
+  const history = api.job.getHistoryForJob.useQuery({ jobId: id });
+
+  console.log(history.data);
 
   const jobLoading = job.isFetching || job.isLoading;
 
+  const historyLoading = history.isFetching || history.isLoading;
+
   if (!job.data) return <>Loading</>;
   // have some logic here, if has trade user, then display without any action buttons
-  return <HomeownerJobPageWithJob job={job.data} jobLoading={jobLoading} />;
+  return (
+    <HomeownerJobPageWithJob
+      job={job.data}
+      jobLoading={jobLoading}
+      history={history.data}
+      historyLoading={historyLoading}
+    />
+  );
 };
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
@@ -56,11 +68,15 @@ type Job = RouterOutputs["job"]["getJobForHomeowner"];
 type HomeownerJobPageWithJobProps = {
   job: Job;
   jobLoading: boolean;
+  history: RouterOutputs["job"]["getHistoryForJob"] | undefined;
+  historyLoading: boolean;
 };
 
 const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   job,
   jobLoading,
+  history,
+  historyLoading,
 }) => {
   const ctx = api.useContext();
 
@@ -89,7 +105,12 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
-      <NotesViewer notes={job.notes} jobId={job.id} />
+      <NotesViewer
+        notes={job.notes}
+        jobId={job.id}
+        history={history?.homeownerNotes}
+        historyLoading={historyLoading}
+      />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Photos
       </h2>
@@ -289,15 +310,33 @@ const Documents: React.FC<DocumentProps> = ({ job }) => {
 };
 
 type Notes = Job["notes"];
+type TradeNotes = Job["tradeNotes"];
+
+type NoteHistory = {
+  notes: string;
+  date: Date;
+};
 
 type NotesViewerProps = {
   notes: Notes;
+  tradeNotes: TradeNotes;
   jobId: string;
+  history?: NoteHistory[];
+  historyLoading: boolean;
 };
 
-const NotesViewer: React.FC<NotesViewerProps> = ({ notes, jobId }) => {
+const NotesViewer: React.FC<NotesViewerProps> = ({
+  notes,
+  tradeNotes,
+  jobId,
+  history,
+  historyLoading,
+}) => {
   const [addNoteOpen, setAddNoteOpen] = useState(false);
   const [newNote, setNewNote] = useState(notes || "");
+  const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
+    undefined | string
+  >();
 
   const ctx = api.useContext();
 
@@ -319,9 +358,35 @@ const NotesViewer: React.FC<NotesViewerProps> = ({ notes, jobId }) => {
   return (
     <div className="grid w-full place-items-center px-4">
       {!!notes && (
-        <div className="w-96 whitespace-pre-line text-base text-slate-700">
-          {notes}
-        </div>
+        <>
+          <p className="mb-2 place-self-start text-base text-blue-900">
+            HOMEOWNER
+          </p>
+          <select
+            className="place-self-end text-center	text-blue-900"
+            value={selectedHomeownerHistory}
+            onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
+          >
+            {!!history &&
+              history.map((history, index) => (
+                <option key={index} value={history.notes}>
+                  {format(history.date, "PPP")}
+                </option>
+              ))}
+          </select>
+          <div className="w-96 whitespace-pre-line text-base text-blue-900">
+            {notes}
+          </div>
+        </>
+      )}
+
+      {!!tradeNotes && (
+        <>
+          <p className="mb-2 text-base text-green-800">TRADE</p>
+          <div className="w-96 whitespace-pre-line text-base text-green-800">
+            {tradeNotes}
+          </div>
+        </>
       )}
       {addNoteOpen ? (
         <ClickAwayListener clickOutsideAction={() => setAddNoteOpen(false)}>
