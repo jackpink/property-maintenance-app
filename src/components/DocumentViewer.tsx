@@ -2,7 +2,7 @@ import { Document } from "@prisma/client";
 import { useState } from "react";
 import Popover from "./Popover";
 import { api } from "~/utils/api";
-import Button from "./Button";
+import Button from "./Atoms/Button";
 import { UploadDocumentButton, UploadFor } from "./UploadDocument";
 
 type DocumentsProps = {

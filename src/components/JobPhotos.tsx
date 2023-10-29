@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Button from "./Button";
+import Button from "./Atoms/Button";
 import LoadingSpinner from "./LoadingSpinner";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];

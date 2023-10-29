@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
-import Button from "./Button";
+import Button from "./Atoms/Button";
 import ClickAwayListener from "./ClickAwayListener";
 
 // build the property page

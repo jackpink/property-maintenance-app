@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import Popover from "./Popover";
-import Button from "./Button";
+import Button from "./Atoms/Button";
 import TextInputWithError from "./TextInput";
 
 export function instanceOfTradeInfo(object: any): object is ITradeInfo {

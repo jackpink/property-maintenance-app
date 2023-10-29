@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
-
-import Button from "~/components/Button";
+import JobDate from "~/components/Organisms/JobDate";
+import Button from "~/components/Atoms/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
 import React, {
@@ -18,13 +18,14 @@ import { Room, type Prisma } from "@prisma/client";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
-import EditDatePopover from "~/components/EditDatePopover";
 import AddTradePopover, {
   instanceOfTradeInfo,
 } from "~/components/AddTradePopover";
 import DocumentViewer from "~/components/DocumentViewer";
 import PropertyHeroWithSelectedRooms from "~/components/PropertyHeroWithSelectedRooms";
 import RoomSelector, { RoomFromLevels } from "~/components/RoomSelector";
+import { PageTitle } from "~/components/Atoms/Title";
+import { TextSpan } from "~/components/Atoms/Text";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -87,9 +88,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
 
   return (
     <div className="grid justify-center">
-      <h1 className="py-8 text-center font-sans text-4xl font-extrabold text-slate-900">
-        {job.title}
-      </h1>
+      <PageTitle title={job.title} />
       <JobDate date={job.date} jobId={job.id} />
       <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
 
@@ -122,59 +121,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         userType="HOMEOWNER"
       />
       <PhotoViewer job={job} />
-    </div>
-  );
-};
-
-type JobDateProps = {
-  date: Date;
-  jobId: string;
-};
-
-const JobDate: React.FC<JobDateProps> = ({ date, jobId }) => {
-  const [jobDayPickerOpen, setJobDayPickerOpen] = useState(false);
-  const [newDate, setNewDate] = useState<Date | undefined>(date);
-
-  const ctx = api.useContext();
-
-  const { mutate: updateDate } = api.job.updateDateForJob.useMutation({
-    onSuccess: () => {
-      // Refetch job for page
-      void ctx.job.getJobForHomeowner.invalidate();
-      // close popover
-      setJobDayPickerOpen(false);
-    },
-    onError: () => {
-      toast("Failed to update Date for Job");
-    },
-  });
-
-  const onClickUpdateDate = () => {
-    // aysnc update date
-    if (!!newDate) updateDate({ jobId: jobId, date: newDate });
-    else toast("Could not update date, selected Date error");
-  };
-
-  return (
-    <div className="mb-4 flex justify-center">
-      <span className="place-self-center px-12 text-center text-lg text-slate-700 ">
-        Job Completed On:{" "}
-      </span>
-      <EditDatePopover
-        currentDate={date}
-        newDate={newDate}
-        setNewDate={setNewDate}
-        jobDayPickerOpen={jobDayPickerOpen}
-        setJobDayPickerOpen={setJobDayPickerOpen}
-      >
-        {!!newDate ? (
-          <Button onClick={onClickUpdateDate}>
-            Set New Date as {format(newDate, "PPP")}
-          </Button>
-        ) : (
-          <></>
-        )}
-      </EditDatePopover>
     </div>
   );
 };
@@ -356,25 +302,27 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
   };
   console.log(notes);
   return (
-    <div className="grid w-full place-items-center px-4">
+    <div className="grid place-items-center place-self-center px-4 md:w-128">
       {!!notes && (
         <>
-          <p className="mb-2 place-self-start text-base text-blue-900">
-            HOMEOWNER
-          </p>
-          <select
-            className="place-self-end text-center	text-blue-900"
-            value={selectedHomeownerHistory}
-            onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
-          >
-            {!!history &&
-              history.map((history, index) => (
-                <option key={index} value={history.notes}>
-                  {format(history.date, "PPP")}
-                </option>
-              ))}
-          </select>
-          <div className="w-96 whitespace-pre-line text-base text-blue-900">
+          <div className="mb-2 grid ">
+            <p className="place-self-start text-base text-blue-900">
+              HOMEOWNER
+            </p>
+            <select
+              className="place-self-end text-center	text-blue-900"
+              value={selectedHomeownerHistory}
+              onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
+            >
+              {!!history &&
+                history.map((history, index) => (
+                  <option key={index} value={history.notes}>
+                    {format(history.date, "PPP")}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="whitespace-pre-line px-4 text-base text-blue-900">
             {notes}
           </div>
         </>
