@@ -1,31 +1,22 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
-import Button from "~/components/Atoms/Button";
+import { CTAButton } from "~/components/Atoms/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
-import React, {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Room, type Prisma } from "@prisma/client";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
-import AddTradePopover, {
-  instanceOfTradeInfo,
-} from "~/components/AddTradePopover";
 import DocumentViewer from "~/components/DocumentViewer";
-import PropertyHeroWithSelectedRooms from "~/components/PropertyHeroWithSelectedRooms";
-import RoomSelector, { RoomFromLevels } from "~/components/RoomSelector";
+import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
 import { PageTitle } from "~/components/Atoms/Title";
-import { TextSpan } from "~/components/Atoms/Text";
+import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
+import JobRoomSelector from "~/components/Organisms/JobRoomSelector";
+import JobDocuments from "~/components/Organisms/JobDocuments";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -96,11 +87,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         Property={job.Property}
         rooms={job.rooms}
       />
-      <RoomSelectorForJob job={job} jobLoading={jobLoading} />
+      <JobRoomSelector job={job} jobLoading={jobLoading} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
       </h2>
-      <Documents job={job} />
+      <JobDocuments job={job} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
@@ -121,136 +112,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         userType="HOMEOWNER"
       />
       <PhotoViewer job={job} />
-    </div>
-  );
-};
-
-type JobCompletedByProps = {
-  tradeInfo: Prisma.JsonValue | null;
-  jobId: string;
-};
-
-const JobCompletedBy: React.FC<JobCompletedByProps> = ({
-  tradeInfo,
-  jobId,
-}) => {
-  const [editTradeInfoOpen, setEditTradeInfoOpen] = useState(false);
-  const [form, setForm] = useState({
-    name:
-      !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.name
-        ? tradeInfo.name
-        : "",
-    email:
-      !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.email
-        ? tradeInfo.email
-        : "",
-    phone:
-      !!tradeInfo && instanceOfTradeInfo(tradeInfo) && tradeInfo.phone
-        ? tradeInfo.phone
-        : "",
-  });
-
-  const ctx = api.useContext();
-
-  const { mutate: updateTradeInfo } =
-    api.job.updateTradeContactForJob.useMutation({
-      onSuccess: () => {
-        // Refetch job for page
-        void ctx.job.getJobForHomeowner.invalidate();
-        // close popover
-        setEditTradeInfoOpen(false);
-      },
-      onError: () => {
-        toast("Failed to update Trade information for Job");
-      },
-    });
-
-  const onClickUpdate = () => {
-    // check inputs?
-    updateTradeInfo({
-      jobId: jobId,
-      tradeName: form.name,
-      tradeEmail: form.email,
-      tradePhone: form.phone,
-    });
-  };
-  // Does job have a Trade User?
-  return (
-    <div className="grid place-items-center">
-      <span className="pb-1 text-center text-lg text-slate-700">
-        Job Completed By:{" "}
-      </span>
-
-      <AddTradePopover
-        tradeInfo={tradeInfo}
-        editPopoverOpen={editTradeInfoOpen}
-        setEditPopoverOpen={setEditTradeInfoOpen}
-        form={form}
-        setForm={setForm}
-        onClickUpdate={onClickUpdate}
-      />
-    </div>
-  );
-};
-
-type DocumentProps = {
-  job: Job;
-};
-
-const Documents: React.FC<DocumentProps> = ({ job }) => {
-  const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
-
-  const { data: documents, isLoading: loading } =
-    api.document.getDocumentsForJob.useQuery({ jobId: job.id });
-
-  const ctx = api.useContext();
-
-  const defaultDocumentsForJob = ["Invoice"]; //If documents label matches, then remove
-  if (!!documents) {
-    for (const document of documents) {
-      const index = defaultDocumentsForJob.indexOf(document.label);
-      console.log("INDEX", index);
-      if (index >= 0) defaultDocumentsForJob.splice(index, 1);
-    }
-  }
-  console.log("defaul;t docs", defaultDocumentsForJob);
-
-  const refetchDataForPage = () => {
-    void ctx.document.getDocumentsForJob.invalidate();
-    setUploadDocumentPopover(false);
-  };
-
-  return (
-    <div className="grid place-items-center">
-      {!!documents ? (
-        <DocumentViewer
-          documents={documents}
-          uploadFor="JOB"
-          propertyId={job.Property.id}
-          jobId={job.id}
-          refetchDataForPage={refetchDataForPage}
-          defaultDocuments={defaultDocumentsForJob}
-        />
-      ) : loading ? (
-        <p>Loading</p>
-      ) : (
-        <p>error</p>
-      )}
-
-      <Button onClick={() => setUploadDocumentPopover(true)}>
-        Upload Other Document
-      </Button>
-      <Popover
-        popoveropen={uploadDocumentPopover}
-        setPopoverOpen={setUploadDocumentPopover}
-      >
-        <UploadDocumentWithLabelInput
-          uploadFor="JOB"
-          jobId={job.id}
-          refetchDataForPage={refetchDataForPage}
-          propertyId={job.Property.id}
-        />
-      </Popover>
     </div>
   );
 };
@@ -349,11 +210,11 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
                 { "border border-2 border-red-500": false }
               )}
             ></textarea>
-            <Button onClick={onClickAddNotes}>+</Button>
+            <CTAButton onClick={onClickAddNotes}>+</CTAButton>
           </div>
         </ClickAwayListener>
       ) : (
-        <Button onClick={() => setAddNoteOpen(true)}>Add Note</Button>
+        <CTAButton onClick={() => setAddNoteOpen(true)}>Add Note</CTAButton>
       )}
     </div>
   );
@@ -430,93 +291,4 @@ const RoomPhotos: React.FC<RoomPhotosProps> = ({ job, roomId }) => {
     );
   }
   return <p>no photos</p>;
-};
-
-type RoomSelectorForJobProps = {
-  job: Job;
-  jobLoading: boolean;
-};
-
-const RoomSelectorForJob: React.FC<RoomSelectorForJobProps> = ({
-  job,
-  jobLoading,
-}) => {
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(
-    "You cannot remove room which has photos linked to it, please remove photos first"
-  );
-  const [loading, setLoading] = useState(false);
-  const [roomSelectorOpen, setRoomSelectorOpen] = useState(false);
-
-  const ctx = api.useContext();
-
-  const { mutate: addRoomToJob } = api.job.addRoomToJob.useMutation({
-    onSuccess: () => {
-      // Refetch job for page
-      setError(false);
-      void ctx.job.getJobForHomeowner.invalidate();
-      setLoading(false);
-      // close popover
-      //closePopover();
-    },
-  });
-
-  const { mutate: removeRoomFromJob } = api.job.removeRoomFromJob.useMutation({
-    onSuccess: () => {
-      // Refetch job for page
-      setError(false);
-      void ctx.job.getJobForHomeowner.invalidate();
-      setLoading(false);
-      // close popover
-      // closePopover();
-    },
-    onError: (error) => {
-      console.log(error);
-      setError(true);
-      setLoading(false);
-    },
-  });
-
-  const onClickRoomAdd = (roomId: string) => {
-    addRoomToJob({ jobId: job.id, roomId: roomId });
-    console.log("new room added to job");
-  };
-
-  const onClickRoomRemove = (roomId: string) => {
-    removeRoomFromJob({ jobId: job.id, roomId: roomId });
-  };
-
-  const checkRoomIsSelectedRoom = useCallback(
-    (roomId: string) => {
-      const result = job.rooms.find(
-        (selectedRoom) => selectedRoom.id === roomId
-      );
-      return !!result;
-    },
-    [job.rooms]
-  );
-
-  return (
-    <RoomSelector
-      property={job.Property}
-      error={error}
-      setError={setError}
-      errorMessage={errorMessage}
-      jobLoading={jobLoading}
-      loading={loading}
-      setLoading={setLoading}
-      onClickRoomAdd={onClickRoomAdd}
-      onClickRoomRemove={onClickRoomRemove}
-      checkRoomSelected={checkRoomIsSelectedRoom}
-      roomSelectorOpen={roomSelectorOpen}
-      setRoomSelectorOpen={setRoomSelectorOpen}
-    >
-      <Button
-        onClick={() => setRoomSelectorOpen(true)}
-        className="my-6 w-48 place-self-center"
-      >
-        Select Rooms
-      </Button>
-    </RoomSelector>
-  );
 };

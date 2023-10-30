@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { concatAddress } from "~/components/Properties/Property";
 import EditProperty from "~/components/EditProperty";
 import RecentJobs from "~/components/RecentJobs";
-import Button from "~/components/Button";
+import { CTAButton } from "~/components/Atoms/Button";
 import Popover from "~/components/Popover";
 import { ReactNode, useState } from "react";
 import clsx from "clsx";
@@ -81,7 +81,10 @@ const HomeownerPropertyPageWithParams: React.FC<
             {propertyFetchError?.message}
           </p>
           <Link href="/homeowner/">
-            <Button className="border-none"> {"< Back to Dashboard"}</Button>
+            <CTAButton className="border-none">
+              {" "}
+              {"< Back to Dashboard"}
+            </CTAButton>
           </Link>
         </div>
       ) : (
@@ -106,12 +109,12 @@ const HomeownerPropertyPageWithParams: React.FC<
         <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
           Recents Jobs
         </h2>
-        <Button
+        <CTAButton
           onClick={() => setCreatejobPopoverOpen(true)}
           className="mb-8 place-self-center"
         >
           Add New Job
-        </Button>
+        </CTAButton>
         <Popover
           popoveropen={createJobPopoverOpen}
           setPopoverOpen={setCreatejobPopoverOpen}
@@ -238,7 +241,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
 
       <DayPicker mode="single" required selected={date} onSelect={setDate} />
 
-      <Button onClick={addJobClickEvent}>Create Job</Button>
+      <CTAButton onClick={addJobClickEvent}>Create Job</CTAButton>
     </div>
   );
 };
