@@ -1,11 +1,13 @@
 import clsx from "clsx";
 
 type TextProps = {
-  text: string;
   className?: string;
 };
 
-export function Text({ text, className }: TextProps) {
+export function Text({
+  className,
+  children,
+}: React.PropsWithChildren<TextProps>) {
   return (
     <p
       className={clsx(
@@ -13,17 +15,19 @@ export function Text({ text, className }: TextProps) {
         className
       )}
     >
-      {text}
+      {children}
     </p>
   );
 }
 
 type TextSpanProps = {
-  text: string;
   className?: string;
 };
 
-export function TextSpan({ text, className }: TextSpanProps) {
+export function TextSpan({
+  className,
+  children,
+}: React.PropsWithChildren<TextSpanProps>) {
   return (
     <span
       className={clsx(
@@ -31,7 +35,7 @@ export function TextSpan({ text, className }: TextSpanProps) {
         className
       )}
     >
-      {text}
+      {children}
     </span>
   );
 }
