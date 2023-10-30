@@ -37,10 +37,7 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
   return (
     <>
       {!!tradeInfo && instanceOfTradeInfo(tradeInfo) ? (
-        <button
-          onClick={() => setEditPopoverOpen(true)}
-          className="mb-4 rounded-md border-2 border-black p-1"
-        >
+        <GhostButton onClick={() => setEditPopoverOpen(true)}>
           <p className="pb-4 text-center text-xl text-slate-700">
             {tradeInfo.name}
           </p>
@@ -54,7 +51,7 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
             {tradeInfo.phone}
           </p>
           <span></span>
-        </button>
+        </GhostButton>
       ) : (
         <GhostButton onClick={() => setEditPopoverOpen(true)}>
           Add Information for Trade
