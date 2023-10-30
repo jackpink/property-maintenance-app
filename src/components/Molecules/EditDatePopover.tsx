@@ -1,5 +1,5 @@
 import { DayPicker } from "react-day-picker";
-import Popover from "../Popover";
+import Popover from "../Atoms/Popover";
 import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
 import { Text } from "../Atoms/Text";

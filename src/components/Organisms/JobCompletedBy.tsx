@@ -10,11 +10,13 @@ import { TextSpan } from "../Atoms/Text";
 type JobCompletedByProps = {
   tradeInfo: Prisma.JsonValue | null;
   jobId: string;
+  disabled?: boolean;
 };
 
 export default function JobCompletedBy({
   tradeInfo,
   jobId,
+  disabled = false,
 }: JobCompletedByProps) {
   const [editTradeInfoOpen, setEditTradeInfoOpen] = useState(false);
 
@@ -63,6 +65,7 @@ export default function JobCompletedBy({
         form={form}
         setForm={setForm}
         onClickUpdate={onClickUpdate}
+        disabled={disabled}
       />
     </div>
   );

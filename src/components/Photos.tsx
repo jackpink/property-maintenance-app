@@ -1,9 +1,9 @@
 /*
     Will need to add a full size image popover, which lets   */
 import { type RouterOutputs, api } from "~/utils/api";
-import Popover from "./Popover";
+import Popover from "./Atoms/Popover";
 import { useEffect, useRef, useState } from "react";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "./Atoms/LoadingSpinner";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 

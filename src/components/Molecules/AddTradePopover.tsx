@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
-import Popover from "../Popover";
+import Popover from "../Atoms/Popover";
 import { CTAButton, GhostButton } from "../Atoms/Button";
 import TextInputWithError from "../TextInput";
 
@@ -22,6 +22,7 @@ type AddTradePopoverProps = {
   form: Form;
   setForm: Dispatch<SetStateAction<Form>>;
   onClickUpdate: () => void;
+  disabled?: boolean;
 };
 
 const AddTradePopover: React.FC<AddTradePopoverProps> = ({
@@ -31,13 +32,17 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
   form,
   setForm,
   onClickUpdate,
+  disabled = false,
 }) => {
   // This will either come from a Trade user in the system or just be JSON values
   // added to component
   return (
     <>
       {!!tradeInfo && instanceOfTradeInfo(tradeInfo) ? (
-        <GhostButton onClick={() => setEditPopoverOpen(true)}>
+        <GhostButton
+          onClick={() => setEditPopoverOpen(true)}
+          disabled={disabled}
+        >
           <p className="pb-4 text-center text-xl text-slate-700">
             {tradeInfo.name}
           </p>
@@ -53,7 +58,10 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
           <span></span>
         </GhostButton>
       ) : (
-        <GhostButton onClick={() => setEditPopoverOpen(true)}>
+        <GhostButton
+          onClick={() => setEditPopoverOpen(true)}
+          disabled={disabled}
+        >
           Add Information for Trade
         </GhostButton>
       )}

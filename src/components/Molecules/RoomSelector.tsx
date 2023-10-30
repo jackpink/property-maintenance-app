@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { RouterOutputs } from "~/utils/api";
-import Popover from "../Popover";
+import Popover from "../Atoms/Popover";
 import { CTAButton } from "../Atoms/Button";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ErrorMessage } from "../Atoms/Text";
