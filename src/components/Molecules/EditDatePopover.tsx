@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { Dispatch, SetStateAction } from "react";
 import { Text } from "../Atoms/Text";
 import { FormattedDate } from "~/utils/utits";
+import clsx from "clsx";
 
 type EditDateProps = {
   currentDate: Date;
@@ -11,6 +12,7 @@ type EditDateProps = {
   setNewDate: Dispatch<SetStateAction<Date | undefined>>;
   jobDayPickerOpen: boolean;
   setJobDayPickerOpen: Dispatch<SetStateAction<boolean>>;
+  disbled?: boolean;
 };
 
 const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
@@ -20,13 +22,17 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
   children,
   jobDayPickerOpen,
   setJobDayPickerOpen,
+  disbled = false,
 }) => {
   return (
     <>
       <span className="">
         <button
           onClick={() => setJobDayPickerOpen(true)}
-          className="rounded-md border-2 border-black p-1"
+          className={clsx(
+            "rounded-md border-2 border-black p-1",
+            disbled && "cursor-not-allowed opacity-50"
+          )}
         >
           {currentDate.toDateString()}
         </button>

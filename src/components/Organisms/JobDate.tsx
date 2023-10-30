@@ -9,9 +9,14 @@ import { format } from "date-fns";
 type JobDateProps = {
   date: Date;
   jobId: string;
+  disabled?: boolean;
 };
 
-export default function JobDate({ date, jobId }: JobDateProps) {
+export default function JobDate({
+  date,
+  jobId,
+  disabled = false,
+}: JobDateProps) {
   const [jobDayPickerOpen, setJobDayPickerOpen] = useState(false);
   const [newDate, setNewDate] = useState<Date | undefined>(date);
 
@@ -45,6 +50,7 @@ export default function JobDate({ date, jobId }: JobDateProps) {
         setNewDate={setNewDate}
         jobDayPickerOpen={jobDayPickerOpen}
         setJobDayPickerOpen={setJobDayPickerOpen}
+        disbled={disabled}
       >
         {!!newDate ? (
           <Button onClick={onClickUpdateDate}>
