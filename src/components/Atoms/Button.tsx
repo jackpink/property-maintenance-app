@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { type ReactNode } from "react";
+import { Text } from "./Text";
 
 type ButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -10,7 +11,7 @@ type ButtonProps = {
   loading?: boolean;
 };
 
-const Button: React.FC<ButtonProps> = ({
+export const CTAButton: React.FC<ButtonProps> = ({
   onClick,
   children,
   className,
@@ -33,4 +34,27 @@ const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
-export default Button;
+
+export function GhostButton({
+  onClick,
+  children,
+  className,
+  value,
+  disabled,
+  loading,
+}: ButtonProps) {
+  return (
+    <button
+      value={value ? value : "value"}
+      onClick={onClick}
+      className={clsx(
+        "rounded border border-teal-800 bg-transparent p-2 text-slate-900",
+        className,
+        disabled && "cursor-not-allowed opacity-50",
+        loading && "animate-pulse cursor-wait"
+      )}
+    >
+      <Text>{children}</Text>
+    </button>
+  );
+}

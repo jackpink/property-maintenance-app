@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { api } from "~/utils/api";
 import { TextSpan } from "../Atoms/Text";
 import EditDatePopover from "../Molecules/EditDatePopover";
-import Button from "../Atoms/Button";
+import { CTAButton } from "../Atoms/Button";
 import { format } from "date-fns";
 
 type JobDateProps = {
@@ -42,7 +42,9 @@ export default function JobDate({
 
   return (
     <div className="mb-4 flex justify-center">
-      <TextSpan text="Job Completed On: " className="place-self-center px-12" />
+      <TextSpan className="place-self-center px-12">
+        Job Completed On:{" "}
+      </TextSpan>
 
       <EditDatePopover
         currentDate={date}
@@ -53,9 +55,9 @@ export default function JobDate({
         disbled={disabled}
       >
         {!!newDate ? (
-          <Button onClick={onClickUpdateDate}>
+          <CTAButton onClick={onClickUpdateDate}>
             Set New Date as {format(newDate, "PPP")}
-          </Button>
+          </CTAButton>
         ) : (
           <></>
         )}

@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Button from "./Atoms/Button";
+import { CTAButton } from "./Atoms/Button";
 import LoadingSpinner from "./LoadingSpinner";
 
 type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
@@ -76,7 +76,7 @@ const Photos: React.FC<Props> = ({ photos, rooms }) => {
           <h1 className="text-lg">Assign Selected Photos to Room</h1>
           {rooms.map((room, index) => {
             return (
-              <Button
+              <CTAButton
                 onClick={click}
                 value={room.id}
                 className="my-4 md:w-96"
@@ -85,7 +85,7 @@ const Photos: React.FC<Props> = ({ photos, rooms }) => {
                 {room.Level.label.toUpperCase() +
                   "→" +
                   room.label.toUpperCase()}
-              </Button>
+              </CTAButton>
             );
           })}
         </div>
@@ -108,15 +108,15 @@ const Photos: React.FC<Props> = ({ photos, rooms }) => {
         })}
         {assignMode ? (
           <div className="fixed bottom-6 w-full">
-            <Button
+            <CTAButton
               onClick={() => setRoomAssignButtonsOpen(true)}
               className="w-2/3 p-6"
             >
               Move to Room
-            </Button>
-            <Button onClick={exitAssignMode} className="ml-5 p-6">
+            </CTAButton>
+            <CTAButton onClick={exitAssignMode} className="ml-5 p-6">
               X
-            </Button>
+            </CTAButton>
           </div>
         ) : (
           <></>

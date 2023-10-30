@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { type ChangeEvent, useState } from "react";
 import { api } from "~/utils/api";
 import { uploadFileToSignedURL } from "~/utils/upload";
-import Button from "./Atoms/Button";
+import { CTAButton } from "./Atoms/Button";
 import { z } from "zod";
 import TextInputWithError from "./TextInput";
 
@@ -159,16 +159,16 @@ export const UploadDocumentWithLabelInput: React.FC<
             errorMessage={errorMessage}
             type="text"
           />
-          <Button onClick={onClickNext}>Next</Button>
+          <CTAButton onClick={onClickNext}>Next</CTAButton>
         </>
       ) : (
         <>
-          <Button
+          <CTAButton
             className="mb-6 justify-self-start border-none"
             onClick={() => setCreateLabelPage(true)}
           >
             ← Back to edit Label
-          </Button>
+          </CTAButton>
           <p className="text-sm">Document Label: </p>
           <label className="pb-6 text-lg text-slate-700">{label}</label>
           <UploadDocumentButton
@@ -178,7 +178,7 @@ export const UploadDocumentWithLabelInput: React.FC<
             jobId={jobId}
             propertyId={propertyId}
           >
-            <Button>Upload Document</Button>
+            <CTAButton>Upload Document</CTAButton>
           </UploadDocumentButton>
         </>
       )}

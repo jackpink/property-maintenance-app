@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { RouterOutputs } from "~/utils/api";
 import Popover from "./Popover";
-import Button from "./Atoms/Button";
+import { CTAButton } from "./Atoms/Button";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { set } from "date-fns";
 
@@ -154,25 +154,25 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
   };
   if (checkRoomSelected(room.id)) {
     return (
-      <Button
+      <CTAButton
         onClick={removeRoomButtonClicked}
         value={room.id}
         className={clsx(className, "border-2")}
         loading={loading || jobLoading}
       >
         {room.label}
-      </Button>
+      </CTAButton>
     );
   }
   return (
-    <Button
+    <CTAButton
       value={room.id}
       onClick={addRoomButtonClicked}
       className={clsx(className, "bg-white")}
       loading={loading || jobLoading}
     >
       {room.label}
-    </Button>
+    </CTAButton>
   );
 };
 

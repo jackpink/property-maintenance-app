@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
-import Button from "./Atoms/Button";
+import { CTAButton } from "./Atoms/Button";
 import ClickAwayListener from "./ClickAwayListener";
 
 // build the property page
@@ -71,7 +71,7 @@ const AddRoomTextInput: React.FC<AddRoomTextInputProps> = ({
               { "border border-2 border-red-500": error }
             )}
           />
-          <Button onClick={addRoomClickEvent}>+</Button>
+          <CTAButton onClick={addRoomClickEvent}>+</CTAButton>
         </div>
       </ClickAwayListener>
       {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
@@ -97,7 +97,7 @@ const AddRoomButton: React.FC<AddRoomButtonProps> = ({ levelId }) => {
       />
     );
   }
-  return <Button onClick={ToggleTextboxOpen}>+ Add Room</Button>;
+  return <CTAButton onClick={ToggleTextboxOpen}>+ Add Room</CTAButton>;
 };
 type Room =
   RouterOutputs["property"]["getPropertyForUser"]["levels"][number]["rooms"][number];
@@ -375,7 +375,7 @@ const AddLevelTextInput: React.FC<AddLevelTextInputProps> = ({
               { "border border-2 border-red-500": error }
             )}
           />
-          <Button onClick={AddLevelClickEvent}>+</Button>
+          <CTAButton onClick={AddLevelClickEvent}>+</CTAButton>
         </div>
       </ClickAwayListener>
       {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
@@ -403,7 +403,7 @@ const AddLevelButton: React.FC<AddLevelButtonProps> = ({ propertyId }) => {
   }
   return (
     <div className="h-24 w-60 rounded-lg bg-black/30 py-6 text-center ">
-      <Button onClick={ToggleTextboxOpen}>+ Add Level</Button>
+      <CTAButton onClick={ToggleTextboxOpen}>+ Add Level</CTAButton>
     </div>
   );
 };
@@ -421,23 +421,23 @@ const EditPropertyModeButton: React.FC<EditPropertyModeButtonProps> = ({
     <>
       {editPropertyMode ? (
         <div className="flex justify-center">
-          <Button
+          <CTAButton
             onClick={() => setEditPropertyMode(false)}
             className="mb-8 flex"
           >
             Exit Edit Mode{" "}
             <Image src="/cancel.svg" alt="Edit" width={30} height={30} />
-          </Button>
+          </CTAButton>
         </div>
       ) : (
         <div className="flex justify-center">
-          <Button
+          <CTAButton
             onClick={() => setEditPropertyMode(true)}
             className="mb-8 flex"
           >
             Edit Property{" "}
             <Image src="/edit_button.svg" alt="Edit" width={30} height={30} />
-          </Button>
+          </CTAButton>
         </div>
       )}
     </>
