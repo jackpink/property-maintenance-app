@@ -39,3 +39,15 @@ export function TextSpan({
     </span>
   );
 }
+
+export function ErrorMessage({
+  error,
+  errorMessage,
+}: {
+  error: boolean;
+  errorMessage: string | null;
+}) {
+  return (
+    <>{error ? <p className="text-red-500">⚠️ {errorMessage}</p> : <></>}</>
+  );
+}
