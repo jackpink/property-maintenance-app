@@ -20,6 +20,8 @@ type UploadDocumentButtonProps = {
 export const UploadDocumentButton: React.FC<
   React.PropsWithChildren<UploadDocumentButtonProps>
 > = ({ label, uploadFor, refetchDataForPage, propertyId, jobId, children }) => {
+  const [uploading, setUploading] = useState(false);
+
   const inputId = useId();
 
   const { mutateAsync: getPresignedUrl } =
@@ -82,6 +84,7 @@ export const UploadDocumentButton: React.FC<
     let file = null;
     if (event.target.files) file = event.target.files[0];
     if (file) {
+      setUploading(true);
       void uploadFile(file);
     }
   };
@@ -102,6 +105,7 @@ export const UploadDocumentButton: React.FC<
           accept="application/pdf"
           id={inputId}
           className="opacity-0"
+          hidden
         />
       </label>
     </>
@@ -180,7 +184,7 @@ export const UploadDocumentWithLabelInput: React.FC<
             jobId={jobId}
             propertyId={propertyId}
           >
-            <UploadButton>Upload Document</UploadButton>
+            <UploadButton loading={true}>Upload Document</UploadButton>
           </UploadDocumentButton>
         </>
       )}
