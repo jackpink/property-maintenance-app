@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { type ReactNode } from "react";
 import { Text } from "./Text";
+import LoadingSpinner from "./LoadingSpinner";
 
 type ButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -128,12 +129,36 @@ export function PlusIcon({
   );
 }
 
-export function DefaultDocumentButton({ label }: { label: string }) {
+type DefaultDocumentButtonProps = {
+  label: string;
+  className?: string;
+  disabled?: boolean;
+  loading?: boolean;
+};
+
+export function DefaultDocumentButton({
+  label,
+  className,
+  disabled,
+  loading,
+}: DefaultDocumentButtonProps) {
   return (
-    <div className=" rounded-md border border-4 border-black pb-2 text-center">
-      <Text className="text-extrabold p-2">Add {label}</Text>
-      <div className="grid place-items-center">
-        <PlusIcon />
+    <div
+      className={clsx(
+        " border-1 rounded-md border border-black bg-teal-300 pb-2 text-center"
+      )}
+    >
+      <Text className="p-2 font-extrabold">
+        {loading ? "Uploading..." : "Add " + label}
+      </Text>
+      <div className={clsx("grid place-items-center")}>
+        {!loading ? (
+          <PlusIcon />
+        ) : (
+          <div className="h-5 w-5">
+            <LoadingSpinner />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -156,10 +181,19 @@ export function UploadButton({
         "cursor-pointer rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold text-slate-900",
         className,
         disabled && "cursor-not-allowed opacity-50",
-        loading && "animate-pulse cursor-wait"
+        loading && "cursor-wait"
       )}
     >
-      {children}
+      {loading ? (
+        <div className="flex flex-row">
+          <div className="h-8 w-8">
+            <LoadingSpinner />
+          </div>
+          <div>Uploading...</div>
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 }
