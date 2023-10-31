@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
-import { CTAButton } from "~/components/Atoms/Button";
+import { CTAButton, GhostButton } from "~/components/Atoms/Button";
 import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
 import React, { useState } from "react";
@@ -141,6 +141,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
 }) => {
   const [addNoteOpen, setAddNoteOpen] = useState(false);
   const [newNote, setNewNote] = useState(notes || "");
+  const [viewHistoryOpen, setViewHistoryOpen] = useState(false);
   const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
     undefined | string
   >();
@@ -170,6 +171,14 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
             <p className="place-self-start text-base text-blue-900">
               HOMEOWNER
             </p>
+          </div>
+          <div className="whitespace-pre-line px-4 text-base text-blue-900">
+            {notes}
+          </div>
+          <GhostButton onClick={() => setViewHistoryOpen(true)}>
+            View History
+          </GhostButton>
+          {viewHistoryOpen && (
             <select
               className="place-self-end text-center	text-blue-900"
               value={selectedHomeownerHistory}
@@ -178,14 +187,11 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
               {!!history &&
                 history.map((history, index) => (
                   <option key={index} value={history.notes}>
-                    {format(history.date, "PPP")}
+                    {format(history.date, "PPPppp")}
                   </option>
                 ))}
             </select>
-          </div>
-          <div className="whitespace-pre-line px-4 text-base text-blue-900">
-            {notes}
-          </div>
+          )}
         </>
       )}
 
