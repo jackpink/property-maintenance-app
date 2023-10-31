@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import DocumentViewer from "../Molecules/DocumentViewer";
-import { CTAButton } from "../Atoms/Button";
+import { GhostButton } from "../Atoms/Button";
 import Popover from "../Atoms/Popover";
 import { UploadDocumentWithLabelInput } from "../Molecules/UploadDocument";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
@@ -52,9 +52,12 @@ export default function JobDocuments({ job }: JobDocumentProps) {
         <p>error</p>
       )}
 
-      <CTAButton onClick={() => setUploadDocumentPopover(true)}>
+      <GhostButton
+        className="font-bold"
+        onClick={() => setUploadDocumentPopover(true)}
+      >
         Upload Other Document
-      </CTAButton>
+      </GhostButton>
       <Popover
         popoveropen={uploadDocumentPopover}
         setPopoverOpen={setUploadDocumentPopover}
