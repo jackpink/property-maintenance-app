@@ -117,7 +117,7 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
       jobId={jobId}
       refetchDataForPage={refetchDataForPage}
     >
-      <DefaultDocumentButton label={label} />
+      <DefaultDocumentButton label={label} loading={true} />
     </UploadDocumentButton>
   );
 };

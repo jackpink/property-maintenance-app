@@ -72,6 +72,7 @@ export const UploadDocumentButton: React.FC<
 
       console.log("Refetching Documents for Page", newDocument);
       newDocument && refetchDataForPage();
+      // Loading logic for button belongs in here
     } catch (e) {
       console.error("Could not upload file");
       console.log(e);
@@ -95,7 +96,7 @@ export const UploadDocumentButton: React.FC<
     <>
       <label
         htmlFor={inputId}
-        className="h-full w-32 cursor-pointer place-self-center"
+        className="h-full cursor-pointer place-self-center"
       >
         {children}
 
