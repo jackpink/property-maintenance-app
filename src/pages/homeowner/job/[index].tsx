@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
 import { CTAButton, GhostButton } from "~/components/Atoms/Button";
-import Popover from "~/components/Popover";
 import Photos from "~/components/JobPhotos";
 import React, { useState } from "react";
 import clsx from "clsx";
@@ -10,8 +9,6 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
-import { UploadDocumentWithLabelInput } from "~/components/UploadDocument";
-import DocumentViewer from "~/components/DocumentViewer";
 import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
 import { PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
@@ -97,6 +94,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       </h2>
       <NotesViewer
         notes={job.notes}
+        tradeNotes={job.tradeNotes}
         jobId={job.id}
         history={history?.homeownerNotes}
         historyLoading={historyLoading}
@@ -171,6 +169,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
             <p className="place-self-start text-base text-blue-900">
               HOMEOWNER
             </p>
+            <GhostButton>Edit</GhostButton>
           </div>
           <div className="whitespace-pre-line px-4 text-base text-blue-900">
             {notes}
