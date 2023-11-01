@@ -10,7 +10,7 @@ import {
   GhostButton,
   PlusIcon,
 } from "../Atoms/Button";
-import { UploadDocumentButton, UploadFor } from "./UploadDocument";
+import { UploadDocumentWrapper, UploadFor } from "./UploadDocument";
 
 type DocumentsProps = {
   documents: Document[];
@@ -110,15 +110,15 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
 }) => {
   console.log("add default", uploadFor, label);
   return (
-    <UploadDocumentButton
+    <UploadDocumentWrapper
       label={label}
       uploadFor={uploadFor}
       propertyId={propertyId}
       jobId={jobId}
       refetchDataForPage={refetchDataForPage}
     >
-      <DefaultDocumentButton label={label} loading={true} />
-    </UploadDocumentButton>
+      <DefaultDocumentButton label={label} />
+    </UploadDocumentWrapper>
   );
 };
 export default DocumentViewer;
