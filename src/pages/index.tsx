@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import Button from "~/components/Button";
+import { CTAButton } from "~/components/Atoms/Button";
 
 const Home: NextPage = () => {
   return (
@@ -11,6 +11,7 @@ const Home: NextPage = () => {
       </h1>
       <SignedIn>
         <div className="grid grid-cols-1 gap-4 ">
+          <h1>Welcome {}</h1>
           <Link
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30"
             href="/homeowner"
@@ -25,15 +26,15 @@ const Home: NextPage = () => {
         {/* Signed out users get sign in button */}
         <div className="flex justify-center">
           <Link className="block py-4" href="/trade/beta">
-            <Button className="rounded-full border-0 p-6">Sign In</Button>
+            <CTAButton className="rounded-full border-0 p-6">Sign In</CTAButton>
           </Link>
         </div>
 
         <div className="flex justify-center">
           <Link className="block" href="/create-account">
-            <Button className="rounded-full border-0 p-6">
+            <CTAButton className="rounded-full border-0 p-6">
               Create An Account
-            </Button>
+            </CTAButton>
           </Link>
         </div>
       </SignedOut>
