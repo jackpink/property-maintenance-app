@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import Image from "next/image";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
@@ -165,11 +166,18 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
     <div className="grid place-items-center place-self-center px-4 md:w-128">
       {!!notes && (
         <>
-          <div className="mb-2 grid ">
-            <p className="place-self-start text-base text-blue-900">
-              HOMEOWNER
-            </p>
-            <GhostButton>Edit</GhostButton>
+          <div className="relative mb-2 h-12 w-full">
+            <p className="absolute left-0 text-base text-blue-900">HOMEOWNER</p>
+            <GhostButton className="absolute -top-3 right-0">
+              <p className="inline-block">{"Edit" + "  "}</p>
+              <Image
+                className="inline-block"
+                src="/edit_button.svg"
+                alt="Edit"
+                width={30}
+                height={30}
+              />
+            </GhostButton>
           </div>
           <div className="whitespace-pre-line px-4 text-base text-blue-900">
             {notes}
