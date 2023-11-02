@@ -117,9 +117,21 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   );
 };
 
-const ParagraphText: React.FC<PropsWithChildren> = ({ children }) => {
+type ParagraphTextProps = {
+  className?: string;
+};
+
+const ParagraphText: React.FC<PropsWithChildren<ParagraphTextProps>> = ({
+  className,
+  children,
+}) => {
   return (
-    <div className="whitespace-pre-line px-4 text-base text-slate-700">
+    <div
+      className={clsx(
+        "whitespace-pre-line px-4 text-base text-slate-700",
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -143,10 +155,12 @@ const DateTimeDropdown: React.FC<DateTimeDropdownProps> = ({
   return (
     <>
       {historyLoading ? (
-        <LoadingSpinner />
+        <div className="h-8 w-8">
+          <LoadingSpinner />
+        </div>
       ) : (
         <select
-          className="border-1	rounded-md border border-black p-1 text-center text-slate-900"
+          className="border-1	rounded-md border border-black p-1 text-center text-green-700"
           value={selectedHomeownerHistory}
           onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
         >
@@ -168,6 +182,8 @@ type NotesViewerProps = {
   updateNotes: (event: MouseEvent<HTMLButtonElement>) => void;
   editNotesMode: boolean;
   setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
+  history?: NoteHistory[];
+  historyLoading?: boolean;
 };
 
 const NotesViewer: React.FC<NotesViewerProps> = ({
@@ -176,11 +192,17 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
   updateNotes,
   editNotesMode,
   setEditNotesMode,
+  history,
+  historyLoading,
 }) => {
   return (
     <div className="grid place-items-center place-self-center px-4 md:w-128">
       {notesLoading ? (
-        <LoadingSpinner />
+        <div className="h-8 w-8">
+          <LoadingSpinner />
+        </div>
+      ) : !notes ? (
+        <>Add</>
       ) : (
         <>
           {editNotesMode && !!notes ? (
@@ -199,6 +221,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
               <ParagraphText>{notes}</ParagraphText>
             </>
           )}
+          <NotesHistory history={history} historyLoading={historyLoading} />
         </>
       )}
     </div>
@@ -238,6 +261,49 @@ const NotesEditor: React.FC<NotesEditorProps> = ({
   );
 };
 
+type NotesHistoryProps = {
+  history?: NoteHistory[];
+  historyLoading?: boolean;
+};
+
+const NotesHistory: React.FC<NotesHistoryProps> = ({
+  history,
+  historyLoading,
+}) => {
+  const [viewHistoryOpen, setViewHistoryOpen] = useState(false);
+  const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
+    undefined | string
+  >();
+
+  return (
+    <>
+      {viewHistoryOpen ? (
+        <>
+          <GhostButton
+            onClick={() => setViewHistoryOpen(false)}
+            className="mb-4"
+          >
+            Close History
+          </GhostButton>
+          <DateTimeDropdown
+            history={history}
+            historyLoading={historyLoading}
+            selectedHomeownerHistory={selectedHomeownerHistory}
+            setSelectedHomeownerHistory={setSelectedHomeownerHistory}
+          />
+          <ParagraphText className="pt-6 text-green-700">
+            {selectedHomeownerHistory}
+          </ParagraphText>
+        </>
+      ) : (
+        <GhostButton onClick={() => setViewHistoryOpen(true)}>
+          View History
+        </GhostButton>
+      )}
+    </>
+  );
+};
+
 type Notes = Job["notes"];
 type TradeNotes = Job["tradeNotes"];
 
@@ -256,24 +322,16 @@ type JobNotesViewerProps = {
 
 const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
   notes,
-  tradeNotes,
   jobId,
   history,
   historyLoading,
 }) => {
-  const [addNoteOpen, setAddNoteOpen] = useState(false);
-  const [newNote, setNewNote] = useState(notes || "");
   const [editNotesMode, setEditNotesMode] = useState(false);
-  const [viewHistoryOpen, setViewHistoryOpen] = useState(false);
-  const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
-    undefined | string
-  >();
 
   const ctx = api.useContext();
 
   const { mutate: createNote } = api.job.updateNotesForJob.useMutation({
     onSuccess: () => {
-      setAddNoteOpen(false);
       void ctx.job.getJobForHomeowner.invalidate();
       setEditNotesMode(false);
     },
@@ -281,11 +339,6 @@ const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
       toast("Could Not Add Notes");
     },
   });
-
-  const onClickAddNotes = () => {
-    console.log("new Note", newNote);
-    createNote({ jobId: jobId, notes: newNote });
-  };
 
   const onClickUpdateNotes = (event: MouseEvent<HTMLButtonElement>) => {
     console.log("new notes", event.currentTarget.value);
@@ -303,48 +356,10 @@ const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
           updateNotes={onClickUpdateNotes}
           editNotesMode={editNotesMode}
           setEditNotesMode={setEditNotesMode}
+          history={history}
+          historyLoading={historyLoading}
         />
-        <GhostButton onClick={() => setViewHistoryOpen(true)}>
-          View History
-        </GhostButton>
-
-        {viewHistoryOpen && (
-          <DateTimeDropdown
-            history={history}
-            historyLoading={historyLoading}
-            selectedHomeownerHistory={selectedHomeownerHistory}
-            setSelectedHomeownerHistory={setSelectedHomeownerHistory}
-          />
-        )}
       </>
-
-      {!!tradeNotes && (
-        <>
-          <p className="mb-2 text-base text-green-800">TRADE</p>
-          <div className="w-96 whitespace-pre-line text-base text-green-800">
-            {tradeNotes}
-          </div>
-        </>
-      )}
-      {addNoteOpen ? (
-        <ClickAwayListener clickOutsideAction={() => setAddNoteOpen(false)}>
-          <div className={clsx("flex")}>
-            <textarea
-              onChange={(e) => setNewNote(e.target.value)}
-              value={newNote}
-              cols={60}
-              rows={3}
-              className={clsx(
-                "border-1 w-full border border-slate-400 p-2 font-extrabold text-slate-900 outline-none",
-                { "border border-2 border-red-500": false }
-              )}
-            ></textarea>
-            <CTAButton onClick={onClickAddNotes}>+</CTAButton>
-          </div>
-        </ClickAwayListener>
-      ) : (
-        <CTAButton onClick={() => setAddNoteOpen(true)}>Add Note</CTAButton>
-      )}
     </div>
   );
 };
