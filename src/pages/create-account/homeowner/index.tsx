@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useSignUp } from "@clerk/nextjs";
 import { z } from "zod";
-import Button from "~/components/Button";
+import { CTAButton } from "~/components/Atoms/Button";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { toast } from "sonner";
