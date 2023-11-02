@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
-import { CTAButton, GhostButton } from "~/components/Atoms/Button";
+import { CTAButton, GhostButton, PlusIcon } from "~/components/Atoms/Button";
 import Photos from "~/components/JobPhotos";
-import React, { PropsWithChildren, useState } from "react";
+import React, { MouseEvent, PropsWithChildren, useState } from "react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -165,27 +165,36 @@ const DateTimeDropdown: React.FC<DateTimeDropdownProps> = ({
 type NotesViewerProps = {
   notes: string | null;
   notesLoading: boolean;
-  updateNotes: () => void;
+  updateNotes: (event: MouseEvent<HTMLButtonElement>) => void;
+  editNotesMode: boolean;
+  setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const NotesViewer: React.FC<NotesViewerProps> = ({
   notes,
   notesLoading,
   updateNotes,
+  editNotesMode,
+  setEditNotesMode,
 }) => {
-  const [editNotes, setEditNotes] = useState(false);
   return (
     <div className="grid place-items-center place-self-center px-4 md:w-128">
       {notesLoading ? (
         <LoadingSpinner />
       ) : (
         <>
-          {editNotes ? (
-            <></>
+          {editNotesMode && !!notes ? (
+            <>
+              <NotesEditor
+                notes={notes}
+                updateNotes={updateNotes}
+                setEditNotesMode={setEditNotesMode}
+              />
+            </>
           ) : (
             <>
               <div className="relative mb-2 h-12 w-full">
-                <EditButton onClick={updateNotes} />
+                <EditButton onClick={() => setEditNotesMode(true)} />
               </div>
               <ParagraphText>{notes}</ParagraphText>
             </>
@@ -193,6 +202,39 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
         </>
       )}
     </div>
+  );
+};
+
+type NotesEditorProps = {
+  notes: string;
+  updateNotes: (event: MouseEvent<HTMLButtonElement>) => void;
+  setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const NotesEditor: React.FC<NotesEditorProps> = ({
+  notes,
+  updateNotes,
+  setEditNotesMode,
+}) => {
+  const [newNote, setNewNote] = useState(notes || "");
+  return (
+    <ClickAwayListener clickOutsideAction={() => setEditNotesMode(false)}>
+      <div className={clsx("flex")}>
+        <textarea
+          onChange={(e) => setNewNote(e.target.value)}
+          value={newNote}
+          cols={60}
+          rows={3}
+          className={clsx(
+            "border-1 w-full border border-slate-400 p-2 font-extrabold text-slate-900 outline-none",
+            { "border border-2 border-red-500": false }
+          )}
+        ></textarea>
+        <CTAButton value={newNote} onClick={updateNotes}>
+          <PlusIcon />
+        </CTAButton>
+      </div>
+    </ClickAwayListener>
   );
 };
 
@@ -221,6 +263,7 @@ const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
 }) => {
   const [addNoteOpen, setAddNoteOpen] = useState(false);
   const [newNote, setNewNote] = useState(notes || "");
+  const [editNotesMode, setEditNotesMode] = useState(false);
   const [viewHistoryOpen, setViewHistoryOpen] = useState(false);
   const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
     undefined | string
@@ -232,6 +275,7 @@ const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
     onSuccess: () => {
       setAddNoteOpen(false);
       void ctx.job.getJobForHomeowner.invalidate();
+      setEditNotesMode(false);
     },
     onError: () => {
       toast("Could Not Add Notes");
@@ -242,16 +286,23 @@ const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
     console.log("new Note", newNote);
     createNote({ jobId: jobId, notes: newNote });
   };
-  console.log(notes);
+
+  const onClickUpdateNotes = (event: MouseEvent<HTMLButtonElement>) => {
+    console.log("new notes", event.currentTarget.value);
+    createNote({
+      jobId: jobId,
+      notes: event.currentTarget.value,
+    });
+  };
   return (
     <div className="grid place-items-center place-self-center px-4 md:w-128">
       <>
         <NotesViewer
           notes={notes}
           notesLoading={false}
-          updateNotes={() => {
-            console.log("updte notes");
-          }}
+          updateNotes={onClickUpdateNotes}
+          editNotesMode={editNotesMode}
+          setEditNotesMode={setEditNotesMode}
         />
         <GhostButton onClick={() => setViewHistoryOpen(true)}>
           View History
