@@ -196,16 +196,16 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
   historyLoading,
 }) => {
   return (
-    <div className="grid place-items-center place-self-center px-4 md:w-128">
+    <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
       {notesLoading ? (
         <div className="h-8 w-8">
           <LoadingSpinner />
         </div>
-      ) : !notes ? (
-        <>Add</>
+      ) : !notes && !editNotesMode ? (
+        <CTAButton onClick={() => setEditNotesMode(true)}>Add Notes</CTAButton>
       ) : (
         <>
-          {editNotesMode && !!notes ? (
+          {editNotesMode ? (
             <>
               <NotesEditor
                 notes={notes}
@@ -229,7 +229,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
 };
 
 type NotesEditorProps = {
-  notes: string;
+  notes: string | null;
   updateNotes: (event: MouseEvent<HTMLButtonElement>) => void;
   setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -348,7 +348,7 @@ const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
     });
   };
   return (
-    <div className="grid place-items-center place-self-center px-4 md:w-128">
+    <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
       <>
         <NotesViewer
           notes={notes}

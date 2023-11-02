@@ -7,7 +7,7 @@ import { concatAddress } from "~/components/Properties/Property";
 import EditProperty from "~/components/EditProperty";
 import RecentJobs from "~/components/RecentJobs";
 import { CTAButton } from "~/components/Atoms/Button";
-import Popover from "~/components/Popover";
+import Popover from "~/components/Atoms/Popover";
 import { ReactNode, useState } from "react";
 import clsx from "clsx";
 import z from "zod";
