@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { type ReactNode } from "react";
 import { Text } from "./Text";
 import LoadingSpinner from "./LoadingSpinner";
+import Image from "next/image";
 
 type ButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -197,3 +198,22 @@ export function UploadButton({
     </div>
   );
 }
+
+type EditButtonProps = {
+  onClick: () => void;
+};
+
+export const EditButton: React.FC<EditButtonProps> = ({ onClick }) => {
+  return (
+    <GhostButton className="absolute -top-3 right-0" onClick={onClick}>
+      <p className="inline-block">{"Edit" + "  "}</p>
+      <Image
+        className="inline-block"
+        src="/edit_button.svg"
+        alt="Edit"
+        width={30}
+        height={30}
+      />
+    </GhostButton>
+  );
+};

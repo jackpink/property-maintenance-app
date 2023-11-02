@@ -3,11 +3,12 @@ import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
 import { CTAButton, GhostButton } from "~/components/Atoms/Button";
 import Photos from "~/components/JobPhotos";
-import React, { useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import Image from "next/image";
+import { EditButton } from "~/components/Atoms/Button";
 import ClickAwayListener from "~/components/ClickAwayListener";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
@@ -15,6 +16,7 @@ import { PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
 import JobRoomSelector from "~/components/Organisms/JobRoomSelector";
 import JobDocuments from "~/components/Organisms/JobDocuments";
+import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -93,7 +95,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
-      <NotesViewer
+      <JobNotesViewer
         notes={job.notes}
         tradeNotes={job.tradeNotes}
         jobId={job.id}
@@ -115,6 +117,85 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   );
 };
 
+const ParagraphText: React.FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <div className="whitespace-pre-line px-4 text-base text-slate-700">
+      {children}
+    </div>
+  );
+};
+
+type DateTimeDropdownProps = {
+  history?: NoteHistory[];
+  historyLoading?: boolean;
+  selectedHomeownerHistory?: string;
+  setSelectedHomeownerHistory: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
+};
+
+const DateTimeDropdown: React.FC<DateTimeDropdownProps> = ({
+  history,
+  historyLoading,
+  selectedHomeownerHistory,
+  setSelectedHomeownerHistory,
+}) => {
+  return (
+    <>
+      {historyLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <select
+          className="border-1	rounded-md border border-black p-1 text-center text-slate-900"
+          value={selectedHomeownerHistory}
+          onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
+        >
+          {!!history &&
+            history.map((history, index) => (
+              <option key={index} value={history.notes}>
+                {format(history.date, "PPPppp")}
+              </option>
+            ))}
+        </select>
+      )}
+    </>
+  );
+};
+
+type NotesViewerProps = {
+  notes: string | null;
+  notesLoading: boolean;
+  updateNotes: () => void;
+};
+
+const NotesViewer: React.FC<NotesViewerProps> = ({
+  notes,
+  notesLoading,
+  updateNotes,
+}) => {
+  const [editNotes, setEditNotes] = useState(false);
+  return (
+    <div className="grid place-items-center place-self-center px-4 md:w-128">
+      {notesLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {editNotes ? (
+            <></>
+          ) : (
+            <>
+              <div className="relative mb-2 h-12 w-full">
+                <EditButton onClick={updateNotes} />
+              </div>
+              <ParagraphText>{notes}</ParagraphText>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
 type Notes = Job["notes"];
 type TradeNotes = Job["tradeNotes"];
 
@@ -123,7 +204,7 @@ type NoteHistory = {
   date: Date;
 };
 
-type NotesViewerProps = {
+type JobNotesViewerProps = {
   notes: Notes;
   tradeNotes: TradeNotes;
   jobId: string;
@@ -131,7 +212,7 @@ type NotesViewerProps = {
   historyLoading: boolean;
 };
 
-const NotesViewer: React.FC<NotesViewerProps> = ({
+const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
   notes,
   tradeNotes,
   jobId,
@@ -164,43 +245,27 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
   console.log(notes);
   return (
     <div className="grid place-items-center place-self-center px-4 md:w-128">
-      {!!notes && (
-        <>
-          <div className="relative mb-2 h-12 w-full">
-            <p className="absolute left-0 text-base text-blue-900">HOMEOWNER</p>
-            <GhostButton className="absolute -top-3 right-0">
-              <p className="inline-block">{"Edit" + "  "}</p>
-              <Image
-                className="inline-block"
-                src="/edit_button.svg"
-                alt="Edit"
-                width={30}
-                height={30}
-              />
-            </GhostButton>
-          </div>
-          <div className="whitespace-pre-line px-4 text-base text-blue-900">
-            {notes}
-          </div>
-          <GhostButton onClick={() => setViewHistoryOpen(true)}>
-            View History
-          </GhostButton>
-          {viewHistoryOpen && (
-            <select
-              className="place-self-end text-center	text-blue-900"
-              value={selectedHomeownerHistory}
-              onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
-            >
-              {!!history &&
-                history.map((history, index) => (
-                  <option key={index} value={history.notes}>
-                    {format(history.date, "PPPppp")}
-                  </option>
-                ))}
-            </select>
-          )}
-        </>
-      )}
+      <>
+        <NotesViewer
+          notes={notes}
+          notesLoading={false}
+          updateNotes={() => {
+            console.log("updte notes");
+          }}
+        />
+        <GhostButton onClick={() => setViewHistoryOpen(true)}>
+          View History
+        </GhostButton>
+
+        {viewHistoryOpen && (
+          <DateTimeDropdown
+            history={history}
+            historyLoading={historyLoading}
+            selectedHomeownerHistory={selectedHomeownerHistory}
+            setSelectedHomeownerHistory={setSelectedHomeownerHistory}
+          />
+        )}
+      </>
 
       {!!tradeNotes && (
         <>
