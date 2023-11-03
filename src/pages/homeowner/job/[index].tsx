@@ -73,31 +73,27 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   };
 
   return (
-    <div className="grid justify-center">
+    <>
       <PageTitle title={job.title} />
-      <JobDate date={job.date} jobId={job.id} />
-      <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
+      <div className="grid grid-cols-2 gap-4 3xl:gap-8">
+        <div className="col-span-2 mx-4 grid justify-center md:w-128 3xl:col-span-1">
+          <JobDate date={job.date} jobId={job.id} />
+          <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
 
-      <JobProperty job={job} jobLoading={jobLoading} />
-      <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
-        Documents
-      </h2>
-      <JobDocuments job={job} />
-      <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
-        Notes
-      </h2>
-      <JobNotes
-        notes={job.notes}
-        tradeNotes={job.tradeNotes}
-        jobId={job.id}
-        history={history?.homeownerNotes}
-        historyLoading={historyLoading}
-      />
-      <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
-        Photos
-      </h2>
-
-      <JobPhotos job={job} />
-    </div>
+          <JobProperty job={job} jobLoading={jobLoading} />
+          <JobDocuments job={job} />
+          <JobNotes
+            notes={job.notes}
+            tradeNotes={job.tradeNotes}
+            jobId={job.id}
+            history={history?.homeownerNotes}
+            historyLoading={historyLoading}
+          />
+        </div>
+        <div className="col-span-2 mx-4 md:w-128 3xl:col-span-1">
+          <JobPhotos job={job} />
+        </div>
+      </div>
+    </>
   );
 };
