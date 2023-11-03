@@ -1,15 +1,16 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
-import Photos from "~/components/JobPhotos";
+import PhotosViewerWithRoomSelector from "~/components/Molecules/PhotosViewerWithRoomSelector";
 import React, { useState } from "react";
-import UploadPhotoButton from "~/components/UploadPhoto";
+import UploadPhotoButton from "~/components/Molecules/UploadPhoto";
 import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
 import { PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
 import JobRoomSelector from "~/components/Organisms/JobRoomSelector";
 import JobDocuments from "~/components/Organisms/JobDocuments";
 import JobNotes from "~/components/Organisms/JobNotes";
+import JobPhotos from "~/components/Organisms/JobPhotos";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -98,87 +99,8 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Photos
       </h2>
-      <UploadPhotoButton
-        jobId={job.id}
-        propertyId={job.Property.id}
-        multipleUploads={true}
-        refetchPageData={refetchPhotosAfterUpload}
-        userType="HOMEOWNER"
-      />
-      <PhotoViewer job={job} />
+
+      <JobPhotos job={job} />
     </div>
   );
-};
-
-type PhotoViewerProps = {
-  job: Job;
-};
-
-const PhotoViewer: React.FC<PhotoViewerProps> = ({ job }) => {
-  const [selectedRoom, setSelectedRoom] = useState("UNASSIGNED");
-  return (
-    <div className="text-center	">
-      <select
-        className="rounded-full border-2 border-solid border-black p-3 text-center	"
-        value={selectedRoom}
-        onChange={(e) => setSelectedRoom(e.target.value)}
-      >
-        <option value="UNASSIGNED">UNASSIGNED</option>
-        {job.rooms.map((room, index) => {
-          return (
-            <option key={index} value={room.id}>
-              {room.Level.label.toUpperCase() + "→" + room.label.toUpperCase()}
-            </option>
-          );
-        })}
-      </select>
-      {selectedRoom === "UNASSIGNED" ? (
-        <UnassignedPhotos job={job} />
-      ) : (
-        <RoomPhotos job={job} roomId={selectedRoom} />
-      )}
-    </div>
-  );
-};
-
-type UnassignedPhotosProps = {
-  job: Job;
-};
-
-const UnassignedPhotos: React.FC<UnassignedPhotosProps> = ({ job }) => {
-  const { data: photos } = api.photo.getUnassignedPhotosForJob.useQuery({
-    jobId: job.id,
-  });
-
-  if (!!photos && photos.length > 0) {
-    console.log(photos);
-    return (
-      <div>
-        <Photos photos={photos} rooms={job.rooms} />
-      </div>
-    );
-  }
-  return <p>no photo</p>;
-};
-
-type RoomPhotosProps = {
-  job: Job;
-  roomId: string;
-};
-
-const RoomPhotos: React.FC<RoomPhotosProps> = ({ job, roomId }) => {
-  const { data: photos } = api.photo.getPhotosForJobAndRoom.useQuery({
-    jobId: job.id,
-    roomId: roomId,
-  });
-
-  if (!!photos && photos.length > 0) {
-    console.log(photos);
-    return (
-      <>
-        <Photos photos={photos} rooms={job.rooms} />
-      </>
-    );
-  }
-  return <p>no photos</p>;
 };

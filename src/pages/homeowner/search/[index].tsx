@@ -9,10 +9,10 @@ import {
 } from "react";
 import { useRouter } from "next/router";
 import { RouterOutputs, api } from "~/utils/api";
-import Photos from "~/components/Photos";
+import Photos from "~/components/Molecules/Photos";
 import { Level, Room } from "@prisma/client";
-import RoomSelector from "~/components/RoomSelector";
-import Button from "~/components/Button";
+import RoomSelector from "~/components/Molecules/RoomSelector";
+import { CTAButton } from "~/components/Atoms/Button";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
