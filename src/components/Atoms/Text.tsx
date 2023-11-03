@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { PropsWithChildren } from "react";
 
 type TextProps = {
   className?: string;
@@ -51,3 +52,23 @@ export function ErrorMessage({
     <>{error ? <p className="text-red-500">⚠️ {errorMessage}</p> : <></>}</>
   );
 }
+
+type ParagraphTextProps = {
+  className?: string;
+};
+
+export const ParagraphText: React.FC<PropsWithChildren<ParagraphTextProps>> = ({
+  className,
+  children,
+}) => {
+  return (
+    <div
+      className={clsx(
+        "whitespace-pre-line px-4 text-base text-slate-700",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+};

@@ -1,8 +1,8 @@
 import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import React, { useCallback, useState } from "react";
-import Button from "~/components/Button";
-import Popover from "~/components/Popover";
+import { CTAButton } from "~/components/Atoms/Button";
+import Popover from "~/components/Atoms/Popover";
 import Properties from "~/components/Properties";
 import RecentJobs from "~/components/RecentJobs";
 import { type RouterOutputs, api } from "~/utils/api";
@@ -70,12 +70,12 @@ const CreateProperty: React.FC<CreatePropertyProps> = ({ userId }) => {
 
   return (
     <div className="grid justify-items-center">
-      <Button
+      <CTAButton
         onClick={() => setCreatePropertyPopover(true)}
         className="mb-8 mt-6 place-self-center"
       >
         Create Property
-      </Button>
+      </CTAButton>
       <Popover
         popoveropen={createPropertyPopover}
         setPopoverOpen={setCreatePropertyPopover}
@@ -258,7 +258,7 @@ const PropertyPrompt: React.FC<PropertyPromptProps> = ({
   return (
     <>
       {!!data && data.length === 0 ? (
-        <Button onClick={onClickCreateProperty}>Create Property</Button>
+        <CTAButton onClick={onClickCreateProperty}>Create Property</CTAButton>
       ) : (
         <p>
           This property already exists in our system. You will be unable to

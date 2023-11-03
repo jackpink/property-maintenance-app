@@ -1,22 +1,15 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
-import { CTAButton, GhostButton, PlusIcon } from "~/components/Atoms/Button";
 import Photos from "~/components/JobPhotos";
-import React, { MouseEvent, PropsWithChildren, useState } from "react";
-import clsx from "clsx";
-import { format } from "date-fns";
-import { toast } from "sonner";
-import Image from "next/image";
-import { EditButton } from "~/components/Atoms/Button";
-import ClickAwayListener from "~/components/ClickAwayListener";
+import React, { useState } from "react";
 import UploadPhotoButton from "~/components/UploadPhoto";
 import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
 import { PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
 import JobRoomSelector from "~/components/Organisms/JobRoomSelector";
 import JobDocuments from "~/components/Organisms/JobDocuments";
-import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
+import JobNotes from "~/components/Organisms/JobNotes";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -95,7 +88,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Notes
       </h2>
-      <JobNotesViewer
+      <JobNotes
         notes={job.notes}
         tradeNotes={job.tradeNotes}
         jobId={job.id}
@@ -113,253 +106,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         userType="HOMEOWNER"
       />
       <PhotoViewer job={job} />
-    </div>
-  );
-};
-
-type ParagraphTextProps = {
-  className?: string;
-};
-
-const ParagraphText: React.FC<PropsWithChildren<ParagraphTextProps>> = ({
-  className,
-  children,
-}) => {
-  return (
-    <div
-      className={clsx(
-        "whitespace-pre-line px-4 text-base text-slate-700",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-};
-
-type DateTimeDropdownProps = {
-  history?: NoteHistory[];
-  historyLoading?: boolean;
-  selectedHomeownerHistory?: string;
-  setSelectedHomeownerHistory: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-};
-
-const DateTimeDropdown: React.FC<DateTimeDropdownProps> = ({
-  history,
-  historyLoading,
-  selectedHomeownerHistory,
-  setSelectedHomeownerHistory,
-}) => {
-  return (
-    <>
-      {historyLoading ? (
-        <div className="h-8 w-8">
-          <LoadingSpinner />
-        </div>
-      ) : (
-        <select
-          className="border-1	rounded-md border border-black p-1 text-center text-green-700"
-          value={selectedHomeownerHistory}
-          onChange={(e) => setSelectedHomeownerHistory(e.target.value)}
-        >
-          {!!history &&
-            history.map((history, index) => (
-              <option key={index} value={history.notes}>
-                {format(history.date, "PPPppp")}
-              </option>
-            ))}
-        </select>
-      )}
-    </>
-  );
-};
-
-type NotesViewerProps = {
-  notes: string | null;
-  notesLoading: boolean;
-  updateNotes: (event: MouseEvent<HTMLButtonElement>) => void;
-  editNotesMode: boolean;
-  setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
-  history?: NoteHistory[];
-  historyLoading?: boolean;
-};
-
-const NotesViewer: React.FC<NotesViewerProps> = ({
-  notes,
-  notesLoading,
-  updateNotes,
-  editNotesMode,
-  setEditNotesMode,
-  history,
-  historyLoading,
-}) => {
-  return (
-    <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
-      {notesLoading ? (
-        <div className="h-8 w-8">
-          <LoadingSpinner />
-        </div>
-      ) : !notes && !editNotesMode ? (
-        <CTAButton onClick={() => setEditNotesMode(true)}>Add Notes</CTAButton>
-      ) : (
-        <>
-          {editNotesMode ? (
-            <>
-              <NotesEditor
-                notes={notes}
-                updateNotes={updateNotes}
-                setEditNotesMode={setEditNotesMode}
-              />
-            </>
-          ) : (
-            <>
-              <div className="relative mb-2 h-12 w-full">
-                <EditButton onClick={() => setEditNotesMode(true)} />
-              </div>
-              <ParagraphText>{notes}</ParagraphText>
-            </>
-          )}
-          <NotesHistory history={history} historyLoading={historyLoading} />
-        </>
-      )}
-    </div>
-  );
-};
-
-type NotesEditorProps = {
-  notes: string | null;
-  updateNotes: (event: MouseEvent<HTMLButtonElement>) => void;
-  setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const NotesEditor: React.FC<NotesEditorProps> = ({
-  notes,
-  updateNotes,
-  setEditNotesMode,
-}) => {
-  const [newNote, setNewNote] = useState(notes || "");
-  return (
-    <ClickAwayListener clickOutsideAction={() => setEditNotesMode(false)}>
-      <div className={clsx("flex")}>
-        <textarea
-          onChange={(e) => setNewNote(e.target.value)}
-          value={newNote}
-          cols={60}
-          rows={3}
-          className={clsx(
-            "border-1 w-full border border-slate-400 p-2 font-extrabold text-slate-900 outline-none",
-            { "border border-2 border-red-500": false }
-          )}
-        ></textarea>
-        <CTAButton value={newNote} onClick={updateNotes}>
-          <PlusIcon />
-        </CTAButton>
-      </div>
-    </ClickAwayListener>
-  );
-};
-
-type NotesHistoryProps = {
-  history?: NoteHistory[];
-  historyLoading?: boolean;
-};
-
-const NotesHistory: React.FC<NotesHistoryProps> = ({
-  history,
-  historyLoading,
-}) => {
-  const [viewHistoryOpen, setViewHistoryOpen] = useState(false);
-  const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
-    undefined | string
-  >();
-
-  return (
-    <>
-      {viewHistoryOpen ? (
-        <>
-          <GhostButton
-            onClick={() => setViewHistoryOpen(false)}
-            className="mb-4"
-          >
-            Close History
-          </GhostButton>
-          <DateTimeDropdown
-            history={history}
-            historyLoading={historyLoading}
-            selectedHomeownerHistory={selectedHomeownerHistory}
-            setSelectedHomeownerHistory={setSelectedHomeownerHistory}
-          />
-          <ParagraphText className="pt-6 text-green-700">
-            {selectedHomeownerHistory}
-          </ParagraphText>
-        </>
-      ) : (
-        <GhostButton onClick={() => setViewHistoryOpen(true)}>
-          View History
-        </GhostButton>
-      )}
-    </>
-  );
-};
-
-type Notes = Job["notes"];
-type TradeNotes = Job["tradeNotes"];
-
-type NoteHistory = {
-  notes: string;
-  date: Date;
-};
-
-type JobNotesViewerProps = {
-  notes: Notes;
-  tradeNotes: TradeNotes;
-  jobId: string;
-  history?: NoteHistory[];
-  historyLoading: boolean;
-};
-
-const JobNotesViewer: React.FC<JobNotesViewerProps> = ({
-  notes,
-  jobId,
-  history,
-  historyLoading,
-}) => {
-  const [editNotesMode, setEditNotesMode] = useState(false);
-
-  const ctx = api.useContext();
-
-  const { mutate: createNote } = api.job.updateNotesForJob.useMutation({
-    onSuccess: () => {
-      void ctx.job.getJobForHomeowner.invalidate();
-      setEditNotesMode(false);
-    },
-    onError: () => {
-      toast("Could Not Add Notes");
-    },
-  });
-
-  const onClickUpdateNotes = (event: MouseEvent<HTMLButtonElement>) => {
-    console.log("new notes", event.currentTarget.value);
-    createNote({
-      jobId: jobId,
-      notes: event.currentTarget.value,
-    });
-  };
-  return (
-    <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
-      <>
-        <NotesViewer
-          notes={notes}
-          notesLoading={false}
-          updateNotes={onClickUpdateNotes}
-          editNotesMode={editNotesMode}
-          setEditNotesMode={setEditNotesMode}
-          history={history}
-          historyLoading={historyLoading}
-        />
-      </>
     </div>
   );
 };
