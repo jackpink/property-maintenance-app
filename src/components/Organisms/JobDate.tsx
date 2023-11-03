@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/utils/api";
-import { TextSpan } from "../Atoms/Text";
 import EditDatePopover from "../Molecules/EditDatePopover";
 import { CTAButton } from "../Atoms/Button";
 import { format } from "date-fns";
+import { PageSubTitle } from "../Atoms/Title";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "../Atoms/BackgroundContainer";
 
 type JobDateProps = {
   date: Date;
@@ -41,11 +45,10 @@ export default function JobDate({
   };
 
   return (
-    <div className="mb-4 flex justify-center">
-      <TextSpan className="place-self-center px-12">
-        Job Completed On:{" "}
-      </TextSpan>
-
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle className="">Job Completed On </PageSubTitle>
+      </BackgroundContainerHeader>
       <EditDatePopover
         currentDate={date}
         newDate={newDate}
@@ -62,6 +65,6 @@ export default function JobDate({
           <></>
         )}
       </EditDatePopover>
-    </div>
+    </BackgroundContainer>
   );
 }

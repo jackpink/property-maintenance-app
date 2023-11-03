@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction } from "react";
 import { Text } from "../Atoms/Text";
 import { FormattedDate } from "~/utils/utits";
 import clsx from "clsx";
-import { GhostButton } from "../Atoms/Button";
+import { EditCalenderButton, GhostButton } from "../Atoms/Button";
 
 type EditDateProps = {
   currentDate: Date;
@@ -28,12 +28,10 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
   return (
     <>
       <span className="">
-        <GhostButton
-          onClick={() => setJobDayPickerOpen(true)}
-          disabled={disbled}
-        >
-          {currentDate.toDateString()}
-        </GhostButton>
+        <Text>
+          {format(currentDate, "PPPP") + " "}
+          <EditCalenderButton onClick={() => setJobDayPickerOpen(true)} />
+        </Text>
       </span>
       <Popover
         popoveropen={jobDayPickerOpen}
