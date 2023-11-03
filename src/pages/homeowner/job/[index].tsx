@@ -11,6 +11,7 @@ import JobRoomSelector from "~/components/Organisms/JobRoomSelector";
 import JobDocuments from "~/components/Organisms/JobDocuments";
 import JobNotes from "~/components/Organisms/JobNotes";
 import JobPhotos from "~/components/Organisms/JobPhotos";
+import JobProperty from "~/components/Organisms/JobProperty";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -77,11 +78,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <JobDate date={job.date} jobId={job.id} />
       <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
 
-      <PropertyHeroWithSelectedRooms
-        Property={job.Property}
-        rooms={job.rooms}
-      />
-      <JobRoomSelector job={job} jobLoading={jobLoading} />
+      <JobProperty job={job} jobLoading={jobLoading} />
       <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
         Documents
       </h2>

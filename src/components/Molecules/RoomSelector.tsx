@@ -44,7 +44,7 @@ const RoomSelector: React.FC<React.PropsWithChildren<RoomSelectorProps>> = ({
   }, [roomSelectorOpen]);
 
   return (
-    <div className="grid">
+    <>
       {children}
       <Popover
         popoveropen={roomSelectorOpen}
@@ -68,7 +68,7 @@ const RoomSelector: React.FC<React.PropsWithChildren<RoomSelectorProps>> = ({
         </div>
         <ErrorMessage error={error} errorMessage={errorMessage} />
       </Popover>
-    </div>
+    </>
   );
 };
 

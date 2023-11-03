@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import RoomSelector from "../Molecules/RoomSelector";
-import { CTAButton } from "../Atoms/Button";
+import { CTAButton, EditButton, GhostButton } from "../Atoms/Button";
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
@@ -84,12 +84,10 @@ export default function JobRoomSelector({
       roomSelectorOpen={roomSelectorOpen}
       setRoomSelectorOpen={setRoomSelectorOpen}
     >
-      <CTAButton
+      <EditButton
         onClick={() => setRoomSelectorOpen(true)}
-        className="my-6 w-48 place-self-center"
-      >
-        Select Rooms
-      </CTAButton>
+        className=" absolute right-0 top-0 place-self-center"
+      />
     </RoomSelector>
   );
 }
