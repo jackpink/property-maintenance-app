@@ -180,7 +180,9 @@ export const UploadDocumentWithLabelInput: React.FC<
     <div className="grid place-items-center">
       {createLabelPage ? (
         <>
-          <PageSubTitle subtitle="Add a label for the Document before uploading" />
+          <PageSubTitle>
+            Add a label for the Document before uploading
+          </PageSubTitle>
 
           <TextInputWithError
             label="Label"

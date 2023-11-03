@@ -1,8 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import Popover from "../Atoms/Popover";
-import { CTAButton, GhostButton } from "../Atoms/Button";
+import { CTAButton, EditButton, GhostButton } from "../Atoms/Button";
 import TextInputWithError from "../TextInput";
+import { Text } from "../Atoms/Text";
 
 export function instanceOfTradeInfo(object: any): object is ITradeInfo {
   return "name" in object && "email" in object && "phone" in object;
@@ -39,24 +40,26 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
   return (
     <>
       {!!tradeInfo && instanceOfTradeInfo(tradeInfo) ? (
-        <GhostButton
-          onClick={() => setEditPopoverOpen(true)}
-          disabled={disabled}
-        >
-          <p className="pb-4 text-center text-xl text-slate-700">
-            {tradeInfo.name}
-          </p>
-          <p className="text-left text-slate-600">
-            <span className="font-light">Email: </span>
-            {tradeInfo.email}
-          </p>
+        <div className="relative">
+          <div>
+            <Text className="pb-4 text-center text-xl text-slate-700">
+              {tradeInfo.name}
+            </Text>
+            <Text className="text-left text-slate-600">
+              <span className="font-light">Email: </span>
+              {tradeInfo.email}
+            </Text>
 
-          <p className="text-left text-slate-600">
-            <span className="font-light">Phone Number: {"   "}</span>
-            {tradeInfo.phone}
-          </p>
-          <span></span>
-        </GhostButton>
+            <Text className="text-left text-slate-600">
+              <span className="font-light">Phone Number: {"   "}</span>
+              {tradeInfo.phone}
+            </Text>
+          </div>
+          <EditButton
+            className="absolute right-0 top-1/2"
+            onClick={() => setEditPopoverOpen(true)}
+          />
+        </div>
       ) : (
         <GhostButton
           onClick={() => setEditPopoverOpen(true)}

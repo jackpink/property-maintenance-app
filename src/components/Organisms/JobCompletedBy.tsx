@@ -6,6 +6,11 @@ import AddTradePopover, {
 import { api } from "~/utils/api";
 import { toast } from "sonner";
 import { TextSpan } from "../Atoms/Text";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "../Atoms/BackgroundContainer";
+import { PageSubTitle } from "../Atoms/Title";
 
 type JobCompletedByProps = {
   tradeInfo: Prisma.JsonValue | null;
@@ -56,8 +61,10 @@ export default function JobCompletedBy({
   };
   // Does job have a Trade User?
   return (
-    <div className="grid place-items-center">
-      <TextSpan className="">Job Completed By: </TextSpan>
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle>Job Completed By</PageSubTitle>
+      </BackgroundContainerHeader>
       <AddTradePopover
         tradeInfo={tradeInfo}
         editPopoverOpen={editTradeInfoOpen}
@@ -67,6 +74,6 @@ export default function JobCompletedBy({
         onClickUpdate={onClickUpdate}
         disabled={disabled}
       />
-    </div>
+    </BackgroundContainer>
   );
 }

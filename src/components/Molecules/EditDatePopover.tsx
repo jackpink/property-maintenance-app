@@ -27,12 +27,14 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
 }) => {
   return (
     <>
-      <span className="">
-        <Text>
-          {format(currentDate, "PPPP") + " "}
-          <EditCalenderButton onClick={() => setJobDayPickerOpen(true)} />
-        </Text>
-      </span>
+      <Text>
+        {format(currentDate, "PPPP") + " "}
+        <EditCalenderButton
+          className="absolute right-0"
+          onClick={() => setJobDayPickerOpen(true)}
+        />
+      </Text>
+
       <Popover
         popoveropen={jobDayPickerOpen}
         setPopoverOpen={setJobDayPickerOpen}
