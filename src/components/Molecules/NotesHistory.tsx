@@ -20,7 +20,7 @@ const NotesHistory: React.FC<NotesHistoryProps> = ({
   const [viewHistoryOpen, setViewHistoryOpen] = useState(false);
   const [selectedHomeownerHistory, setSelectedHomeownerHistory] = useState<
     undefined | string
-  >();
+  >(history ? (history[0] ? history[0].notes : "") : "");
 
   return (
     <>

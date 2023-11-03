@@ -9,11 +9,11 @@ type Photo = RouterOutputs["photo"]["getUnassignedPhotosForJob"][number];
 
 type Photos = RouterOutputs["photo"]["getUnassignedPhotosForJob"];
 
-type Props = {
+type PhotoViewerProps = {
   photos: Photos;
 };
 
-const Photos: React.FC<Props> = ({ photos }) => {
+const PhotoViewer: React.FC<PhotoViewerProps> = ({ photos }) => {
   return (
     <div className="flex  flex-wrap justify-center gap-4 pt-8">
       {photos.map((photo, index, photoArray) => {
@@ -29,8 +29,6 @@ const Photos: React.FC<Props> = ({ photos }) => {
     </div>
   );
 };
-
-export default Photos;
 
 type PhotoProps = {
   photo: Photo;
@@ -75,7 +73,10 @@ type FullSizePhotoProps = {
   photoArray: Photo[];
 };
 
-const FullSizePhoto: React.FC<FullSizePhotoProps> = ({ index, photoArray }) => {
+export const FullSizePhoto: React.FC<FullSizePhotoProps> = ({
+  index,
+  photoArray,
+}) => {
   const [photoIndex, setPhotoIndex] = useState(index);
   const photo = photoArray.at(photoIndex);
   if (!photo) return <>Not found</>;
@@ -165,3 +166,4 @@ const FullSizePhoto: React.FC<FullSizePhotoProps> = ({ index, photoArray }) => {
     </div>
   );
 };
+export default PhotoViewer;
