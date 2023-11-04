@@ -58,6 +58,7 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
           <EditButton
             className="absolute right-0 top-1/2"
             onClick={() => setEditPopoverOpen(true)}
+            disabled={disabled}
           />
         </div>
       ) : (

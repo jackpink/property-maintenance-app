@@ -55,7 +55,7 @@ export default function JobDate({
         setNewDate={setNewDate}
         jobDayPickerOpen={jobDayPickerOpen}
         setJobDayPickerOpen={setJobDayPickerOpen}
-        disbled={disabled}
+        disabled={disabled}
       >
         {!!newDate ? (
           <CTAButton onClick={onClickUpdateDate}>

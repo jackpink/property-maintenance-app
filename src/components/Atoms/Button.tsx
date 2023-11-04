@@ -3,6 +3,7 @@ import { type ReactNode } from "react";
 import { Text } from "./Text";
 import LoadingSpinner from "./LoadingSpinner";
 import Image from "next/image";
+import { toast } from "sonner";
 
 type ButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -152,17 +153,26 @@ export function CalendarIcon({ className }: { className?: string }) {
   );
 }
 
+const ButtonDisabledToast = () => {
+  toast("You are not authorised to change this");
+};
+
 type EditCalenderButtonProps = {
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
 export function EditCalenderButton({
   onClick,
   className,
+  disabled = false,
 }: EditCalenderButtonProps) {
   return (
-    <button className={clsx(className)} onClick={onClick}>
+    <button
+      className={clsx(className, disabled && "cursor-not-allowed opacity-50")}
+      onClick={disabled ? ButtonDisabledToast : onClick}
+    >
       <CalendarIcon />
     </button>
   );
@@ -240,14 +250,19 @@ export function UploadButton({
 type EditButtonProps = {
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
 export const EditButton: React.FC<EditButtonProps> = ({
   onClick,
   className,
+  disabled = false,
 }) => {
   return (
-    <button onClick={onClick} className={clsx(className)}>
+    <button
+      onClick={disabled ? ButtonDisabledToast : onClick}
+      className={clsx(className, disabled && "cursor-not-allowed opacity-50")}
+    >
       <EditIcon />
     </button>
   );

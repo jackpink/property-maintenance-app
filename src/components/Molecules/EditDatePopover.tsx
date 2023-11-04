@@ -13,7 +13,7 @@ type EditDateProps = {
   setNewDate: Dispatch<SetStateAction<Date | undefined>>;
   jobDayPickerOpen: boolean;
   setJobDayPickerOpen: Dispatch<SetStateAction<boolean>>;
-  disbled?: boolean;
+  disabled?: boolean;
 };
 
 const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
@@ -23,7 +23,7 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
   children,
   jobDayPickerOpen,
   setJobDayPickerOpen,
-  disbled = false,
+  disabled = false,
 }) => {
   return (
     <>
@@ -32,6 +32,7 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
         <EditCalenderButton
           className="absolute right-0 p-1"
           onClick={() => setJobDayPickerOpen(true)}
+          disabled={disabled}
         />
       </Text>
 
