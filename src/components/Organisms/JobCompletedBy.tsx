@@ -41,7 +41,7 @@ export default function JobCompletedBy({
     api.job.updateTradeContactForJob.useMutation({
       onSuccess: () => {
         // Refetch job for page
-        void ctx.job.getJobForHomeowner.invalidate();
+        void ctx.job.getJob.invalidate();
         // close popover
         setEditTradeInfoOpen(false);
       },

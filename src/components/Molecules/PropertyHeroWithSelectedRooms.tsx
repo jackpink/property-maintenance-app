@@ -6,8 +6,7 @@ import house from "~/images/demo-page/house-stock-image.png";
 import { Property } from "@prisma/client";
 import { Text } from "../Atoms/Text";
 import { CTAButton } from "../Atoms/Button";
-
-type Job = RouterOutputs["job"]["getJobForHomeowner"];
+import { Job } from "~/pages/homeowner/job/[index]";
 
 type Rooms = Job["rooms"];
 

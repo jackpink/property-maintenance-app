@@ -10,7 +10,7 @@ import {
 } from "../Atoms/BackgroundContainer";
 import { PageSubTitle } from "../Atoms/Title";
 
-type Job = RouterOutputs["job"]["getJobForHomeowner"];
+type Job = RouterOutputs["job"]["getJob"];
 
 type Notes = Job["notes"];
 type TradeNotes = Job["tradeNotes"];
@@ -35,7 +35,7 @@ const JobNotes: React.FC<JobNotesProps> = ({
 
   const { mutate: createNote } = api.job.updateNotesForJob.useMutation({
     onSuccess: () => {
-      void ctx.job.getJobForHomeowner.invalidate();
+      void ctx.job.getJob.invalidate();
       setEditNotesMode(false);
     },
     onError: () => {

@@ -2,8 +2,7 @@ import { useCallback, useState } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import RoomSelector from "../Molecules/RoomSelector";
 import { CTAButton, EditButton, GhostButton } from "../Atoms/Button";
-
-type Job = RouterOutputs["job"]["getJobForHomeowner"];
+import { Job } from "~/pages/homeowner/job/[index]";
 
 type JobRoomSelectorProps = {
   job: Job;
@@ -27,7 +26,7 @@ export default function JobRoomSelector({
     onSuccess: () => {
       // Refetch job for page
       setError(false);
-      void ctx.job.getJobForHomeowner.invalidate();
+      void ctx.job.getJob.invalidate();
       setLoading(false);
       // close popover
       //closePopover();
@@ -38,7 +37,7 @@ export default function JobRoomSelector({
     onSuccess: () => {
       // Refetch job for page
       setError(false);
-      void ctx.job.getJobForHomeowner.invalidate();
+      void ctx.job.getJob.invalidate();
       setLoading(false);
       // close popover
       // closePopover();

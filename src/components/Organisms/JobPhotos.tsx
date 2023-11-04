@@ -8,7 +8,7 @@ import {
 } from "../Atoms/BackgroundContainer";
 import { PageSubTitle } from "../Atoms/Title";
 
-type Job = RouterOutputs["job"]["getJobForHomeowner"];
+type Job = RouterOutputs["job"]["getJob"];
 
 type Photos = RouterOutputs["photo"]["getUnassignedPhotosForJob"];
 

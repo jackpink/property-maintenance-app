@@ -10,8 +10,7 @@ import {
   BackgroundContainerHeader,
 } from "../Atoms/BackgroundContainer";
 import { PageSubTitle } from "../Atoms/Title";
-
-type Job = RouterOutputs["job"]["getJobForHomeowner"];
+import { Job } from "~/pages/homeowner/job/[index]";
 
 type JobDocumentProps = {
   job: Job;
