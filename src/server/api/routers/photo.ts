@@ -9,6 +9,12 @@ import { aws4Interceptor } from "aws4-axios";
 import { TRPCError } from "@trpc/server";
 
 
+/**
+ * Router for handling photo-related API requests.
+ * @remarks
+ * This router contains methods for uploading, creating records, and retrieving photos.
+ * @packageDocumentation
+ */
 export const photoRouter = createTRPCRouter({
   
   getPhotoUploadPresignedUrl: privateProcedure

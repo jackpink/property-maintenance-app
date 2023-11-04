@@ -27,10 +27,10 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
 }) => {
   return (
     <>
-      <Text>
+      <Text className="relative p-4">
         {format(currentDate, "PPPP") + " "}
         <EditCalenderButton
-          className="absolute right-0"
+          className="absolute right-0 p-1"
           onClick={() => setJobDayPickerOpen(true)}
         />
       </Text>

@@ -29,7 +29,7 @@ type HomeownerJobPageWithParamsProps = {
 const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   id,
 }) => {
-  const job = api.job.getJobForHomeowner.useQuery({ jobId: id });
+  const job = api.job.getJob.useQuery({ jobId: id });
   const history = api.job.getHistoryForJob.useQuery({ jobId: id });
 
   console.log(history.data);
@@ -37,6 +37,12 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   const jobLoading = job.isFetching || job.isLoading;
 
   const historyLoading = history.isFetching || history.isLoading;
+
+  const userIsTrade = job.data?.userIsTrade;
+
+  const userIsHomeowner = job.data?.userIsHomeowner;
+
+  const userDeniedAccess = job.data?.userDeniedAccess;
 
   if (!job.data) return <>Loading</>;
   // have some logic here, if has trade user, then display without any action buttons
@@ -50,7 +56,7 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   );
 };
 
-type Job = RouterOutputs["job"]["getJobForHomeowner"];
+type Job = RouterOutputs["job"]["getJob"];
 
 type HomeownerJobPageWithJobProps = {
   job: Job;
@@ -66,6 +72,8 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   historyLoading,
 }) => {
   const ctx = api.useContext();
+
+  //Need to know whether the user is a Trade or Homeowner
 
   const refetchPhotosAfterUpload = () => {
     void ctx.photo.getPhotosForJobAndRoom.invalidate();

@@ -4,6 +4,11 @@ import { RouterOutputs, api } from "~/utils/api";
 import { MouseEvent } from "react";
 import NotesViewer from "../Molecules/NotesViewer";
 import { NoteHistory } from "../Molecules/NotesHistory";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "../Atoms/BackgroundContainer";
+import { PageSubTitle } from "../Atoms/Title";
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
@@ -46,19 +51,24 @@ const JobNotes: React.FC<JobNotesProps> = ({
     });
   };
   return (
-    <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
-      <>
-        <NotesViewer
-          notes={notes}
-          notesLoading={false}
-          updateNotes={onClickUpdateNotes}
-          editNotesMode={editNotesMode}
-          setEditNotesMode={setEditNotesMode}
-          history={history}
-          historyLoading={historyLoading}
-        />
-      </>
-    </div>
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle>Homeowner Notes</PageSubTitle>
+      </BackgroundContainerHeader>
+      <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
+        <>
+          <NotesViewer
+            notes={notes}
+            notesLoading={false}
+            updateNotes={onClickUpdateNotes}
+            editNotesMode={editNotesMode}
+            setEditNotesMode={setEditNotesMode}
+            history={history}
+            historyLoading={historyLoading}
+          />
+        </>
+      </div>
+    </BackgroundContainer>
   );
 };
 

@@ -25,6 +25,7 @@ interface JSONArray extends Array<JSONValue> {}
 
 
 
+
 export const jobRouter = createTRPCRouter({
   
   getRecentJobsForTradeUser: privateProcedure
@@ -170,7 +171,7 @@ export const jobRouter = createTRPCRouter({
       })
     return job;
   }),
-  getJobForHomeowner: privateProcedure
+  getJob: privateProcedure
   .input(z.object({ jobId: z.string() }))
   .query(async ({ ctx, input }) => {
 
@@ -196,6 +197,15 @@ export const jobRouter = createTRPCRouter({
           }
         }
       })
+      // check user permissions
+
+    const isTradeUser =  (job.tradeUserId === ctx.currentUser)
+    const isHomeownerUser = (job.Property.homeownerUserId === ctx.currentUser)
+    if (!isTradeUser && !isHomeownerUser) {
+      throw new TRPCError({
+        code: "FORBIDDEN"
+      })
+    }
     return job;
   }),
   addRoomToJob: privateProcedure

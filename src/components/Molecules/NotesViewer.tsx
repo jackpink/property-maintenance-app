@@ -45,7 +45,10 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
           ) : (
             <>
               <div className="relative mb-2 h-12 w-full">
-                <EditButton onClick={() => setEditNotesMode(true)} />
+                <EditButton
+                  className="absolute  right-0"
+                  onClick={() => setEditNotesMode(true)}
+                />
               </div>
               <ParagraphText>{notes}</ParagraphText>
             </>

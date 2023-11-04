@@ -2,6 +2,11 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import UploadPhotoButton from "../Molecules/UploadPhoto";
 import { RouterOutputs, api } from "~/utils/api";
 import PhotosViewerWithRoomSelector from "../Molecules/PhotosViewerWithRoomSelector";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "../Atoms/BackgroundContainer";
+import { PageSubTitle } from "../Atoms/Title";
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
@@ -36,34 +41,39 @@ const JobPhotos: React.FC<JobPhotosProps> = ({ job }) => {
   }, [unassignedPhotos]);
 
   return (
-    <div className="flex flex-col	">
-      <UploadPhotoButton
-        jobId={job.id}
-        propertyId={job.Property.id}
-        multipleUploads={true}
-        refetchPageData={refetchDataForPage}
-        userType="HOMEOWNER"
-      />
-      <RoomSelectorDropdown
-        rooms={job.rooms}
-        selectedRoom={selectedRoom}
-        setSelectedRoom={setSelectedRoom}
-        unassignedPhotos={unassignedPhotosToDisplay}
-      />
-      {selectedRoom === "UNASSIGNED" && unassignedPhotos ? (
-        <UnassignedPhotos
-          photos={unassignedPhotos}
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle>Photos</PageSubTitle>
+      </BackgroundContainerHeader>
+      <div className="flex flex-col	">
+        <UploadPhotoButton
+          jobId={job.id}
+          propertyId={job.Property.id}
+          multipleUploads={true}
+          refetchPageData={refetchDataForPage}
+          userType="HOMEOWNER"
+        />
+        <RoomSelectorDropdown
           rooms={job.rooms}
-          refetchDataForPage={refetchDataForPage}
+          selectedRoom={selectedRoom}
+          setSelectedRoom={setSelectedRoom}
+          unassignedPhotos={unassignedPhotosToDisplay}
         />
-      ) : (
-        <RoomPhotos
-          job={job}
-          roomId={selectedRoom}
-          refetchDataForPage={refetchDataForPage}
-        />
-      )}
-    </div>
+        {selectedRoom === "UNASSIGNED" && unassignedPhotos ? (
+          <UnassignedPhotos
+            photos={unassignedPhotos}
+            rooms={job.rooms}
+            refetchDataForPage={refetchDataForPage}
+          />
+        ) : (
+          <RoomPhotos
+            job={job}
+            roomId={selectedRoom}
+            refetchDataForPage={refetchDataForPage}
+          />
+        )}
+      </div>
+    </BackgroundContainer>
   );
 };
 type RoomSelectorDropdownProps = {

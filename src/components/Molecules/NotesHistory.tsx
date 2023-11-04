@@ -44,7 +44,7 @@ const NotesHistory: React.FC<NotesHistoryProps> = ({
         </>
       ) : (
         <GhostButton onClick={() => setViewHistoryOpen(true)}>
-          View History
+          VIEW HISTORY
         </GhostButton>
       )}
     </>

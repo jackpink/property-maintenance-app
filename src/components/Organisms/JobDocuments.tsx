@@ -5,6 +5,11 @@ import { GhostButton } from "../Atoms/Button";
 import Popover from "../Atoms/Popover";
 import { UploadDocumentWithLabelInput } from "../Molecules/UploadDocument";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "../Atoms/BackgroundContainer";
+import { PageSubTitle } from "../Atoms/Title";
 
 type Job = RouterOutputs["job"]["getJobForHomeowner"];
 
@@ -36,39 +41,44 @@ export default function JobDocuments({ job }: JobDocumentProps) {
   };
 
   return (
-    <div className="grid place-items-center">
-      {!!documents ? (
-        <DocumentViewer
-          documents={documents}
-          uploadFor="JOB"
-          propertyId={job.Property.id}
-          jobId={job.id}
-          refetchDataForPage={refetchDataForPage}
-          defaultDocuments={defaultDocumentsForJob}
-        />
-      ) : loading ? (
-        <LoadingSpinner />
-      ) : (
-        <p>error</p>
-      )}
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle>Documents</PageSubTitle>
+      </BackgroundContainerHeader>
+      <div className="grid place-items-center">
+        {!!documents ? (
+          <DocumentViewer
+            documents={documents}
+            uploadFor="JOB"
+            propertyId={job.Property.id}
+            jobId={job.id}
+            refetchDataForPage={refetchDataForPage}
+            defaultDocuments={defaultDocumentsForJob}
+          />
+        ) : loading ? (
+          <LoadingSpinner />
+        ) : (
+          <p>error</p>
+        )}
 
-      <GhostButton
-        className="font-bold"
-        onClick={() => setUploadDocumentPopover(true)}
-      >
-        Upload Other Document
-      </GhostButton>
-      <Popover
-        popoveropen={uploadDocumentPopover}
-        setPopoverOpen={setUploadDocumentPopover}
-      >
-        <UploadDocumentWithLabelInput
-          uploadFor="JOB"
-          jobId={job.id}
-          refetchDataForPage={refetchDataForPage}
-          propertyId={job.Property.id}
-        />
-      </Popover>
-    </div>
+        <GhostButton
+          className=""
+          onClick={() => setUploadDocumentPopover(true)}
+        >
+          UPLOAD OTHER DOCUMENT
+        </GhostButton>
+        <Popover
+          popoveropen={uploadDocumentPopover}
+          setPopoverOpen={setUploadDocumentPopover}
+        >
+          <UploadDocumentWithLabelInput
+            uploadFor="JOB"
+            jobId={job.id}
+            refetchDataForPage={refetchDataForPage}
+            propertyId={job.Property.id}
+          />
+        </Popover>
+      </div>
+    </BackgroundContainer>
   );
 }

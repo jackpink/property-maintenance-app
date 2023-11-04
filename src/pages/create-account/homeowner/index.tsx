@@ -254,7 +254,7 @@ const HomeownerCreateAccountpage = () => {
           <LastNameInput form={form} setForm={setForm} />
           <EmailInput form={form} setForm={setForm} />
           <PasswordInput form={form} setForm={setForm} />
-          <Button onClick={onSubmit}>Submit</Button>{" "}
+          <CTAButton onClick={onSubmit}>Submit</CTAButton>{" "}
         </>
       )}
       {pendingVerification && (
@@ -415,7 +415,7 @@ const EmailVerificationInput: React.FC<EmailVerificationInputProps> = ({
         )}
       />
       {error && <p className="text-red-500">⚠️ {errorMessage}</p>}
-      <Button onClick={onPressVerify}>Verify Email</Button>
+      <CTAButton onClick={onPressVerify}>Verify Email</CTAButton>
     </div>
   );
 };
