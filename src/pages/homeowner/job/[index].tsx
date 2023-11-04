@@ -12,6 +12,8 @@ import JobDocuments from "~/components/Organisms/JobDocuments";
 import JobNotes from "~/components/Organisms/JobNotes";
 import JobPhotos from "~/components/Organisms/JobPhotos";
 import JobProperty from "~/components/Organisms/JobProperty";
+import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
+import { auth } from "@clerk/nextjs";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -38,25 +40,30 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
 
   const historyLoading = history.isFetching || history.isLoading;
 
-  const userIsTrade = job.data?.userIsTrade;
+  const forbidden = job.failureReason?.message === "FORBIDDEN";
 
-  const userIsHomeowner = job.data?.userIsHomeowner;
-
-  const userDeniedAccess = job.data?.userDeniedAccess;
-
-  if (!job.data) return <>Loading</>;
   // have some logic here, if has trade user, then display without any action buttons
   return (
-    <HomeownerJobPageWithJob
-      job={job.data}
-      jobLoading={jobLoading}
-      history={history.data}
-      historyLoading={historyLoading}
-    />
+    <>
+      {forbidden ? (
+        <p>Forbidden</p>
+      ) : jobLoading ? (
+        <LoadingSpinner />
+      ) : !job.data ? (
+        <>Could not get Data</>
+      ) : (
+        <HomeownerJobPageWithJob
+          job={job.data}
+          jobLoading={jobLoading}
+          history={history.data}
+          historyLoading={historyLoading}
+        />
+      )}
+    </>
   );
 };
 
-type Job = RouterOutputs["job"]["getJob"];
+export type Job = RouterOutputs["job"]["getJob"];
 
 type HomeownerJobPageWithJobProps = {
   job: Job;
@@ -73,6 +80,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
 }) => {
   const ctx = api.useContext();
 
+  const { userId } = auth();
+
+  //const isHomeowner = job.Property.homeownerUserId === userId;
+  const isHomeowner = true;
+
   //Need to know whether the user is a Trade or Homeowner
 
   const refetchPhotosAfterUpload = () => {
@@ -85,21 +97,30 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <PageTitle title={job.title} />
       <div className="grid grid-cols-2 gap-4 3xl:gap-8">
         <div className="col-span-2 mx-4 grid justify-center md:w-128 3xl:col-span-1">
-          <JobDate date={job.date} jobId={job.id} />
-          <JobCompletedBy tradeInfo={job.nonUserTradeInfo} jobId={job.id} />
+          <JobDate date={job.date} jobId={job.id} isHomeowner={isHomeowner} />
+          <JobCompletedBy
+            tradeInfo={job.nonUserTradeInfo}
+            jobId={job.id}
+            isHomeowner={isHomeowner}
+          />
 
-          <JobProperty job={job} jobLoading={jobLoading} />
-          <JobDocuments job={job} />
+          <JobProperty
+            job={job}
+            jobLoading={jobLoading}
+            isHomeowner={isHomeowner}
+          />
+          <JobDocuments job={job} isHomeowner={isHomeowner} />
           <JobNotes
             notes={job.notes}
             tradeNotes={job.tradeNotes}
             jobId={job.id}
             history={history?.homeownerNotes}
             historyLoading={historyLoading}
+            isHomeowner={isHomeowner}
           />
         </div>
         <div className="col-span-2 mx-4 md:w-128 3xl:col-span-1">
-          <JobPhotos job={job} />
+          <JobPhotos job={job} isHomeowner={isHomeowner} />
         </div>
       </div>
     </>
