@@ -16,9 +16,14 @@ type Rooms = Job["rooms"];
 type JobPropertyProps = {
   job: Job;
   jobLoading: boolean;
+  disabled?: boolean;
 };
 
-export default function JobProperty({ job, jobLoading }: JobPropertyProps) {
+export default function JobProperty({
+  job,
+  jobLoading,
+  disabled = false,
+}: JobPropertyProps) {
   return (
     <BackgroundContainer>
       <BackgroundContainerHeader>
@@ -37,7 +42,11 @@ export default function JobProperty({ job, jobLoading }: JobPropertyProps) {
             </p>
           );
         })}
-        <JobRoomSelector job={job} jobLoading={jobLoading} />
+        <JobRoomSelector
+          job={job}
+          jobLoading={jobLoading}
+          disabled={disabled}
+        />
       </div>
     </BackgroundContainer>
   );

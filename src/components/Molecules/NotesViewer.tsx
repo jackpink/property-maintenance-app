@@ -13,6 +13,7 @@ type NotesViewerProps = {
   setEditNotesMode: React.Dispatch<React.SetStateAction<boolean>>;
   history?: NoteHistory[];
   historyLoading?: boolean;
+  disabled?: boolean;
 };
 
 const NotesViewer: React.FC<NotesViewerProps> = ({
@@ -23,6 +24,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
   setEditNotesMode,
   history,
   historyLoading,
+  disabled = false,
 }) => {
   return (
     <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
@@ -48,6 +50,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
                 <EditButton
                   className="absolute  right-0"
                   onClick={() => setEditNotesMode(true)}
+                  disabled={disabled}
                 />
               </div>
               <ParagraphText>{notes}</ParagraphText>

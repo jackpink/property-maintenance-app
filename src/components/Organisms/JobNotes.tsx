@@ -21,6 +21,7 @@ type JobNotesProps = {
   jobId: string;
   history?: NoteHistory[];
   historyLoading: boolean;
+  disabled?: boolean;
 };
 
 const JobNotes: React.FC<JobNotesProps> = ({
@@ -28,6 +29,7 @@ const JobNotes: React.FC<JobNotesProps> = ({
   jobId,
   history,
   historyLoading,
+  disabled = false,
 }) => {
   const [editNotesMode, setEditNotesMode] = useState(false);
 
@@ -65,6 +67,7 @@ const JobNotes: React.FC<JobNotesProps> = ({
             setEditNotesMode={setEditNotesMode}
             history={history}
             historyLoading={historyLoading}
+            disabled={disabled}
           />
         </>
       </div>

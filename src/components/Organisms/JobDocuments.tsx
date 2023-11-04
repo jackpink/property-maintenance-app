@@ -14,9 +14,13 @@ import { Job } from "~/pages/homeowner/job/[index]";
 
 type JobDocumentProps = {
   job: Job;
+  disabled?: boolean;
 };
 
-export default function JobDocuments({ job }: JobDocumentProps) {
+export default function JobDocuments({
+  job,
+  disabled = false,
+}: JobDocumentProps) {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
 
   const { data: documents, isLoading: loading } =

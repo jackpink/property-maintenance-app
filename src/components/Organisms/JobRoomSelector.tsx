@@ -7,11 +7,13 @@ import { Job } from "~/pages/homeowner/job/[index]";
 type JobRoomSelectorProps = {
   job: Job;
   jobLoading: boolean;
+  disabled?: boolean;
 };
 
 export default function JobRoomSelector({
   job,
   jobLoading,
+  disabled = false,
 }: JobRoomSelectorProps) {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(
@@ -86,6 +88,7 @@ export default function JobRoomSelector({
       <EditButton
         onClick={() => setRoomSelectorOpen(true)}
         className=" absolute right-0 top-0 place-self-center"
+        disabled={disabled}
       />
     </RoomSelector>
   );
