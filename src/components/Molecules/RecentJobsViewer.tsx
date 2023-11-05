@@ -1,5 +1,5 @@
 import { type RouterOutputs } from "~/utils/api";
-import { concatAddress } from "../Properties/Property";
+import { concatAddress } from "./Properties/Property";
 import Link from "next/link";
 import { useRouter } from "next/router";
 

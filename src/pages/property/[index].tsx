@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
-import { concatAddress } from "~/components/Properties/Property";
+import { concatAddress } from "~/components/Molecules/Properties/Property";
 import EditProperty from "~/components/Organisms/EditProperty";
 import { CTAButton } from "~/components/Atoms/Button";
 import { ReactNode, useState } from "react";

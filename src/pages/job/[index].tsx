@@ -14,6 +14,11 @@ import JobPhotos from "~/components/Organisms/JobPhotos";
 import JobProperty from "~/components/Organisms/JobProperty";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 import { auth, useAuth } from "@clerk/nextjs";
+import {
+  ColumnOne,
+  ColumnTwo,
+  ResponsiveColumns,
+} from "~/components/Atoms/PageLayout";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -94,8 +99,8 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   return (
     <>
       <PageTitle>{job.title}</PageTitle>
-      <div className="grid grid-cols-2 gap-4 3xl:gap-8">
-        <div className="col-span-2 mx-4 grid justify-center md:w-128 3xl:col-span-1">
+      <ResponsiveColumns>
+        <ColumnOne>
           <JobDate date={job.date} jobId={job.id} disabled={!isHomeowner} />
           <JobCompletedBy
             tradeInfo={job.nonUserTradeInfo}
@@ -117,11 +122,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
             historyLoading={historyLoading}
             disabled={!isHomeowner}
           />
-        </div>
-        <div className="col-span-2 mx-4 md:w-128 3xl:col-span-1">
+        </ColumnOne>
+        <ColumnTwo>
           <JobPhotos job={job} />
-        </div>
-      </div>
+        </ColumnTwo>
+      </ResponsiveColumns>
     </>
   );
 };
