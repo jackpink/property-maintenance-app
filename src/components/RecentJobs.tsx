@@ -25,7 +25,7 @@ const Job: React.FC<JobProps> = ({ job }) => {
   const date = job.date.toDateString();
   return (
     <Link
-      href={`${asPath}/job/${job.id}`}
+      href={`/job/${job.id}`}
       className="grid w-full grid-cols-4 rounded-xl border-2 border-solid border-teal-800 hover:bg-black/20"
     >
       <div className="relative col-span-3">

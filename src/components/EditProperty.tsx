@@ -3,8 +3,10 @@ import clsx from "clsx";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
-import { CTAButton } from "./Atoms/Button";
+import { CTAButton, PlusIcon } from "./Atoms/Button";
 import ClickAwayListener from "./ClickAwayListener";
+import { TextInput } from "./TextInput";
+import { ErrorMessage } from "./Atoms/Text";
 
 // build the property page
 // get params, get Property by Id
@@ -85,19 +87,64 @@ type AddRoomButtonProps = {
 
 const AddRoomButton: React.FC<AddRoomButtonProps> = ({ levelId }) => {
   const [textboxOpen, setTextboxOpen] = useState(false);
+  const [roomNameInput, setRoomNameInput] = useState("");
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("Error");
   const ToggleTextboxOpen = () => {
     //toggle textboxOpen
     setTextboxOpen(!textboxOpen);
   };
-  if (textboxOpen) {
-    return (
-      <AddRoomTextInput
-        ToggleTextboxOpen={ToggleTextboxOpen}
-        levelId={levelId}
-      />
-    );
-  }
-  return <CTAButton onClick={ToggleTextboxOpen}>+ Add Room</CTAButton>;
+  const ctx = api.useContext();
+
+  const { mutate: createRoom, isLoading: isCreatingRoom } =
+    api.property.createRoomForLevel.useMutation({
+      onSuccess: () => {
+        // toggle the textbox open
+        ToggleTextboxOpen();
+        // refetch our property
+        void ctx.property.getPropertyForUser.invalidate();
+      },
+    });
+
+  const addRoomClickEvent = () => {
+    // Check The Room input for correctness
+    const checkAddRoomInput = ValidRoomInput.safeParse(roomNameInput);
+    if (!checkAddRoomInput.success) {
+      console.log("throw error onm input");
+      const errorFormatted = checkAddRoomInput.error.format()._errors.pop();
+      if (!!errorFormatted) setErrorMessage(errorFormatted);
+      setError(true);
+    } else {
+      console.log("add room ", roomNameInput);
+      createRoom({
+        label: roomNameInput,
+        levelId: levelId,
+      });
+    }
+  };
+  return (
+    <>
+      {textboxOpen ? (
+        <ClickAwayListener clickOutsideAction={() => setTextboxOpen(false)}>
+          <div className="flex">
+            <TextInput
+              value={roomNameInput}
+              onChange={(e) => setRoomNameInput(e.currentTarget.value)}
+              error={error}
+              type="text"
+            />
+
+            <CTAButton onClick={addRoomClickEvent}>
+              <PlusIcon />
+            </CTAButton>
+          </div>
+          <ErrorMessage error={error} errorMessage={errorMessage} />
+        </ClickAwayListener>
+      ) : (
+        <CTAButton onClick={ToggleTextboxOpen}>+ Add Room</CTAButton>
+      )}
+    </>
+  );
 };
 type Room =
   RouterOutputs["property"]["getPropertyForUser"]["levels"][number]["rooms"][number];

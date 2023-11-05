@@ -11,7 +11,7 @@ import { api } from "~/utils/api";
 import { uploadFileToSignedURL } from "~/utils/upload";
 import { CTAButton, UploadButton } from "../Atoms/Button";
 import { z } from "zod";
-import TextInputWithError from "../TextInput";
+import { TextInputWithError } from "../TextInput";
 import { PageSubTitle } from "../Atoms/Title";
 import { Button } from "react-day-picker";
 

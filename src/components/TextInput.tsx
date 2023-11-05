@@ -1,7 +1,8 @@
 import clsx from "clsx";
+import { ErrorMessage } from "./Atoms/Text";
 
 type TextInputWithErrorProps = {
-  label: string;
+  label?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: boolean;
@@ -16,6 +17,38 @@ const TextInputWithError: React.FC<TextInputWithErrorProps> = ({
   onChange,
   error,
   errorMessage,
+  disabled,
+  type = "text",
+}) => {
+  return (
+    <>
+      <TextInput
+        label={label}
+        value={value}
+        error={error}
+        onChange={onChange}
+        disabled={disabled}
+        type={type}
+      />
+      <ErrorMessage error={error} errorMessage={errorMessage} />
+    </>
+  );
+};
+
+type TextInputProps = {
+  label?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error: boolean;
+  disabled?: boolean;
+  type?: "text" | "email" | "password" | "tel";
+};
+
+const TextInput: React.FC<TextInputProps> = ({
+  label,
+  value,
+  error,
+  onChange,
   disabled,
   type = "text",
 }) => {
@@ -41,14 +74,14 @@ const TextInputWithError: React.FC<TextInputWithErrorProps> = ({
   return (
     <>
       {" "}
-      <label className="text-lg text-slate-700">{label}</label>
+      {label && <label className="text-lg text-slate-700">{label}</label>}
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e)}
         disabled={disabled}
         className={clsx(
-          "mb-4 rounded-md bg-gray-100 p-2 ",
+          " w-full rounded-md bg-gray-100 p-2 ",
           {
             " border border-4 border-red-500 ": error,
           },
@@ -57,9 +90,8 @@ const TextInputWithError: React.FC<TextInputWithErrorProps> = ({
         inputMode={inputMode}
         autoComplete={autoComplete}
       />
-      {error ? <p className="text-red-500">⚠️ {errorMessage}</p> : null}
     </>
   );
 };
 
-export default TextInputWithError;
+export { TextInput, TextInputWithError };

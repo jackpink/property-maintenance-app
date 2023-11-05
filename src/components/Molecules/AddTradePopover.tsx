@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import Popover from "../Atoms/Popover";
 import { CTAButton, EditButton, GhostButton } from "../Atoms/Button";
-import TextInputWithError from "../TextInput";
+import { TextInputWithError } from "../TextInput";
 import { Text } from "../Atoms/Text";
 
 export function instanceOfTradeInfo(object: any): object is ITradeInfo {

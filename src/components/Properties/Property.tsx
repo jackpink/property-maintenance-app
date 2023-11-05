@@ -43,7 +43,7 @@ const Property: React.FC<Props> = ({ property }) => {
   const address = concatAddress(property);
   const { asPath } = useRouter();
   return (
-    <Link href={`${asPath}/property/${property.id}`}>
+    <Link href={`/property/${property.id}`}>
       <div className="grid w-full grid-cols-3 rounded-xl border-2 border-solid border-teal-800 hover:bg-black/20">
         <Image
           alt="House Stock Image"
