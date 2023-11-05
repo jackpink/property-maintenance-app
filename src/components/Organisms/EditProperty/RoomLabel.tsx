@@ -8,10 +8,9 @@ type Room =
 
 type RoomLabelProps = {
   room: Room;
-  editPropertyMode: boolean;
 };
 
-const RoomLabel: React.FC<RoomLabelProps> = ({ room, editPropertyMode }) => {
+const RoomLabel: React.FC<RoomLabelProps> = ({ room }) => {
   const [editLabelMode, setEditLabelMode] = useState(false);
   const [editLabelInput, setEditLabelInput] = useState(room.label);
 

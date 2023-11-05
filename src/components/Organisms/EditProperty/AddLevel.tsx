@@ -4,7 +4,7 @@ import { CTAButton } from "~/components/Atoms/Button";
 import AddButtonWithTextInput from "~/components/Molecules/AddButtonWithTextInput";
 import { api } from "~/utils/api";
 
-const ValidLevelInput = z
+export const ValidLevelInput = z
   .string()
   .min(1, { message: "Must be 5 or more characters long" })
   .max(30, { message: "Must be less than 30 characters" });
