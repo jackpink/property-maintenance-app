@@ -93,7 +93,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
 
   return (
     <>
-      <PageTitle title={job.title} />
+      <PageTitle>{job.title}</PageTitle>
       <div className="grid grid-cols-2 gap-4 3xl:gap-8">
         <div className="col-span-2 mx-4 grid justify-center md:w-128 3xl:col-span-1">
           <JobDate date={job.date} jobId={job.id} disabled={!isHomeowner} />

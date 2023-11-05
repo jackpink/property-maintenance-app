@@ -1,14 +1,14 @@
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { concatAddress } from "~/components/Properties/Property";
-import EditProperty from "~/components/EditProperty";
+import EditProperty from "~/components/Organisms/EditProperty";
 import RecentJobs from "~/components/RecentJobs";
 import { CTAButton } from "~/components/Atoms/Button";
 import Popover from "~/components/Atoms/Popover";
-import { ReactNode, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import clsx from "clsx";
 import z from "zod";
 import Link from "next/link";
@@ -17,8 +17,24 @@ import {
   LargeButtonContent,
   LargeButtonTitle,
 } from "~/components/LargeButton";
-import TextInputWithError from "~/components/TextInput";
+import { TextInputWithError } from "~/components/Atoms/TextInput";
+import {
+  ColumnOne,
+  ColumnTwo,
+  ResponsiveColumns,
+} from "~/components/Atoms/PageLayout";
+import { PageSubTitle, PageTitle } from "~/components/Atoms/Title";
+import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 // build the property page
+import { Text } from "~/components/Atoms/Text";
+import {
+  PropertyWithLevelAndRooms,
+  RoomSelector,
+} from "~/components/Molecules/RoomSelector";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "~/components/Atoms/BackgroundContainer";
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
 // search photos
@@ -40,6 +56,8 @@ const HomeownerPropertyPageWithParams: React.FC<
   HomeownerPropertyPageWithParamsProps
 > = ({ propertyId }) => {
   const [createJobPopoverOpen, setCreatejobPopoverOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const {
     data: property,
@@ -63,81 +81,172 @@ const HomeownerPropertyPageWithParams: React.FC<
   let address = "";
   if (!!property) address = concatAddress(property);
 
-  console.log("propertyIsLoading", propertyIsLoading);
-  console.log("propertyFetchError", propertyFetchError);
+  const onClickRoomAdd = (roomId: string) => {
+    setSelectedRoom(roomId);
+    setLoading(false);
+  };
+
+  const onClickRoomRemove = (roomId: string) => {
+    setSelectedRoom("");
+    setLoading(false);
+  };
 
   return (
-    <div className="grid grid-cols-1">
-      <h1 className="py-8 text-center font-sans text-4xl font-extrabold text-slate-900">
-        {address}
-      </h1>
-      {propertyIsLoading ? (
-        <p className="px-12 pb-4 text-center text-lg text-slate-700">
-          Loading Property
-        </p>
-      ) : !property ? (
-        <div className="grid place-items-center">
-          <p className="px-12 pb-4 text-center text-lg text-slate-700">
-            {propertyFetchError?.message}
-          </p>
-          <Link href="/homeowner/">
-            <CTAButton className="border-none">
-              {" "}
-              {"< Back to Dashboard"}
-            </CTAButton>
-          </Link>
-        </div>
-      ) : (
-        <>
-          <Link
-            href={"/homeowner/search/" + property.id}
-            className="mb-6 grid place-items-center"
-          >
-            <LargeButton>
-              <LargeButtonTitle>Search</LargeButtonTitle>
-              <LargeButtonContent>
-                Search Photos of the property by room and job
-              </LargeButtonContent>
-            </LargeButton>
-          </Link>
-          <EditProperty property={property} />
-        </>
-      )}
-
-      <div className="mb-8 border-b-2 border-black pb-8"></div>
-      <div className="grid w-9/12 place-self-center md:w-8/12 lg:w-7/12 xl:w-128">
-        <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
-          Recents Jobs
-        </h2>
-        <CTAButton
-          onClick={() => setCreatejobPopoverOpen(true)}
-          className="mb-8 place-self-center"
-        >
-          Add New Job
-        </CTAButton>
-        <Popover
-          popoveropen={createJobPopoverOpen}
-          setPopoverOpen={setCreatejobPopoverOpen}
-        >
-          {propertyIsLoading || !property ? (
-            <p>Loading Property</p>
-          ) : (
-            <CreateJobForm propertyId={property.id} />
+    <>
+      <PageTitle>{address}</PageTitle>
+      <ResponsiveColumns>
+        <ColumnOne>
+          {propertyIsLoading && (
+            <div className="h-30 w-30">
+              <LoadingSpinner />
+            </div>
           )}
-        </Popover>
-        {recentJobsAreLoading ? (
-          <p className="px-12 pb-4 text-center text-lg text-slate-700">
+
+          {!property ? (
+            <div className="grid place-items-center">
+              <p className="px-12 pb-4 text-center text-lg text-slate-700">
+                {propertyFetchError?.message}
+              </p>
+              <Link href="/homeowner/">
+                <CTAButton className="border-none">
+                  {" "}
+                  {"< Back to Dashboard"}
+                </CTAButton>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <Link
+                href={"/homeowner/search/" + property.id}
+                className="mb-6 grid place-items-center"
+              >
+                <LargeButton>
+                  <LargeButtonTitle>Search</LargeButtonTitle>
+                  <LargeButtonContent>
+                    Search Photos of the property by room and job
+                  </LargeButtonContent>
+                </LargeButton>
+              </Link>
+              <CTAButton
+                onClick={() => setCreatejobPopoverOpen(true)}
+                className="mb-8 place-self-center"
+              >
+                Add New Job
+              </CTAButton>
+              <Popover
+                popoveropen={createJobPopoverOpen}
+                setPopoverOpen={setCreatejobPopoverOpen}
+              >
+                <CreateJobForm propertyId={propertyId} />
+              </Popover>
+              <PropertyRoomSelector
+                property={property}
+                loading={loading}
+                setLoading={setLoading}
+                onClickRoomAdd={onClickRoomAdd}
+                onClickRoomRemove={onClickRoomRemove}
+                checkRoomSelected={(roomId) => roomId === selectedRoom}
+                selectedRoom={selectedRoom}
+              />
+              {recentJobsAreLoading && <LoadingSpinner />}
+              {recentJobs ? (
+                <PropertyRecentJobs
+                  recentJobs={recentJobs}
+                  loading={recentJobsAreLoading}
+                  fetchErrormessage={recentJobsFetchError?.message}
+                />
+              ) : (
+                <Text>Could not load recent jobs for this property.</Text>
+              )}
+            </>
+          )}
+        </ColumnOne>
+        <ColumnTwo>
+          {propertyIsLoading && (
+            <div className="h-30 w-30">
+              <LoadingSpinner />
+            </div>
+          )}
+          {!!property ? (
+            <EditProperty property={property} />
+          ) : (
+            <>
+              <Text>Could Not Load Property</Text>
+            </>
+          )}
+        </ColumnTwo>
+      </ResponsiveColumns>
+    </>
+  );
+};
+
+type PropertyRoomSelectorProps = {
+  property: PropertyWithLevelAndRooms;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  onClickRoomAdd: (roomId: string) => void;
+  onClickRoomRemove: (roomId: string) => void;
+  checkRoomSelected: (roomId: string) => boolean;
+  selectedRoom: string;
+};
+
+const PropertyRoomSelector: React.FC<PropertyRoomSelectorProps> = ({
+  property,
+  loading,
+  setLoading,
+  onClickRoomAdd,
+  onClickRoomRemove,
+  checkRoomSelected,
+  selectedRoom,
+}) => {
+  return (
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle>Rooms</PageSubTitle>
+      </BackgroundContainerHeader>
+      <RoomSelector
+        property={property}
+        onClickRoomAdd={onClickRoomAdd}
+        onClickRoomRemove={onClickRoomRemove}
+        loading={loading}
+        setLoading={setLoading}
+        checkRoomSelected={(roomId) => roomId === selectedRoom}
+      />
+    </BackgroundContainer>
+  );
+};
+type RecentJobs = RouterOutputs["job"]["getRecentJobsForProperty"];
+
+type PropertyRecentJobsProps = {
+  recentJobs: RecentJobs;
+  loading: boolean;
+  fetchErrormessage?: string | null;
+};
+
+const PropertyRecentJobs: React.FC<PropertyRecentJobsProps> = ({
+  recentJobs,
+  loading,
+  fetchErrormessage,
+}) => {
+  return (
+    <BackgroundContainer>
+      <BackgroundContainerHeader>
+        <PageSubTitle>Recent Jobs</PageSubTitle>
+      </BackgroundContainerHeader>
+      <div className="relative flex flex-wrap justify-center">
+        {loading ? (
+          <p className=" px-12 pb-4 text-center text-lg text-slate-700">
             Loading Recent jobs
           </p>
         ) : !recentJobs ? (
-          <p className="px-12 pb-4 text-center text-lg text-slate-700">
-            {recentJobsFetchError?.message}
+          <p className="w-9/12 px-12 pb-4 text-center text-lg text-slate-700">
+            {fetchErrormessage}
           </p>
         ) : (
           <RecentJobs recentJobs={recentJobs} />
         )}
       </div>
-    </div>
+    </BackgroundContainer>
   );
 };
 

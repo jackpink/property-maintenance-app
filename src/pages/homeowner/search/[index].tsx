@@ -9,10 +9,11 @@ import {
 } from "react";
 import { useRouter } from "next/router";
 import { RouterOutputs, api } from "~/utils/api";
-import Photos from "~/components/Molecules/Photos";
+import PhotoViewer from "~/components/Molecules/PhotoViewer";
 import { Level, Room } from "@prisma/client";
 import RoomSelector from "~/components/Molecules/RoomSelector";
 import { CTAButton } from "~/components/Atoms/Button";
+import RoomSelectorPopover from "~/components/Molecules/RoomSelector";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -103,7 +104,7 @@ const PropertyPhotoSearchPageWithParams: React.FC<
       {selectedJobs.length > 0 &&
         !!selectedRoom.room &&
         selectedRoom.room.id && (
-          <PhotoViewer
+          <PhotoViewer2
             selectedRoomId={selectedRoom.room.id}
             selectedJobIds={selectedJobIds}
           />
@@ -121,12 +122,12 @@ const PropertyPhotoSearchPage = () => {
   return <PropertyPhotoSearchPageWithParams propertyId={id} />;
 };
 
-type PhotoViewerProps = {
+type PhotoViewer2Props = {
   selectedRoomId: string;
   selectedJobIds: string[];
 };
 
-const PhotoViewer: React.FC<PhotoViewerProps> = ({
+const PhotoViewer2: React.FC<PhotoViewer2Props> = ({
   selectedRoomId,
   selectedJobIds,
 }) => {
@@ -134,7 +135,7 @@ const PhotoViewer: React.FC<PhotoViewerProps> = ({
     jobIds: selectedJobIds,
     roomId: selectedRoomId,
   });
-  return <>{!!photos && <Photos photos={photos} />}</>;
+  return <>{!!photos && <PhotoViewer photos={photos} />}</>;
 };
 
 export default PropertyPhotoSearchPage;
@@ -188,7 +189,7 @@ const RoomSelectorForPhotoSearch: React.FC<RoomSelectorForJobProps> = ({
   );
 
   return (
-    <RoomSelector
+    <RoomSelectorPopover
       property={property}
       error={error}
       setError={setError}
@@ -219,6 +220,6 @@ const RoomSelectorForPhotoSearch: React.FC<RoomSelectorForJobProps> = ({
           {selectedRoom.level?.label} &gt; {selectedRoom.room?.label}
         </p>
       </button>
-    </RoomSelector>
+    </RoomSelectorPopover>
   );
 };
