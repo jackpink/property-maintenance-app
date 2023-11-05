@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import RoomSelector from "../Molecules/RoomSelector";
 import { CTAButton, EditButton, GhostButton } from "../Atoms/Button";
-import { Job } from "~/pages/homeowner/job/[index]";
+import { Job } from "~/pages/job/[index]";
 
 type JobRoomSelectorProps = {
   job: Job;

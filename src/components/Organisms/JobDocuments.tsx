@@ -10,7 +10,7 @@ import {
   BackgroundContainerHeader,
 } from "../Atoms/BackgroundContainer";
 import { PageSubTitle } from "../Atoms/Title";
-import { Job } from "~/pages/homeowner/job/[index]";
+import { Job } from "~/pages/job/[index]";
 
 type JobDocumentProps = {
   job: Job;

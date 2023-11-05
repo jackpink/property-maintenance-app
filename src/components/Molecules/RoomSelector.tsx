@@ -4,7 +4,7 @@ import Popover from "../Atoms/Popover";
 import { CTAButton } from "../Atoms/Button";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ErrorMessage } from "../Atoms/Text";
-import { Job } from "~/pages/homeowner/job/[index]";
+import { Job } from "~/pages/job/[index]";
 
 type PropertyWithLevelAndRooms = Job["Property"];
 

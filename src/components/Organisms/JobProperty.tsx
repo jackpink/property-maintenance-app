@@ -7,7 +7,7 @@ import { PageSubTitle } from "../Atoms/Title";
 import PropertyHeroWithSelectedRooms from "../Molecules/PropertyHeroWithSelectedRooms";
 import { Text } from "../Atoms/Text";
 
-import { Job } from "~/pages/homeowner/job/[index]";
+import { Job } from "~/pages/job/[index]";
 import { Property } from "@prisma/client";
 import JobRoomSelector from "./JobRoomSelector";
 

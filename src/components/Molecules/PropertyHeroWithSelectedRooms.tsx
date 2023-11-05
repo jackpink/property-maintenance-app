@@ -6,7 +6,7 @@ import house from "~/images/demo-page/house-stock-image.png";
 import { Property } from "@prisma/client";
 import { Text } from "../Atoms/Text";
 import { CTAButton } from "../Atoms/Button";
-import { Job } from "~/pages/homeowner/job/[index]";
+import { Job } from "~/pages/job/[index]";
 
 type Rooms = Job["rooms"];
 
@@ -30,7 +30,9 @@ const PropertyHeroWithSelectedRooms: React.FC<
         />
         <div className="relative col-span-2 flex flex-col justify-center">
           <Text className="p-3 text-lg font-extrabold ">{address}</Text>
-          <CTAButton className="">Go To Property Page</CTAButton>
+          <Link href={`/property/${property.id}`}>
+            <CTAButton className="">Go To Property Page</CTAButton>
+          </Link>
         </div>
       </div>
     </div>
