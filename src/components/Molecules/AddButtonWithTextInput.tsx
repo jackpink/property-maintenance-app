@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { CTAButton, PlusIcon } from "../Atoms/Button";
 import { ErrorMessage } from "../Atoms/Text";
 import ClickAwayListener from "../ClickAwayListener";
@@ -6,15 +6,26 @@ import { TextInput } from "../TextInput";
 
 type AddButtonWithTextInputProps = {
   addButtonClickEvent: () => void;
+  textboxOpen: boolean;
+  setTextboxOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+  error: boolean;
+  errorMessage: string;
 };
 
-const AddButtonWithTextInput: React.FC<AddButtonWithTextInputProps> = ({
+const AddButtonWithTextInput: React.FC<
+  PropsWithChildren<AddButtonWithTextInputProps>
+> = ({
   addButtonClickEvent,
+  textboxOpen,
+  setTextboxOpen,
+  input,
+  setInput,
+  error,
+  errorMessage,
+  children,
 }) => {
-  const [textboxOpen, setTextboxOpen] = useState(false);
-  const [roomNameInput, setRoomNameInput] = useState("");
-  const [error, setError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("Error");
   const ToggleTextboxOpen = () => {
     //toggle textboxOpen
     setTextboxOpen(!textboxOpen);
@@ -26,8 +37,8 @@ const AddButtonWithTextInput: React.FC<AddButtonWithTextInputProps> = ({
         <ClickAwayListener clickOutsideAction={() => setTextboxOpen(false)}>
           <div className="flex">
             <TextInput
-              value={roomNameInput}
-              onChange={(e) => setRoomNameInput(e.currentTarget.value)}
+              value={input}
+              onChange={(e) => setInput(e.currentTarget.value)}
               error={error}
               type="text"
             />
@@ -39,7 +50,7 @@ const AddButtonWithTextInput: React.FC<AddButtonWithTextInputProps> = ({
           <ErrorMessage error={error} errorMessage={errorMessage} />
         </ClickAwayListener>
       ) : (
-        <CTAButton onClick={ToggleTextboxOpen}>+ Add Room</CTAButton>
+        <>{children}</>
       )}
     </>
   );
