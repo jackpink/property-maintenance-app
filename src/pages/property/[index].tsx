@@ -1,27 +1,22 @@
-import { RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { DayPicker } from "react-day-picker";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import { concatAddress } from "~/components/Properties/Property";
 import EditProperty from "~/components/Organisms/EditProperty";
 import { CTAButton } from "~/components/Atoms/Button";
-import Popover from "~/components/Atoms/Popover";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
-import z from "zod";
+import { ReactNode, useState } from "react";
 import Link from "next/link";
 import {
   LargeButton,
   LargeButtonContent,
   LargeButtonTitle,
-} from "~/components/LargeButton";
-import { TextInputWithError } from "~/components/Atoms/TextInput";
+} from "~/components/Atoms/Button";
 import {
   ColumnOne,
   ColumnTwo,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
-import { PageSubTitle, PageTitle } from "~/components/Atoms/Title";
+import { PageTitle } from "~/components/Atoms/Title";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 // build the property page
 import { Text } from "~/components/Atoms/Text";

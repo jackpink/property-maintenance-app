@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import ClickAwayListener from "../ClickAwayListener";
+import ClickAwayListener from "../Atoms/ClickAwayListener";
 import { MouseEvent, useState } from "react";
 import { CTAButton, PlusIcon } from "../Atoms/Button";
 

@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from "react";
 import { CTAButton, PlusIcon } from "../Atoms/Button";
 import { ErrorMessage } from "../Atoms/Text";
-import ClickAwayListener from "../ClickAwayListener";
+import ClickAwayListener from "../Atoms/ClickAwayListener";
 import { TextInput } from "../Atoms/TextInput";
 
 type AddButtonWithTextInputProps = {

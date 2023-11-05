@@ -11,7 +11,7 @@ import {
   LargeButton,
   LargeButtonContent,
   LargeButtonTitle,
-} from "../LargeButton";
+} from "../Atoms/Button";
 
 type PropertyAddJobProps = {
   propertyId: string;
