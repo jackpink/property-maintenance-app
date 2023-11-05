@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { concatAddress } from "~/components/Properties/Property";
 import EditProperty from "~/components/Organisms/EditProperty";
-import RecentJobs from "~/components/RecentJobs";
 import { CTAButton } from "~/components/Atoms/Button";
 import Popover from "~/components/Atoms/Popover";
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
@@ -35,6 +34,8 @@ import {
   BackgroundContainer,
   BackgroundContainerHeader,
 } from "~/components/Atoms/BackgroundContainer";
+import PropertyDocuments from "~/components/Organisms/PropertyDocuments";
+import PropertyRecentJobs from "~/components/Organisms/PropertyRecentJobs";
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
 // search photos
@@ -148,6 +149,7 @@ const HomeownerPropertyPageWithParams: React.FC<
                 checkRoomSelected={(roomId) => roomId === selectedRoom}
                 selectedRoom={selectedRoom}
               />
+              <PropertyDocuments propertyId={property.id} />
               {recentJobsAreLoading && <LoadingSpinner />}
               {recentJobs ? (
                 <PropertyRecentJobs
@@ -212,40 +214,6 @@ const PropertyRoomSelector: React.FC<PropertyRoomSelectorProps> = ({
         setLoading={setLoading}
         checkRoomSelected={(roomId) => roomId === selectedRoom}
       />
-    </BackgroundContainer>
-  );
-};
-type RecentJobs = RouterOutputs["job"]["getRecentJobsForProperty"];
-
-type PropertyRecentJobsProps = {
-  recentJobs: RecentJobs;
-  loading: boolean;
-  fetchErrormessage?: string | null;
-};
-
-const PropertyRecentJobs: React.FC<PropertyRecentJobsProps> = ({
-  recentJobs,
-  loading,
-  fetchErrormessage,
-}) => {
-  return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Recent Jobs</PageSubTitle>
-      </BackgroundContainerHeader>
-      <div className="relative flex flex-wrap justify-center">
-        {loading ? (
-          <p className=" px-12 pb-4 text-center text-lg text-slate-700">
-            Loading Recent jobs
-          </p>
-        ) : !recentJobs ? (
-          <p className="w-9/12 px-12 pb-4 text-center text-lg text-slate-700">
-            {fetchErrormessage}
-          </p>
-        ) : (
-          <RecentJobs recentJobs={recentJobs} />
-        )}
-      </div>
     </BackgroundContainer>
   );
 };

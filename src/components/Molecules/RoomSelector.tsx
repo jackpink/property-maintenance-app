@@ -202,7 +202,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
     <CTAButton
       value={room.id}
       onClick={addRoomButtonClicked}
-      className={clsx(className, "bg-white")}
+      className={clsx(className, "bg-inherit")}
       loading={loading || jobLoading}
     >
       {room.label}
