@@ -5,10 +5,11 @@ import { CTAButton } from "../Atoms/Button";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ErrorMessage } from "../Atoms/Text";
 import { Job } from "~/pages/job/[index]";
+import { Text } from "../Atoms/Text";
 
-type PropertyWithLevelAndRooms = Job["Property"];
+export type PropertyWithLevelAndRooms = Job["Property"];
 
-type RoomSelectorProps = {
+type RoomSelectorPopoverProps = {
   property: PropertyWithLevelAndRooms;
   error: boolean;
   setError: Dispatch<SetStateAction<boolean>>;
@@ -23,7 +24,9 @@ type RoomSelectorProps = {
   setRoomSelectorOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const RoomSelector: React.FC<React.PropsWithChildren<RoomSelectorProps>> = ({
+const RoomSelectorPopover: React.FC<
+  React.PropsWithChildren<RoomSelectorPopoverProps>
+> = ({
   property,
   error,
   setError,
@@ -49,25 +52,57 @@ const RoomSelector: React.FC<React.PropsWithChildren<RoomSelectorProps>> = ({
         popoveropen={roomSelectorOpen}
         setPopoverOpen={setRoomSelectorOpen}
       >
-        <div className="flex flex-wrap justify-center gap-3">
-          {property.levels.map((level, index) => {
-            return (
-              <Level
-                level={level}
-                key={index}
-                onClickRoomAdd={onClickRoomAdd}
-                onClickRoomRemove={onClickRoomRemove}
-                checkRoomSelected={checkRoomSelected}
-                jobLoading={jobLoading ? true : false}
-                loading={loading}
-                setLoading={setLoading}
-              />
-            );
-          })}
-        </div>
+        <RoomSelector
+          property={property}
+          jobLoading={jobLoading}
+          loading={loading}
+          setLoading={setLoading}
+          onClickRoomAdd={onClickRoomAdd}
+          onClickRoomRemove={onClickRoomRemove}
+          checkRoomSelected={checkRoomSelected}
+        />
         <ErrorMessage error={error} errorMessage={errorMessage} />
       </Popover>
     </>
+  );
+};
+
+type RoomSelectorProps = {
+  property: PropertyWithLevelAndRooms;
+  jobLoading?: boolean;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  onClickRoomAdd: (roomId: string) => void;
+  onClickRoomRemove: (roomId: string) => void;
+  checkRoomSelected: (roomId: string) => boolean;
+};
+
+export const RoomSelector: React.FC<RoomSelectorProps> = ({
+  property,
+  jobLoading,
+  loading,
+  setLoading,
+  onClickRoomAdd,
+  onClickRoomRemove,
+  checkRoomSelected,
+}) => {
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {property.levels.map((level, index) => {
+        return (
+          <Level
+            level={level}
+            key={index}
+            onClickRoomAdd={onClickRoomAdd}
+            onClickRoomRemove={onClickRoomRemove}
+            checkRoomSelected={checkRoomSelected}
+            jobLoading={jobLoading ? true : false}
+            loading={loading}
+            setLoading={setLoading}
+          />
+        );
+      })}
+    </div>
   );
 };
 
@@ -95,7 +130,7 @@ export const Level: React.FC<LevelProps> = ({
 }) => {
   return (
     <div className="w-60 text-center">
-      <h1>{level?.label}</h1>
+      <Text className="text-large font-extrabold">{level?.label}</Text>
       {level?.rooms.map((room, index) => (
         <div key={index} className="grid grid-cols-1 gap-2 p-2">
           <RoomButton
@@ -175,4 +210,4 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
   );
 };
 
-export default RoomSelector;
+export default RoomSelectorPopover;

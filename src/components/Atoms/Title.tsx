@@ -2,11 +2,13 @@ import clsx from "clsx";
 import { PropsWithChildren } from "react";
 
 type PageTitleProps = {
-  title: string;
   className?: string;
 };
 
-export function PageTitle({ title, className }: PageTitleProps) {
+export function PageTitle({
+  className,
+  children,
+}: PropsWithChildren<PageTitleProps>) {
   return (
     <h1
       className={clsx(
@@ -14,7 +16,7 @@ export function PageTitle({ title, className }: PageTitleProps) {
         className
       )}
     >
-      {title}
+      {children}
     </h1>
   );
 }

@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { EditButton } from "../Atoms/Button";
 import { ErrorMessage } from "../Atoms/Text";
 import ClickAwayListener from "../ClickAwayListener";
-import { TextInput } from "../TextInput";
+import { TextInput } from "../Atoms/TextInput";
 import Image from "next/image";
 import { Text } from "../Atoms/Text";
 
