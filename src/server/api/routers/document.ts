@@ -94,5 +94,15 @@ export const documentRouter = createTRPCRouter({
   })
   return documents;
   }),
+  getDocumentsForProperty: privateProcedure
+  .input(z.object({ propertyId: z.string()}))
+  .query(async ({ ctx, input }) => {
+    const documents = ctx.prisma.document.findMany({
+      where: {
+        propertyId: input.propertyId
+      }
+  })
+  return documents;
+  })
   
 });

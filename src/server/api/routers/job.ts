@@ -53,37 +53,29 @@ export const jobRouter = createTRPCRouter({
       },
     });
     
-
+    const jobs = [];
     const homeownerPropertyIds: string[] = [];
 
     for (const property of propertiesForHomeownerUser) {
       homeownerPropertyIds.push(property.id);
-    }
-    
-    console.log("homewoner properties", homeownerPropertyIds);
-    
-    return ctx.prisma.job.findMany({
- 
+      const jobsForProperty = await ctx.prisma.job.findMany({
         where: {
-            ...(homeownerPropertyIds ? {
-              AND: [
-                {id: {
-                  in: homeownerPropertyIds
-                }
-              },
-              
-              ]
-            }
-            : {})
-        },
-        orderBy: {
-            date: 'desc'
-        },
-        include: {
-            Property: true
-        },
-        take: 5
+          propertyId: property.id
+        }, include: {
+          Property: true
+        },  
+      })
+      jobs.push(...jobsForProperty);
+
+    }
+
+    
+    jobs.sort((a, b) => {
+      return b.date.getTime() - a.date.getTime();
     });
+    console.log("homewoner properties", jobs);
+    
+    return jobs;
   }),
   getRecentJobsForPropertyByTradeUser: privateProcedure
   .input(z.object({ propertyId: z.string() }))
