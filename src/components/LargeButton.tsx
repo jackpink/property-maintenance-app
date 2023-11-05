@@ -1,10 +1,17 @@
-export const LargeButton: React.FC<React.PropsWithChildren> = ({
-  children,
-}) => {
+type LargeButtonProps = {
+  onClick?: () => void;
+};
+
+export const LargeButton: React.FC<
+  React.PropsWithChildren<LargeButtonProps>
+> = ({ children, onClick }) => {
   return (
-    <div className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30">
+    <button
+      onClick={onClick}
+      className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30"
+    >
       {children}
-    </div>
+    </button>
   );
 };
 
