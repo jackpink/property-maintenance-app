@@ -250,12 +250,16 @@ export function UploadButton({
 type EditButtonProps = {
   onClick: () => void;
   className?: string;
+  width?: string;
+  height?: string;
   disabled?: boolean;
 };
 
 export const EditButton: React.FC<EditButtonProps> = ({
   onClick,
   className,
+  width = "50px",
+  height = "50px",
   disabled = false,
 }) => {
   return (
@@ -263,16 +267,16 @@ export const EditButton: React.FC<EditButtonProps> = ({
       onClick={disabled ? ButtonDisabledToast : onClick}
       className={clsx(className, disabled && "cursor-not-allowed opacity-50")}
     >
-      <EditIcon />
+      <EditIcon width={width} height={height} />
     </button>
   );
 };
 
-export function EditIcon() {
+export function EditIcon({ width, height }: { width: string; height: string }) {
   return (
     <svg
-      width="50px"
-      height="50px"
+      width={width}
+      height={height}
       viewBox="0 -0.5 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

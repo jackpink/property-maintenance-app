@@ -1,13 +1,7 @@
-import clsx from "clsx";
-import { Dispatch, SetStateAction, useState } from "react";
-import { EditButton } from "~/components/Atoms/Button";
-import { ErrorMessage } from "~/components/Atoms/Text";
-import ClickAwayListener from "~/components/ClickAwayListener";
-import Image from "next/image";
-import { TextInput } from "~/components/TextInput";
-import { Text } from "~/components/Atoms/Text";
+import { useState } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import { ValidRoomInput } from "./AddRoom";
+import TextInputWithEditButton from "~/components/Molecules/TextInputWithEditButton";
 
 type Room =
   RouterOutputs["property"]["getPropertyForUser"]["levels"][number]["rooms"][number];
@@ -73,78 +67,6 @@ const RoomLabel: React.FC<RoomLabelProps> = ({ room, editPropertyMode }) => {
         error={error}
         errorMessage={errorMessage}
       />
-    </>
-  );
-};
-
-type TextInputWithEditButtonProps = {
-  label: string;
-  editLabelInput: string;
-  setEditLabelInput: Dispatch<SetStateAction<string>>;
-  editLabelMode: boolean;
-  setEditLabelMode: Dispatch<SetStateAction<boolean>>;
-  textInputDisabled: boolean;
-  updateLabelClickEvent: () => void;
-  error: boolean;
-  errorMessage: string;
-};
-
-const TextInputWithEditButton: React.FC<TextInputWithEditButtonProps> = ({
-  label,
-  editLabelInput,
-  setEditLabelInput,
-  editLabelMode,
-  setEditLabelMode,
-  textInputDisabled,
-  updateLabelClickEvent,
-  error,
-  errorMessage,
-}) => {
-  return (
-    <>
-      <div className="flex justify-center">
-        {editLabelMode ? (
-          <ClickAwayListener clickOutsideAction={() => setEditLabelMode(false)}>
-            <div className="flex">
-              <input
-                value={editLabelInput}
-                onChange={(e) => setEditLabelInput(e.target.value)}
-                disabled={textInputDisabled}
-                className={clsx(
-                  "w-full p-2 font-extrabold text-slate-900 outline-none",
-                  { "border border-2 border-red-500": error }
-                )}
-              />
-              <TextInput
-                value={label}
-                onChange={(e) => setEditLabelInput(e.currentTarget.value)}
-                error={error}
-              />
-              <button onClick={() => setEditLabelMode(false)} className="px-1">
-                <Image src="/cancel.svg" alt="Edit" width={40} height={40} />
-              </button>
-              <button onClick={updateLabelClickEvent} className="px-1">
-                <Image
-                  src="/check_circle.svg"
-                  alt="Edit"
-                  width={40}
-                  height={40}
-                />
-              </button>
-            </div>
-          </ClickAwayListener>
-        ) : (
-          <>
-            <Text className="text-xl font-extrabold">{label}</Text>
-
-            <button className="pr-6">
-              <EditButton onClick={() => setEditLabelMode(true)} />
-            </button>
-          </>
-        )}
-      </div>
-
-      <ErrorMessage error={error} errorMessage={errorMessage} />
     </>
   );
 };
