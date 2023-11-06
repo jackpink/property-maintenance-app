@@ -1,6 +1,5 @@
-import { concatAddress } from "~/components/Properties/Property";
+import { concatAddress } from "~/components/Molecules/Properties/Property";
 import Jobs, { type SelectedJobs } from "~/components/Jobs";
-import Documents from "~/components/Documents";
 import {
   type Dispatch,
   type SetStateAction,
@@ -11,8 +10,6 @@ import { useRouter } from "next/router";
 import { RouterOutputs, api } from "~/utils/api";
 import PhotoViewer from "~/components/Molecules/PhotoViewer";
 import { Level, Room } from "@prisma/client";
-import RoomSelector from "~/components/Molecules/RoomSelector";
-import { CTAButton } from "~/components/Atoms/Button";
 import RoomSelectorPopover from "~/components/Molecules/RoomSelector";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};

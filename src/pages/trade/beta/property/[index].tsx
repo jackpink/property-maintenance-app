@@ -2,11 +2,11 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
-import { concatAddress } from "~/components/Properties/Property";
-import EditProperty from "~/components/EditProperty";
-import RecentJobs from "~/components/RecentJobs";
-import Button from "~/components/Button";
-import Popover from "~/components/Popover";
+import { concatAddress } from "~/components/Molecules/Properties/Property";
+import EditProperty from "~/components/Organisms/EditProperty";
+import RecentJobsViewer from "~/components/Molecules/RecentJobsViewer";
+import { CTAButton } from "~/components/Atoms/Button";
+import Popover from "~/components/Atoms/Popover";
 import { useState } from "react";
 import clsx from "clsx";
 import z from "zod";
@@ -87,7 +87,7 @@ const CreateJobForm: React.FC<CreateJobFormProps> = ({ propertyId }) => {
 
       <DayPicker mode="single" required selected={date} onSelect={setDate} />
 
-      <Button onClick={addJobClickEvent}>Create Job</Button>
+      <CTAButton onClick={addJobClickEvent}>Create Job</CTAButton>
     </div>
   );
 };
@@ -123,19 +123,19 @@ const TradePropertyPageWithParams: React.FC<
         <h2 className="pb-4 text-center font-sans text-3xl font-extrabold text-slate-900">
           Recents Jobs
         </h2>
-        <Button
+        <CTAButton
           onClick={() => setCreatejobPopoverOpen(true)}
           className="mb-8 place-self-center"
         >
           Add New Job
-        </Button>
+        </CTAButton>
         <Popover
           popoveropen={createJobPopoverOpen}
           setPopoverOpen={setCreatejobPopoverOpen}
         >
           <CreateJobForm propertyId={property.data.id} />
         </Popover>
-        <RecentJobs recentJobs={recentJobs.data} />
+        <RecentJobsViewer recentJobs={recentJobs.data} />
       </div>
     </div>
   );

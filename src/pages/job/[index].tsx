@@ -1,24 +1,21 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobDate";
-import PhotosViewerWithRoomSelector from "~/components/Molecules/PhotosViewerWithRoomSelector";
-import React, { useState } from "react";
-import UploadPhotoButton from "~/components/Molecules/UploadPhoto";
-import PropertyHeroWithSelectedRooms from "~/components/Molecules/PropertyHeroWithSelectedRooms";
+import React from "react";
 import { PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
-import JobRoomSelector from "~/components/Organisms/JobRoomSelector";
 import JobDocuments from "~/components/Organisms/JobDocuments";
 import JobNotes from "~/components/Organisms/JobNotes";
 import JobPhotos from "~/components/Organisms/JobPhotos";
 import JobProperty from "~/components/Organisms/JobProperty";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
-import { auth, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import {
   ColumnOne,
   ColumnTwo,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
+import { NoteHistory } from "~/components/Molecules/NotesHistory";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -83,18 +80,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   history,
   historyLoading,
 }) => {
-  const ctx = api.useContext();
-
   const { userId } = useAuth();
 
   const isHomeowner = job.Property.homeownerUserId === userId;
 
   //Need to know whether the user is a Trade or Homeowner
-
-  const refetchPhotosAfterUpload = () => {
-    void ctx.photo.getPhotosForJobAndRoom.invalidate();
-    void ctx.photo.getUnassignedPhotosForJob.invalidate();
-  };
 
   return (
     <>
@@ -118,7 +108,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
             notes={job.notes}
             tradeNotes={job.tradeNotes}
             jobId={job.id}
-            history={history?.homeownerNotes}
+            history={history?.homeownerNotes as NoteHistory[]}
             historyLoading={historyLoading}
             disabled={!isHomeowner}
           />

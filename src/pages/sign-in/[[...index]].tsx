@@ -1,16 +1,23 @@
-import { SignIn } from "@clerk/nextjs";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import {
   BackgroundContainer,
   BackgroundContainerHeader,
 } from "~/components/Atoms/BackgroundContainer";
 import { CTAButton } from "~/components/Atoms/Button";
-import { ColumnOne, ResponsiveColumns } from "~/components/Atoms/PageLayout";
+import { ColumnOne } from "~/components/Atoms/PageLayout";
 import { TextInput } from "~/components/Atoms/TextInput";
 import { PageSubTitle } from "~/components/Atoms/Title";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { ErrorMessage } from "~/components/Atoms/Text";
+
+interface Error {
+  longMessage: string;
+}
+
+interface ErrorObject {
+  errors: Error[];
+}
 
 const SignInPage = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -33,15 +40,16 @@ const SignInPage = () => {
       if (result.status === "complete") {
         console.log(result);
         await setActive({ session: result.createdSessionId });
-        router.push("/homeowner");
+        void router.push("/homeowner");
       } else {
         /*Investigate why the login hasn't completed */
         console.log(result);
       }
-    } catch (err: any) {
-      console.error("error", err.errors[0].longMessage);
+    } catch (err) {
+      console.error("error", (err as ErrorObject).errors[0]?.longMessage);
       setError(true);
-      setErrorMessage(err.errors[0].longMessage);
+      const responseMessage = (err as ErrorObject).errors[0]?.longMessage || "";
+      setErrorMessage(responseMessage);
     }
   };
 
@@ -69,7 +77,7 @@ const SignInPage = () => {
                 type="password"
               />
             </div>
-            <CTAButton onClick={handleSubmit}>Sign In</CTAButton>
+            <CTAButton onClick={() => void handleSubmit()}>Sign In</CTAButton>
           </div>
           <div className="text-center">
             <ErrorMessage error={error} errorMessage={errorMessage} />

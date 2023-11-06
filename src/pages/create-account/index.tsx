@@ -3,7 +3,7 @@ import {
   LargeButton,
   LargeButtonTitle,
   LargeButtonContent,
-} from "../../components/LargeButton";
+} from "../../components/Atoms/Button";
 
 const CreateAcccountPage = () => {
   return (

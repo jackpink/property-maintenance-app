@@ -1,10 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
-import {  getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { env } from "../../../env.mjs";
-import { v4 as uuidv4 } from 'uuid';
-import { TRPCError } from "@trpc/server";
 
 
 export const productRouter= createTRPCRouter({

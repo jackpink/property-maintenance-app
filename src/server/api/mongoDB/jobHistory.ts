@@ -1,5 +1,5 @@
 
-import { MongoClient, ServerApiVersion, UpdateFilter } from 'mongodb';
+import { MongoClient, ServerApiVersion, type UpdateFilter } from 'mongodb';
 import {env} from '../../../env.mjs';
 
 const uri = env.MONGODB_URI;

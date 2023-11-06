@@ -1,29 +1,10 @@
 
-import { Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import { type RouterOutputs } from "~/utils/api";
 import { getJobHistory, updateJobHistory } from "../mongoDB/jobHistory";
-type JSONValue = 
- | string
- | number
- | boolean
- | null
- | JSONValue[]
- | {[key: string]: JSONValue}
-
-interface JSONObject {
-  [k: string]: JSONValue
-}
-
-interface updateJson {
-  $push: JSONObject
-}
-
-interface JSONArray extends Array<JSONValue> {}
-
-
 
 
 export const jobRouter = createTRPCRouter({
@@ -332,6 +313,7 @@ export const jobRouter = createTRPCRouter({
         nonUserTradeInfo: json
       }
     })
+    return newJob;
   }),
   updateNotesForJob:privateProcedure
   .input(z.object({jobId: z.string(), notes: z.string()}))
