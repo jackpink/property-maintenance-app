@@ -1,7 +1,13 @@
 import { type NextPage } from "next";
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { CTAButton } from "~/components/Atoms/Button";
+import {
+  CTAButton,
+  LargeButton,
+  LargeButtonContent,
+  LargeButtonTitle,
+} from "~/components/Atoms/Button";
+import { Text } from "~/components/Atoms/Text";
 
 const Home: NextPage = () => {
   return (
@@ -10,14 +16,17 @@ const Home: NextPage = () => {
         Prop Doc
       </h1>
       <SignedIn>
-        <div className="grid grid-cols-1 gap-4 ">
-          <h1>Welcome {}</h1>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30"
-            href="/homeowner"
-          >
-            <h3 className="text-2xl font-bold">Homepage→</h3>
-            <div className="text-lg">View your Properties and latest Jobs</div>
+        <div className="flex flex-wrap justify-center gap-4 text-center ">
+          <Text>Welcome to Prop Doc the property maintenance app. </Text>
+          <Text>Management all of the work done on your home.</Text>
+          <Text>Search photos and documents for past work doe in rooms.</Text>
+          <Link href="/homeowner">
+            <LargeButton>
+              <LargeButtonTitle>Homepage</LargeButtonTitle>
+              <LargeButtonContent>
+                Explore your properties and latest jobs
+              </LargeButtonContent>
+            </LargeButton>
           </Link>
         </div>
         {/* Mount the UserButton component */}
@@ -38,18 +47,6 @@ const Home: NextPage = () => {
           </Link>
         </div>
       </SignedOut>
-      <div className="grid grid-cols-1 gap-4 ">
-        <Link
-          className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30"
-          href="/"
-        >
-          <h3 className="text-2xl font-bold">Demo →</h3>
-          <div className="text-lg">
-            See how it works. Explore a demo version of the app.
-          </div>
-        </Link>
-      </div>
-      <p className="text-2xl text-white"></p>
     </div>
   );
 };
