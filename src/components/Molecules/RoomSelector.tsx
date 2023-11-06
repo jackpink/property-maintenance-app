@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { RouterOutputs } from "~/utils/api";
 import Popover from "../Atoms/Popover";
-import { CTAButton } from "../Atoms/Button";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { CTAButton, GhostButton } from "../Atoms/Button";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { ErrorMessage } from "../Atoms/Text";
 import { Job } from "~/pages/job/[index]";
 import { Text } from "../Atoms/Text";
@@ -199,14 +199,14 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
     );
   }
   return (
-    <CTAButton
+    <GhostButton
       value={room.id}
       onClick={addRoomButtonClicked}
       className={clsx(className, "bg-inherit")}
       loading={loading || jobLoading}
     >
       {room.label}
-    </CTAButton>
+    </GhostButton>
   );
 };
 

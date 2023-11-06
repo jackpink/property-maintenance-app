@@ -62,12 +62,15 @@ const AddTradePopover: React.FC<AddTradePopoverProps> = ({
           />
         </div>
       ) : (
-        <GhostButton
-          onClick={() => setEditPopoverOpen(true)}
-          disabled={disabled}
-        >
-          Add Information for Trade
-        </GhostButton>
+        <div className="flex flex-wrap justify-center">
+          <GhostButton
+            onClick={() => setEditPopoverOpen(true)}
+            disabled={disabled}
+            className="justify-self-center"
+          >
+            Add Information for Trade
+          </GhostButton>
+        </div>
       )}
       <Popover
         popoveropen={editPopoverOpen}
