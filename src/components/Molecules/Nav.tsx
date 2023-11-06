@@ -67,7 +67,7 @@ const NavPopover: React.FC<NavPopoverProps> = ({
       </button>
       <SignedIn>
         {/* Mount the UserButton component */}
-        <UserButton />
+        <UserButton afterSignOutUrl="/sign-in" />
       </SignedIn>
       <SignedOut>
         {/* Signed out users get sign in button */}
