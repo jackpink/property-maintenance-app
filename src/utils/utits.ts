@@ -13,7 +13,7 @@ interface PropertyWithoutJobs {
   state: string;
   country: string;
   apartment: string | null;
-};
+}
 //RouterOutputs["job"]["getRecentJobsForTradeUser"][number]["Property"];
 
 export const concatAddress = (property: PropertyWithoutJobs) => {
