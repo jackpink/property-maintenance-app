@@ -12,7 +12,7 @@ export function PageTitle({
   return (
     <h1
       className={clsx(
-        "py-8 text-center font-sans text-4xl font-extrabold text-slate-900",
+        "py-8 text-center font-sans text-4xl font-extrabold text-dark",
         className
       )}
     >
@@ -32,7 +32,7 @@ export function PageSubTitle({
   return (
     <h2
       className={clsx(
-        "pb-4 text-center font-sans text-3xl font-extrabold text-slate-700",
+        "pb-4 text-center font-sans text-3xl font-extrabold text-dark",
         className
       )}
     >

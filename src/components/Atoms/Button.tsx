@@ -27,7 +27,7 @@ export const CTAButton: React.FC<ButtonProps> = ({
       value={value ? value : "value"}
       onClick={onClick}
       className={clsx(
-        "rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold text-slate-900",
+        "rounded border border-dark bg-brand/80 p-2 text-xl font-extrabold text-dark",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "animate-pulse cursor-wait"
@@ -194,7 +194,7 @@ export function DefaultDocumentButton({
   return (
     <div
       className={clsx(
-        " border-1 rounded-md border border-black bg-teal-300 pb-2 text-center"
+        " border-1 rounded-md border border-black bg-brand/80 pb-2 text-center"
       )}
     >
       <Text className="p-2 font-extrabold">
@@ -227,7 +227,7 @@ export function UploadButton({
   return (
     <div
       className={clsx(
-        "cursor-pointer rounded border border-teal-800 bg-teal-300 p-2 text-xl font-extrabold text-slate-900",
+        "cursor-pointer rounded border border-teal-800 bg-brand/80 p-2 text-xl font-extrabold text-slate-900",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "cursor-wait"
@@ -308,7 +308,7 @@ export const LargeButton: React.FC<
   return (
     <button
       onClick={onClick}
-      className="flex max-w-xs flex-col gap-4 rounded-xl bg-black/20 p-4 text-teal-800 hover:bg-black/30"
+      className="flex max-w-xs flex-col gap-4 rounded-xl bg-brand p-4 text-teal-800 hover:bg-black/30"
     >
       {children}
     </button>
@@ -318,11 +318,11 @@ export const LargeButton: React.FC<
 export const LargeButtonTitle: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  return <h3 className="text-2xl font-bold">{children} →</h3>;
+  return <h3 className="text-2xl font-bold text-dark">{children} →</h3>;
 };
 
 export const LargeButtonContent: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  return <div className="text-lg">{children}</div>;
+  return <div className="text-lg text-dark">{children}</div>;
 };
