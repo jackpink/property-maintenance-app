@@ -15,6 +15,13 @@ export default {
       screens: {
         '3xl': '1800px'
       },
+      colors: {
+        primary: "#2ec4b6",
+        secondary: "#aceae4",
+        brand: "#a799b7",
+        dark: "#011627", 
+        light: "#cbf3f0"
+      }
       
     },
   },
