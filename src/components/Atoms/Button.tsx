@@ -54,7 +54,7 @@ export function GhostButton({
       value={value ? value : "value"}
       onClick={onClick}
       className={clsx(
-        "rounded border border-teal-800 bg-transparent p-2 text-slate-900",
+        "rounded border border-dark bg-transparent p-2 text-dark",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "animate-pulse cursor-wait"
@@ -83,7 +83,7 @@ export function DocumentButton({
   return (
     <button
       className={clsx(
-        "m-2 p-2",
+        "m-2 flex flex-col items-center justify-center",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "animate-pulse cursor-wait"
@@ -98,7 +98,7 @@ export function DocumentButton({
           />
         </g>
       </svg>
-      <p>{label}</p>
+      <Text>{label}</Text>
     </button>
   );
 }
@@ -197,7 +197,7 @@ export function DefaultDocumentButton({
   return (
     <div
       className={clsx(
-        " border-1 rounded-md border border-black bg-brand/80 pb-2 text-center"
+        " border-1 rounded-full border border-dark bg-brand p-4 text-center"
       )}
     >
       <Text className="p-2 font-extrabold">
@@ -230,7 +230,7 @@ export function UploadButton({
   return (
     <div
       className={clsx(
-        "cursor-pointer rounded border border-teal-800 bg-brand/80 p-2 text-xl font-extrabold text-slate-900",
+        "cursor-pointer rounded border border-teal-800 bg-brand p-2 text-xl font-extrabold text-slate-900",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "cursor-wait"
@@ -311,7 +311,7 @@ export const LargeButton: React.FC<
   return (
     <button
       onClick={onClick}
-      className="flex max-w-xs flex-col gap-4 rounded-xl bg-brand p-4 text-teal-800 hover:bg-black/30"
+      className="flex max-w-xs flex-col gap-4 rounded-xl bg-brand p-4  hover:bg-brand/70"
     >
       {children}
     </button>
@@ -327,5 +327,5 @@ export const LargeButtonTitle: React.FC<React.PropsWithChildren> = ({
 export const LargeButtonContent: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  return <div className="text-lg text-dark">{children}</div>;
+  return <Text className="text-lg text-dark">{children}</Text>;
 };
