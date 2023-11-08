@@ -16,11 +16,11 @@ export default {
         '3xl': '1800px'
       },
       colors: {
-        primary: "#2ec4b6",
-        secondary: "#aceae4",
-        brand: "#a799b7",
+        primary: "#acf7c1",
+        secondary: "#bffff1",
+        brand: "#7df2cd",
         dark: "#011627", 
-        light: "#cbf3f0"
+        light: "#f7ece1"
       }
       
     },
