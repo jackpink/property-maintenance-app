@@ -12,6 +12,7 @@ type ButtonProps = {
   value?: string;
   disabled?: boolean;
   loading?: boolean;
+  rounded?: boolean;
 };
 
 export const CTAButton: React.FC<ButtonProps> = ({
@@ -21,6 +22,7 @@ export const CTAButton: React.FC<ButtonProps> = ({
   value,
   disabled,
   loading,
+  rounded,
 }) => {
   return (
     <button
@@ -30,7 +32,8 @@ export const CTAButton: React.FC<ButtonProps> = ({
         "rounded border border-dark bg-brand/80 p-2 text-xl font-extrabold text-dark",
         className,
         disabled && "cursor-not-allowed opacity-50",
-        loading && "animate-pulse cursor-wait"
+        loading && "animate-pulse cursor-wait",
+        rounded && "rounded-full border-0 p-6"
       )}
     >
       {children}

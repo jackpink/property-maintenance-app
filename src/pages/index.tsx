@@ -35,15 +35,13 @@ const Home: NextPage = () => {
         {/* Signed out users get sign in button */}
         <div className="flex justify-center">
           <Link className="block py-4" href="/trade/beta">
-            <CTAButton className="rounded-full border-0 p-6">Sign In</CTAButton>
+            <CTAButton rounded>Sign In</CTAButton>
           </Link>
         </div>
 
         <div className="flex justify-center">
           <Link className="block" href="/create-account">
-            <CTAButton className="rounded-full border-0 p-6">
-              Create An Account
-            </CTAButton>
+            <CTAButton rounded>Create An Account</CTAButton>
           </Link>
         </div>
       </SignedOut>
