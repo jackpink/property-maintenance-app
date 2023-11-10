@@ -10,26 +10,17 @@ const NavItems: React.FC = () => {
   return (
     <>
       <li>
-        <Link
-          href="/homeowner"
-          className="hover:text-sky-500 dark:hover:text-sky-400"
-        >
+        <Link href="/homeowner" className="hover:text-sky-500 ">
           <Text className="text-altPrimary">Dashboard</Text>
         </Link>
       </li>
       <li>
-        <Link
-          href="/about"
-          className="hover:text-sky-500 dark:hover:text-sky-400"
-        >
+        <Link href="/about" className="hover:text-sky-500 ">
           <Text className="text-altPrimary">About</Text>
         </Link>
       </li>
       <li>
-        <Link
-          href="/contact"
-          className="hover:text-sky-500 dark:hover:text-sky-400"
-        >
+        <Link href="/contact" className="hover:text-sky-500">
           <Text className="text-altPrimary">Contact</Text>
         </Link>
       </li>
@@ -84,10 +75,10 @@ const NavPopover: React.FC<NavPopoverProps> = ({
         onClose={setIsOpen}
       >
         <Dialog.Overlay className="fixed inset-0 bg-light backdrop-blur-sm" />
-        <div className="dark:highlight-white/5 fixed right-4 top-4 w-full max-w-xs rounded-lg bg-white p-6 text-base font-semibold text-slate-900 shadow-lg dark:bg-slate-800 dark:text-slate-400">
+        <div className=" fixed right-4 top-4 w-full max-w-xs rounded-lg bg-white p-6 text-base font-semibold shadow-lg">
           <button
             type="button"
-            className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
+            className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600 "
             onClick={() => setIsOpen(false)}
           >
             <span className="sr-only">Close navigation</span>
