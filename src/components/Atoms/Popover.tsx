@@ -14,7 +14,7 @@ const Popover: React.FC<PopoverProps> = ({
   children,
 }) => {
   return (
-    <div className={clsx("inline")}>
+    <div className={clsx("inline", !popoveropen && "hidden")}>
       <button
         type="button"
         className="flex h-8 items-center justify-center text-slate-500 hover:text-slate-600 "

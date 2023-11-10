@@ -74,7 +74,7 @@ const NavPopover: React.FC<NavPopoverProps> = ({
         open={isOpen}
         onClose={setIsOpen}
       >
-        <Dialog.Overlay className="fixed inset-0 bg-light backdrop-blur-sm" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
         <div className=" fixed right-4 top-4 w-full max-w-xs rounded-lg bg-white p-6 text-base font-semibold shadow-lg">
           <button
             type="button"

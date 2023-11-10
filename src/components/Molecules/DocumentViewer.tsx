@@ -33,8 +33,8 @@ const DocumentViewer: React.FC<DocumentsProps> = ({
   defaultDocuments,
 }) => {
   return (
-    <div className="relative  w-full overflow-x-auto">
-      <div className="mx-12 flex">
+    <div className="relative mb-4  w-full overflow-x-auto py-4">
+      <div className="mx-12 flex gap-4">
         {defaultDocuments.map((defaultDocumentLabel, index) => (
           <AddDefaultDocumentButton
             label={defaultDocumentLabel}
@@ -64,7 +64,7 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
   });
   console.log("docuemnt url", pdfUrl);
   return (
-    <div className="mx-auto flex-none">
+    <div className="mx-auto flex flex-none items-center ">
       <DocumentButton
         label={document.label}
         onClick={() => setDocumentOpen(true)}
