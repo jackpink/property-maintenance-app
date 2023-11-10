@@ -54,7 +54,7 @@ const NavPopover: React.FC<NavPopoverProps> = ({
       <div className="felx-nowrap flex">
         <button
           type="button"
-          className="flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
+          className="flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600"
           onClick={() => setIsOpen(true)}
         >
           <span className="sr-only">Navigation</span>
@@ -83,7 +83,7 @@ const NavPopover: React.FC<NavPopoverProps> = ({
         open={isOpen}
         onClose={setIsOpen}
       >
-        <Dialog.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80" />
+        <Dialog.Overlay className="fixed inset-0 bg-light backdrop-blur-sm" />
         <div className="dark:highlight-white/5 fixed right-4 top-4 w-full max-w-xs rounded-lg bg-white p-6 text-base font-semibold text-slate-900 shadow-lg dark:bg-slate-800 dark:text-slate-400">
           <button
             type="button"

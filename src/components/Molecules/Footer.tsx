@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
                 <h3 className="text-sm font-bold uppercase tracking-wider ">
-                  <Text className="text-altPrimary">Homeowners</Text>
+                  <Text className="text-blue">Homeowners</Text>
                 </h3>
                 <ul role="list" className="mt-4 space-y-2">
                   <li>

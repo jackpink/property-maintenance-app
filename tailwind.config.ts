@@ -19,10 +19,11 @@ export default {
         primary: "#acf7c1",
         secondary: " #ccfff4",
         brand: "#7df2cd",
+        brandSecondary: "#c470e7",
         dark: "#011627", 
         light: "#f7ece1",
-        altPrimary: "#c470e7",
-        altSecondary: "#d8c2ff",
+        altPrimary: "#0E7C7B",
+        altSecondary: "#86bbbd",
       }
       
     },

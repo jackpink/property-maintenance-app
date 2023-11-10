@@ -10,12 +10,7 @@ export function Text({
   children,
 }: React.PropsWithChildren<TextProps>) {
   return (
-    <p
-      className={clsx(
-        "--font-geist-sans text-center font-sans text-lg text-dark",
-        className
-      )}
-    >
+    <p className={clsx(" text-center font-sans text-lg text-dark", className)}>
       {children}
     </p>
   );
