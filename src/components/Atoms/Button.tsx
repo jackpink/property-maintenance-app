@@ -60,7 +60,7 @@ export function GhostButton({
         loading && "animate-pulse cursor-wait"
       )}
     >
-      <Text>{children}</Text>
+      <Text className="font-sans">{children}</Text>
     </button>
   );
 }
@@ -98,7 +98,7 @@ export function DocumentButton({
           />
         </g>
       </svg>
-      <Text>{label}</Text>
+      <Text className="font-sans text-dark">{label}</Text>
     </button>
   );
 }
@@ -197,10 +197,10 @@ export function DefaultDocumentButton({
   return (
     <div
       className={clsx(
-        " border-1 rounded-full border border-dark bg-brand p-4 text-center"
+        " border-1 rounded-full border border-dark bg-brand p-4 text-center text-dark"
       )}
     >
-      <Text className="p-2 font-extrabold">
+      <Text className="p-2 font-sans font-extrabold">
         {loading ? "Uploading..." : "Add " + label}
       </Text>
       <div className={clsx("grid place-items-center")}>
@@ -230,7 +230,7 @@ export function UploadButton({
   return (
     <div
       className={clsx(
-        "cursor-pointer rounded border border-teal-800 bg-brand p-2 text-xl font-extrabold text-slate-900",
+        "cursor-pointer rounded border border-dark bg-brand p-2 font-sans text-xl font-extrabold text-dark",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "cursor-wait"
@@ -321,11 +321,13 @@ export const LargeButton: React.FC<
 export const LargeButtonTitle: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  return <h3 className="text-2xl font-bold text-dark">{children} →</h3>;
+  return (
+    <Text className="font-sans text-2xl font-bold text-dark">{children} →</Text>
+  );
 };
 
 export const LargeButtonContent: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  return <Text className="text-lg text-dark">{children}</Text>;
+  return <Text className="font-sans text-lg text-dark">{children}</Text>;
 };

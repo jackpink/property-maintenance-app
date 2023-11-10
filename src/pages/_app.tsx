@@ -11,6 +11,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     <ClerkProvider {...pageProps}>
       <PageLayout>
         <Toaster position="top-center" richColors />
+
         <Component {...pageProps} />
       </PageLayout>
     </ClerkProvider>

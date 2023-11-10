@@ -4,6 +4,7 @@ import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { HorizontalLogo } from "../Atoms/Logo";
+import { Text } from "../Atoms/Text";
 
 const NavItems: React.FC = () => {
   return (
@@ -13,7 +14,7 @@ const NavItems: React.FC = () => {
           href="/homeowner"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          Dashboard
+          <Text>Dashboard</Text>
         </Link>
       </li>
       <li>
@@ -21,7 +22,7 @@ const NavItems: React.FC = () => {
           href="/about"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          About
+          <Text>About</Text>
         </Link>
       </li>
       <li>
@@ -29,7 +30,7 @@ const NavItems: React.FC = () => {
           href="/contact"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          Contact
+          <Text>Contact</Text>
         </Link>
       </li>
     </>
@@ -50,30 +51,32 @@ const NavPopover: React.FC<NavPopoverProps> = ({
 
   return (
     <div className={clsx("inline", className, display)} {...props}>
-      <button
-        type="button"
-        className="flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
-        onClick={() => setIsOpen(true)}
-      >
-        <span className="sr-only">Navigation</span>
-        <svg width="24" height="24" fill="none" aria-hidden="true">
-          <path
-            d="M12 6v.01M12 12v.01M12 18v.01M12 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-      <SignedIn>
-        {/* Mount the UserButton component */}
-        <UserButton afterSignOutUrl="/sign-in" />
-      </SignedIn>
-      <SignedOut>
-        {/* Signed out users get sign in button */}
-        <SignInButton />
-      </SignedOut>
+      <div className="felx-nowrap flex">
+        <button
+          type="button"
+          className="flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
+          onClick={() => setIsOpen(true)}
+        >
+          <span className="sr-only">Navigation</span>
+          <svg width="24" height="24" fill="none" aria-hidden="true">
+            <path
+              d="M12 6v.01M12 12v.01M12 18v.01M12 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        <SignedIn>
+          {/* Mount the UserButton component */}
+          <UserButton afterSignOutUrl="/sign-in" />
+        </SignedIn>
+        <SignedOut>
+          {/* Signed out users get sign in button */}
+          <SignInButton />
+        </SignedOut>
+      </div>
       <Dialog
         as="div"
         className={clsx("fixed inset-0 z-50", display)}
@@ -115,14 +118,11 @@ const Nav: React.FC = () => {
   return (
     <>
       <div className="relative flex w-full items-center justify-between px-2 pt-6">
-        <Link
-          href="/"
-          className="mr-3 w-[2.0625rem] flex-none overflow-hidden md:w-auto"
-        >
+        <Link href="/" className="mr-3  flex-none overflow-hidden md:w-auto">
           <HorizontalLogo height={40} />
         </Link>
 
-        <div className="relative ml-auto hidden items-center lg:flex">
+        <div className="relative ml-auto hidden items-center sm:flex">
           <nav className="text-sm font-semibold leading-6 text-slate-700 dark:text-slate-200">
             <ul className="flex space-x-8">
               <NavItems />
@@ -138,7 +138,7 @@ const Nav: React.FC = () => {
             <SignInButton />
           </SignedOut>
         </div>
-        <NavPopover className="-my-1 ml-2" display="lg:hidden" />
+        <NavPopover className="-my-1 ml-2" display="sm:hidden" />
       </div>
     </>
   );
