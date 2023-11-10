@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { HorizontalLogo } from "../Atoms/Logo";
 
 const NavItems: React.FC = () => {
   return (
@@ -118,8 +119,7 @@ const Nav: React.FC = () => {
           href="/"
           className="mr-3 w-[2.0625rem] flex-none overflow-hidden md:w-auto"
         >
-          <span className="sr-only">Tailwind CSS home page</span>
-          <p>Logo</p>
+          <HorizontalLogo height={40} />
         </Link>
 
         <div className="relative ml-auto hidden items-center lg:flex">

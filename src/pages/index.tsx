@@ -13,7 +13,7 @@ import Logo from "~/components/Atoms/Logo";
 const Home: NextPage = () => {
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-      <Logo width="300px" height="300px" />
+      <Logo width="300px" height="300px" colour="#0e7c7b" />
       <SignedIn>
         <div className="flex flex-col justify-center gap-4 text-center ">
           <Text>Welcome to Prop Doc the property maintenance app. </Text>
