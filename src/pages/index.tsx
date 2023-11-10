@@ -8,15 +8,14 @@ import {
   LargeButtonTitle,
 } from "~/components/Atoms/Button";
 import { Text } from "~/components/Atoms/Text";
+import Logo from "~/components/Atoms/Logo";
 
 const Home: NextPage = () => {
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-      <h1 className="text-5xl font-extrabold tracking-tight text-teal-900 sm:text-[5rem]">
-        Prop Doc
-      </h1>
+      <Logo width="300px" height="300px" />
       <SignedIn>
-        <div className="flex flex-wrap justify-center gap-4 text-center ">
+        <div className="flex flex-col justify-center gap-4 text-center ">
           <Text>Welcome to Prop Doc the property maintenance app. </Text>
           <Text>Management all of the work done on your home.</Text>
           <Text>Search photos and documents for past work doe in rooms.</Text>
