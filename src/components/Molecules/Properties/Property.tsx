@@ -3,6 +3,7 @@ import Image from "next/image";
 import house from "~/images/demo-page/house-stock-image.png";
 import { type RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/router";
+import { Text, TextSpan } from "~/components/Atoms/Text";
 
 type PropertyWithoutJobs = {
   streetNumber: string;
@@ -51,13 +52,15 @@ const Property: React.FC<Props> = ({ property }) => {
           className="min-w-xl rounded-xl p-3"
         />
         <div className="relative col-span-2">
-          <h1 className="p-3 text-lg font-extrabold text-slate-900 lg:text-2xl">
+          <Text className="p-3 text-lg font-extrabold text-slate-900 lg:text-2xl">
             {address}
-          </h1>
-          <h2 className="p-3">
+          </Text>
+          <Text className="p-3">
             Last Job:{" "}
-            <span className="font-italic">{property.jobs[0]?.title}</span>
-          </h2>
+            <TextSpan className="font-italic">
+              {property.jobs[0]?.title}
+            </TextSpan>
+          </Text>
         </div>
       </div>
     </Link>

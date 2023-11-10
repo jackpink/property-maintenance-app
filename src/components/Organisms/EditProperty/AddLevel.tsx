@@ -58,7 +58,7 @@ const AddLevelButton: React.FC<AddLevelButtonProps> = ({ propertyId }) => {
       textboxOpen={textboxOpen}
       setTextboxOpen={setTextboxOpen}
     >
-      <div className="h-24 w-60 rounded-lg bg-black/30 py-6 text-center ">
+      <div className="h-24 w-60 rounded-lg bg-altSecondary py-6 text-center ">
         <CTAButton onClick={() => setTextboxOpen(true)}>+ Add Level</CTAButton>
       </div>
     </AddButtonWithTextInput>

@@ -48,8 +48,8 @@ const Level: React.FC<LevelProps> = ({ level }) => {
   };
 
   return (
-    <div className=" w-60 rounded-lg bg-black/20 text-center">
-      <div className="mb-6 bg-black/10 py-4 text-center">
+    <div className=" w-60 overflow-hidden rounded-lg bg-altSecondary text-center">
+      <div className="mb-6 bg-altPrimary py-4 text-center">
         <TextInputWithEditButton
           label={level.label}
           editLabelInput={editLabelInput}

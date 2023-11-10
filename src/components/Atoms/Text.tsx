@@ -12,7 +12,7 @@ export function Text({
   return (
     <p
       className={clsx(
-        "--font-geist-sans text-center font-mono text-lg text-dark",
+        "--font-geist-sans text-center font-sans text-lg text-dark",
         className
       )}
     >
@@ -31,7 +31,7 @@ export function TextSpan({
 }: React.PropsWithChildren<TextSpanProps>) {
   return (
     <span
-      className={clsx("text-center font-mono text-lg text-dark", className)}
+      className={clsx("text-center font-sans text-lg text-dark", className)}
     >
       {children}
     </span>

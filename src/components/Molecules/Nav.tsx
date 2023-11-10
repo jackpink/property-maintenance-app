@@ -14,7 +14,7 @@ const NavItems: React.FC = () => {
           href="/homeowner"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          <Text>Dashboard</Text>
+          <Text className="text-altPrimary">Dashboard</Text>
         </Link>
       </li>
       <li>
@@ -22,7 +22,7 @@ const NavItems: React.FC = () => {
           href="/about"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          <Text>About</Text>
+          <Text className="text-altPrimary">About</Text>
         </Link>
       </li>
       <li>
@@ -30,7 +30,7 @@ const NavItems: React.FC = () => {
           href="/contact"
           className="hover:text-sky-500 dark:hover:text-sky-400"
         >
-          <Text>Contact</Text>
+          <Text className="text-altPrimary">Contact</Text>
         </Link>
       </li>
     </>
