@@ -102,7 +102,7 @@ const PhotosViewerWithRoomSelector: React.FC<
           );
         })}
         {assignMode ? (
-          <div className="fixed bottom-6 w-full">
+          <div className="fixed bottom-6 flex w-full justify-center">
             <CTAButton
               onClick={() => setRoomAssignButtonsOpen(true)}
               className="w-2/3 p-6"
