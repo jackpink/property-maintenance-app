@@ -15,11 +15,11 @@ const Home: NextPage = () => {
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
       <Logo width="300px" height="300px" colour="#c470e7" />
       <SignedIn>
-        <div className="flex flex-col justify-center gap-4 text-center ">
+        <div className="flex flex-col items-center justify-center gap-4 text-center ">
           <Text>Welcome to Prop Doc the property maintenance app. </Text>
           <Text>Management all of the work done on your home.</Text>
           <Text>Search photos and documents for past work doe in rooms.</Text>
-          <Link href="/homeowner">
+          <Link href="/homeowner" className="">
             <LargeButton>
               <LargeButtonTitle>Homepage</LargeButtonTitle>
               <LargeButtonContent>
