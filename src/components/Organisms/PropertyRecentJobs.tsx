@@ -34,9 +34,9 @@ const PropertyRecentJobs: React.FC<PropertyRecentJobsProps> = ({
             {fetchErrormessage}
           </p>
         ) : (
-          <>
+          <div className="py-4">
             <RecentJobsViewer recentJobs={recentJobs} />
-          </>
+          </div>
         )}
       </div>
     </BackgroundContainer>
