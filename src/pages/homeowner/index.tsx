@@ -10,6 +10,7 @@ import { PageTitle } from "~/components/Atoms/Title";
 import DashboardProperties from "~/components/Organisms/DashboardProperties";
 import DashboardRecentJobs from "~/components/Organisms/DashboardRecentJobs";
 import HomeownerCreateProperty from "~/components/Organisms/HomeownerCreateProperty";
+import { Text } from "~/components/Atoms/Text";
 
 const HomeownerPage = () => {
   const { userId } = useAuth();
@@ -38,11 +39,12 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
 
       <ResponsiveColumns>
         <ColumnOne>
-          <h2 className="mb-6 border-b-2 border-black py-4 text-center font-sans text-xl font-extrabold text-slate-900">
+          <Text className="mb-6 border-b-2 border-black py-4 text-center font-sans text-xl font-extrabold text-slate-900">
             Welcome {name}, this is your Dashboard. Create or Select a specific
             property or browse recent jobs here.
-          </h2>
+          </Text>
           <HomeownerCreateProperty userId={userId} />
+          <div className="p-2"></div>
           <DashboardProperties userId={userId} />
         </ColumnOne>
         <ColumnTwo>
