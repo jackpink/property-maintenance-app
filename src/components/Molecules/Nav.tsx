@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { HorizontalLogo } from "../Atoms/Logo";
 import { Text } from "../Atoms/Text";
+import { CTAButton } from "../Atoms/Button";
 
 const NavItems: React.FC = () => {
   return (
@@ -65,7 +66,7 @@ const NavPopover: React.FC<NavPopoverProps> = ({
         </SignedIn>
         <SignedOut>
           {/* Signed out users get sign in button */}
-          <SignInButton />
+          <CTAButton rounded>Sign In</CTAButton>
         </SignedOut>
       </div>
       <Dialog
@@ -126,7 +127,9 @@ const Nav: React.FC = () => {
           </SignedIn>
           <SignedOut>
             {/* Signed out users get sign in button */}
-            <SignInButton />
+            <Link href="/sign-in">
+              <CTAButton rounded>Sign In</CTAButton>
+            </Link>
           </SignedOut>
         </div>
         <NavPopover className="-my-1 ml-2" display="sm:hidden" />
