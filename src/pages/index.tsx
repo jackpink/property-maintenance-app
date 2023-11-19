@@ -33,7 +33,7 @@ const Home: NextPage = () => {
       <SignedOut>
         {/* Signed out users get sign in button */}
         <div className="flex justify-center">
-          <Link className="block py-4" href="/trade/beta">
+          <Link className="block py-4" href="/">
             <CTAButton rounded>Sign In</CTAButton>
           </Link>
         </div>

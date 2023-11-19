@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { concatAddress } from "~/components/Molecules/Properties/Property";
 import EditProperty from "~/components/Organisms/EditProperty";
 import { CTAButton } from "~/components/Atoms/Button";
-import { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import Link from "next/link";
 import {
   LargeButton,
@@ -62,8 +62,6 @@ const HomeownerPropertyPageWithParams: React.FC<
   } = api.job.getRecentJobsForProperty.useQuery({
     propertyId: propertyId,
   });
-
-  const router = useRouter();
 
   if (!!propertyFetchError) toast("Failed to fetch property");
   if (!!recentJobsFetchError) toast("Failed to fetch Recent Jobs");

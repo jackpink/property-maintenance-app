@@ -5,6 +5,7 @@ import {
   type SetStateAction,
   useState,
   useCallback,
+  useEffect,
 } from "react";
 import { useRouter } from "next/router";
 import { RouterOutputs, api } from "~/utils/api";
@@ -43,6 +44,8 @@ const JobsForSelectedRoom: React.FC<JobsForSelectedRoomProps> = ({
   const jobs = api.job.getJobsForRoom.useQuery({
     roomId: selectedRoom.room.id,
   });
+  // when room changes we want to select all jobs
+
   if (!jobs.data) return <>loading jobs</>;
   return (
     <Jobs
@@ -66,6 +69,10 @@ const PropertyPhotoSearchPageWithParams: React.FC<
   });
   const [selectedJobs, setSelectedJobs] = useState<SelectedJobs>([]);
   console.log("Slected jobs", selectedJobs);
+
+  useEffect(() => {
+    setSelectedJobs([]);
+  }, [selectedRoom.room?.id]);
 
   const property = api.property.getPropertyForUser.useQuery({ id: propertyId });
   if (!property.data) return <>Loading</>;
