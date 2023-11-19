@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type ReactNode } from "react";
+import { useRef, type ReactNode, useEffect, use, useState } from "react";
 import { Text } from "./Text";
 import LoadingSpinner from "./LoadingSpinner";
 import Image from "next/image";
@@ -285,8 +285,8 @@ export function EditIcon({ width, height }: { width: string; height: string }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M17.7 5.12758L19.266 6.37458C19.4172 6.51691 19.5025 6.71571 19.5013 6.92339C19.5002 7.13106 19.4128 7.32892 19.26 7.46958L18.07 8.89358L14.021 13.7226C13.9501 13.8037 13.8558 13.8607 13.751 13.8856L11.651 14.3616C11.3755 14.3754 11.1356 14.1751 11.1 13.9016V11.7436C11.1071 11.6395 11.149 11.5409 11.219 11.4636L15.193 6.97058L16.557 5.34158C16.8268 4.98786 17.3204 4.89545 17.7 5.12758Z"
         stroke="#000000"
         stroke-width="1.5"
@@ -331,3 +331,131 @@ export const LargeButtonContent: React.FC<React.PropsWithChildren> = ({
 }) => {
   return <Text className="font-sans text-lg text-dark">{children}</Text>;
 };
+
+export function NavMenuIcon({ height }: { height: number }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const fullElementRef = useRef<HTMLButtonElement>(null);
+
+  const bottomLineFadeOut = useRef<SVGAnimateElement>(null);
+  const bottomLineFadeIn = useRef<SVGAnimateElement>(null);
+
+  const width = (90.03 / 80.77) * height;
+
+  useEffect(() => {
+    const fullElement = fullElementRef.current;
+    if (!fullElement) return;
+    fullElement.addEventListener("click", () => {
+      if (!isOpen) {
+        console.log(isOpen);
+        bottomLineFadeOut.current?.beginElement();
+        setIsOpen(false);
+      } else {
+        bottomLineFadeIn.current?.beginElement();
+        setIsOpen(true);
+      }
+    });
+  }, [fullElementRef.current]);
+
+  return (
+    <button ref={fullElementRef}>
+      <svg
+        width="90.037476"
+        zoomAndPan="magnify"
+        viewBox="0 0 67.528107 60.582205"
+        height="80.776276"
+        preserveAspectRatio="xMidYMid"
+        version="1.0"
+        id="svg2"
+      >
+        <defs id="defs1">
+          <clipPath id="6ee8f72035">
+            <path
+              d="m 40,48.1875 h 305 v 20.25 H 40 Z m 0,0"
+              clipRule="nonzero"
+              id="path1"
+            />
+          </clipPath>
+          <clipPath id="6ee8f72035-6">
+            <path
+              d="m 40,48.1875 h 305 v 20.25 H 40 Z m 0,0"
+              clipRule="nonzero"
+              id="path1-7"
+            />
+          </clipPath>
+          <clipPath id="6ee8f72035-62">
+            <path
+              d="m 40,48.1875 h 305 v 20.25 H 40 Z m 0,0"
+              clipRule="nonzero"
+              id="path1-9"
+            />
+          </clipPath>
+        </defs>
+        <g
+          clipPath="url(#6ee8f72035)"
+          id="g2"
+          transform="matrix(0.22204518,0,0,0.55555555,-8.9378373,-26.770833)"
+        >
+          <path
+            fill="#000000"
+            d="M 334.23828,48.1875 H 50.511719 c -5.597657,0 -10.132813,4.53125 -10.132813,10.125 0,5.589844 4.535156,10.125 10.132813,10.125 H 334.23828 c 5.59766,0 10.13281,-4.535156 10.13281,-10.125 0,-5.59375 -4.53515,-10.125 -10.13281,-10.125 z m 0,0"
+            fillOpacity="1"
+            fillRule="nonzero"
+            id="path2"
+          />
+        </g>
+        <g
+          clipPath="url(#6ee8f72035-6)"
+          id="g2-5"
+          transform="matrix(0.22204518,0,0,0.55555556,-8.9407408,-2.1156837)"
+        >
+          <path
+            fill="#000000"
+            d="M 334.23828,48.1875 H 50.511719 c -5.597657,0 -10.132813,4.53125 -10.132813,10.125 0,5.589844 4.535156,10.125 10.132813,10.125 H 334.23828 c 5.59766,0 10.13281,-4.535156 10.13281,-10.125 0,-5.59375 -4.53515,-10.125 -10.13281,-10.125 z m 0,0"
+            fillOpacity="1"
+            fillRule="nonzero"
+            id="path2-3"
+          />
+        </g>
+        <g
+          clipPath="url(#6ee8f72035-62)"
+          id="g2-1"
+          transform="matrix(0.14803012,0,0,0.55555556,-5.9772943,22.561375)"
+        >
+          <path
+            fill="#000000"
+            d="M 334.23828,48.1875 H 50.511719 c -5.597657,0 -10.132813,4.53125 -10.132813,10.125 0,5.589844 4.535156,10.125 10.132813,10.125 H 334.23828 c 5.59766,0 10.13281,-4.535156 10.13281,-10.125 0,-5.59375 -4.53515,-10.125 -10.13281,-10.125 z m 0,0"
+            fillOpacity="1"
+            fillRule="nonzero"
+            id="path2-2"
+          >
+            <animate
+              id="anim1"
+              attributeType="xml"
+              attributeName="fillOpacity"
+              begin="indefinite"
+              dur="2s"
+              from={1}
+              to={0}
+              fill="freeze"
+              repeatCount="0"
+              ref={bottomLineFadeOut}
+            />
+            <animate
+              id="anim2"
+              attributeType="xml"
+              attributeName="fillOpacity"
+              begin="indefinite"
+              dur="2s"
+              from={0}
+              to={1}
+              fill="freeze"
+              repeatCount="0"
+              ref={bottomLineFadeIn}
+            />
+          </path>
+        </g>
+      </svg>
+    </button>
+  );
+}

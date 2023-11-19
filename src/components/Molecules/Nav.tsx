@@ -6,6 +6,7 @@ import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { HorizontalLogo } from "../Atoms/Logo";
 import { Text } from "../Atoms/Text";
 import { CTAButton } from "../Atoms/Button";
+import { NavMenuIcon } from "../Atoms/Button";
 
 const NavItems: React.FC = () => {
   return (
@@ -61,11 +62,9 @@ const NavPopover: React.FC<NavPopoverProps> = ({
           </svg>
         </button>
         <SignedIn>
-          {/* Mount the UserButton component */}
           <UserButton afterSignOutUrl="/sign-in" />
         </SignedIn>
         <SignedOut>
-          {/* Signed out users get sign in button */}
           <CTAButton rounded>Sign In</CTAButton>
         </SignedOut>
       </div>
@@ -131,6 +130,7 @@ const Nav: React.FC = () => {
               <CTAButton rounded>Sign In</CTAButton>
             </Link>
           </SignedOut>
+          <NavMenuIcon height={20} />
         </div>
         <NavPopover className="-my-1 ml-2" display="sm:hidden" />
       </div>
