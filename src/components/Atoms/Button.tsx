@@ -1,5 +1,12 @@
 import clsx from "clsx";
-import { useRef, type ReactNode, useEffect, use, useState } from "react";
+import {
+  useRef,
+  type ReactNode,
+  useEffect,
+  use,
+  useState,
+  useCallback,
+} from "react";
 import { Text } from "./Text";
 import LoadingSpinner from "./LoadingSpinner";
 import Image from "next/image";
@@ -335,30 +342,27 @@ export const LargeButtonContent: React.FC<React.PropsWithChildren> = ({
 export function NavMenuIcon({ height }: { height: number }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const fullElementRef = useRef<HTMLButtonElement>(null);
-
   const bottomLineFadeOut = useRef<SVGAnimateElement>(null);
   const bottomLineFadeIn = useRef<SVGAnimateElement>(null);
 
   const width = (90.03 / 80.77) * height;
 
-  useEffect(() => {
-    const fullElement = fullElementRef.current;
-    if (!fullElement) return;
-    fullElement.addEventListener("click", () => {
-      if (!isOpen) {
-        console.log(isOpen);
-        bottomLineFadeOut.current?.beginElement();
-        setIsOpen(false);
-      } else {
-        bottomLineFadeIn.current?.beginElement();
-        setIsOpen(true);
-      }
-    });
-  }, [fullElementRef.current]);
+  const onClick = useCallback(() => {
+    bottomLineFadeIn.current?.beginElementAt(1);
+    console.log(bottomLineFadeIn.current);
+    if (!isOpen) {
+      console.log(isOpen);
+      bottomLineFadeOut.current?.beginElement();
+      setIsOpen(true);
+    } else {
+      console.log(isOpen);
+      bottomLineFadeIn.current?.beginElement();
+      setIsOpen(false);
+    }
+  }, [isOpen, bottomLineFadeIn.current]);
 
   return (
-    <button ref={fullElementRef}>
+    <button onClick={onClick}>
       <svg
         width="90.037476"
         zoomAndPan="magnify"
