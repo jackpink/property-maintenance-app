@@ -2,30 +2,86 @@ import Link from "next/link";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import clsx from "clsx";
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import {
+  UserButton,
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  useUser,
+  SignOutButton,
+} from "@clerk/nextjs";
 import { HorizontalLogo } from "../Atoms/Logo";
 import { Text } from "../Atoms/Text";
 import { CTAButton } from "../Atoms/Button";
-import { NavMenuIcon } from "../Atoms/Button";
+import { NavMenuButton } from "../Atoms/Button";
 
 const NavItems: React.FC = () => {
   return (
     <>
-      <li>
+      <li className="mb-4">
         <Link href="/homeowner" className="hover:text-sky-500 ">
-          <Text className="text-altPrimary">Dashboard</Text>
+          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
+            Dashboard
+          </Text>
         </Link>
       </li>
-      <li>
-        <Link href="/about" className="hover:text-sky-500 ">
-          <Text className="text-altPrimary">About</Text>
+      <li className="mb-4">
+        <Link href="/about" className="">
+          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
+            About
+          </Text>
         </Link>
       </li>
-      <li>
+      <li className="mb-4">
         <Link href="/contact" className="hover:text-sky-500">
-          <Text className="text-altPrimary">Contact</Text>
+          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
+            Contact
+          </Text>
         </Link>
       </li>
+    </>
+  );
+};
+
+const UserItems: React.FC = () => {
+  const { user } = useUser();
+  return (
+    <>
+      <SignedIn>
+        <li>
+          <Text className="text-altSecondary">ACCOUNT</Text>
+          <div className="relative h-32 px-6">
+            <UserButton afterSignOutUrl="/sign-in" userProfileMode="modal" />
+            <Text className="absolute right-0 top-0 text-altSecondary">
+              {user?.fullName}
+            </Text>
+
+            <Text className="absolute right-0 top-10 text-altSecondary">
+              {user?.primaryEmailAddress?.emailAddress}
+            </Text>
+          </div>
+        </li>
+        <li className="flex flex-col">
+          <SignOutButton>
+            <CTAButton rounded className="self-center">
+              Sign Out
+            </CTAButton>
+          </SignOutButton>
+        </li>
+      </SignedIn>
+
+      <SignedOut>
+        <li className="flex flex-col ">
+          <CTAButton rounded className="self-center">
+            Sign In
+          </CTAButton>
+        </li>
+        <li className="flex flex-col">
+          <CTAButton rounded className="self-center">
+            Sign Up
+          </CTAButton>
+        </li>
+      </SignedOut>
     </>
   );
 };
@@ -35,77 +91,8 @@ type NavPopoverProps = {
   className: string;
 };
 
-const NavPopover: React.FC<NavPopoverProps> = ({
-  display = "md:hidden",
-  className,
-  ...props
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className={clsx("inline", className, display)} {...props}>
-      <div className="felx-nowrap flex">
-        <button
-          type="button"
-          className="flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600"
-          onClick={() => setIsOpen(true)}
-        >
-          <span className="sr-only">Navigation</span>
-          <svg width="24" height="24" fill="none" aria-hidden="true">
-            <path
-              d="M12 6v.01M12 12v.01M12 18v.01M12 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        <SignedIn>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </SignedIn>
-        <SignedOut>
-          <CTAButton rounded>Sign In</CTAButton>
-        </SignedOut>
-      </div>
-      <Dialog
-        as="div"
-        className={clsx("fixed inset-0 z-50", display)}
-        open={isOpen}
-        onClose={setIsOpen}
-      >
-        <Dialog.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
-        <div className=" fixed right-4 top-4 w-full max-w-xs rounded-lg bg-white p-6 text-base font-semibold shadow-lg">
-          <button
-            type="button"
-            className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center text-slate-500 hover:text-slate-600 "
-            onClick={() => setIsOpen(false)}
-          >
-            <span className="sr-only">Close navigation</span>
-            <svg
-              viewBox="0 0 10 10"
-              className="h-2.5 w-2.5 overflow-visible"
-              aria-hidden="true"
-            >
-              <path
-                d="M0 0L10 10M10 0L0 10"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-          <ul className="space-y-6">
-            <NavItems />
-          </ul>
-        </div>
-      </Dialog>
-    </div>
-  );
-};
-
 const Nav: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <div className="relative flex w-full items-center justify-between px-2 pt-6">
@@ -114,7 +101,7 @@ const Nav: React.FC = () => {
         </Link>
 
         <div className="relative ml-auto hidden items-center sm:flex">
-          <nav className="text-sm font-semibold leading-6 text-slate-700 dark:text-slate-200">
+          <nav className="">
             <ul className="flex space-x-8">
               <NavItems />
             </ul>
@@ -122,7 +109,7 @@ const Nav: React.FC = () => {
           <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
           <SignedIn>
             {/* Mount the UserButton component */}
-            <UserButton />
+            <UserButton userProfileMode="navigation" />
           </SignedIn>
           <SignedOut>
             {/* Signed out users get sign in button */}
@@ -130,9 +117,23 @@ const Nav: React.FC = () => {
               <CTAButton rounded>Sign In</CTAButton>
             </Link>
           </SignedOut>
-          <NavMenuIcon height={20} />
         </div>
-        <NavPopover className="-my-1 ml-2" display="sm:hidden" />
+        <NavMenuButton
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          className="sm:hidden"
+        />
+      </div>
+      <div
+        className={clsx(
+          "  w-full rounded-md border-b-2 border-black bg-light p-2 transition-max-height  duration-500 ease-in-out sm:hidden",
+          isOpen ? "visible max-h-96" : "invisible max-h-0"
+        )}
+      >
+        <ul className="">
+          <NavItems />
+          <UserItems />
+        </ul>
       </div>
     </>
   );

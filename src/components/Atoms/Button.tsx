@@ -6,6 +6,8 @@ import {
   use,
   useState,
   useCallback,
+  Dispatch,
+  SetStateAction,
 } from "react";
 import { Text } from "./Text";
 import LoadingSpinner from "./LoadingSpinner";
@@ -339,127 +341,39 @@ export const LargeButtonContent: React.FC<React.PropsWithChildren> = ({
   return <Text className="font-sans text-lg text-dark">{children}</Text>;
 };
 
-export function NavMenuIcon({ height }: { height: number }) {
-  const [isOpen, setIsOpen] = useState(false);
+type NavMenuButtonProps = {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  className?: string;
+};
 
-  const bottomLineFadeOut = useRef<SVGAnimateElement>(null);
-  const bottomLineFadeIn = useRef<SVGAnimateElement>(null);
-
-  const width = (90.03 / 80.77) * height;
-
-  const onClick = useCallback(() => {
-    bottomLineFadeIn.current?.beginElementAt(1);
-    console.log(bottomLineFadeIn.current);
-    if (!isOpen) {
-      console.log(isOpen);
-      bottomLineFadeOut.current?.beginElement();
-      setIsOpen(true);
-    } else {
-      console.log(isOpen);
-      bottomLineFadeIn.current?.beginElement();
-      setIsOpen(false);
-    }
-  }, [isOpen, bottomLineFadeIn.current]);
-
+export function NavMenuButton({
+  isOpen,
+  setIsOpen,
+  className,
+}: NavMenuButtonProps) {
   return (
-    <button onClick={onClick}>
-      <svg
-        width="90.037476"
-        zoomAndPan="magnify"
-        viewBox="0 0 67.528107 60.582205"
-        height="80.776276"
-        preserveAspectRatio="xMidYMid"
-        version="1.0"
-        id="svg2"
-      >
-        <defs id="defs1">
-          <clipPath id="6ee8f72035">
-            <path
-              d="m 40,48.1875 h 305 v 20.25 H 40 Z m 0,0"
-              clipRule="nonzero"
-              id="path1"
-            />
-          </clipPath>
-          <clipPath id="6ee8f72035-6">
-            <path
-              d="m 40,48.1875 h 305 v 20.25 H 40 Z m 0,0"
-              clipRule="nonzero"
-              id="path1-7"
-            />
-          </clipPath>
-          <clipPath id="6ee8f72035-62">
-            <path
-              d="m 40,48.1875 h 305 v 20.25 H 40 Z m 0,0"
-              clipRule="nonzero"
-              id="path1-9"
-            />
-          </clipPath>
-        </defs>
-        <g
-          clipPath="url(#6ee8f72035)"
-          id="g2"
-          transform="matrix(0.22204518,0,0,0.55555555,-8.9378373,-26.770833)"
-        >
-          <path
-            fill="#000000"
-            d="M 334.23828,48.1875 H 50.511719 c -5.597657,0 -10.132813,4.53125 -10.132813,10.125 0,5.589844 4.535156,10.125 10.132813,10.125 H 334.23828 c 5.59766,0 10.13281,-4.535156 10.13281,-10.125 0,-5.59375 -4.53515,-10.125 -10.13281,-10.125 z m 0,0"
-            fillOpacity="1"
-            fillRule="nonzero"
-            id="path2"
-          />
-        </g>
-        <g
-          clipPath="url(#6ee8f72035-6)"
-          id="g2-5"
-          transform="matrix(0.22204518,0,0,0.55555556,-8.9407408,-2.1156837)"
-        >
-          <path
-            fill="#000000"
-            d="M 334.23828,48.1875 H 50.511719 c -5.597657,0 -10.132813,4.53125 -10.132813,10.125 0,5.589844 4.535156,10.125 10.132813,10.125 H 334.23828 c 5.59766,0 10.13281,-4.535156 10.13281,-10.125 0,-5.59375 -4.53515,-10.125 -10.13281,-10.125 z m 0,0"
-            fillOpacity="1"
-            fillRule="nonzero"
-            id="path2-3"
-          />
-        </g>
-        <g
-          clipPath="url(#6ee8f72035-62)"
-          id="g2-1"
-          transform="matrix(0.14803012,0,0,0.55555556,-5.9772943,22.561375)"
-        >
-          <path
-            fill="#000000"
-            d="M 334.23828,48.1875 H 50.511719 c -5.597657,0 -10.132813,4.53125 -10.132813,10.125 0,5.589844 4.535156,10.125 10.132813,10.125 H 334.23828 c 5.59766,0 10.13281,-4.535156 10.13281,-10.125 0,-5.59375 -4.53515,-10.125 -10.13281,-10.125 z m 0,0"
-            fillOpacity="1"
-            fillRule="nonzero"
-            id="path2-2"
-          >
-            <animate
-              id="anim1"
-              attributeType="xml"
-              attributeName="fillOpacity"
-              begin="indefinite"
-              dur="2s"
-              from={1}
-              to={0}
-              fill="freeze"
-              repeatCount="0"
-              ref={bottomLineFadeOut}
-            />
-            <animate
-              id="anim2"
-              attributeType="xml"
-              attributeName="fillOpacity"
-              begin="indefinite"
-              dur="2s"
-              from={0}
-              to={1}
-              fill="freeze"
-              repeatCount="0"
-              ref={bottomLineFadeIn}
-            />
-          </path>
-        </g>
-      </svg>
+    <button onClick={() => setIsOpen(!isOpen)} className={className}>
+      <div className="flex h-10 w-10 flex-col gap-2">
+        <span
+          className={clsx(
+            "h-2 transform rounded-full bg-black transition duration-500 ease-in-out",
+            isOpen && "translate-y-4 rotate-45"
+          )}
+        ></span>
+        <span
+          className={clsx(
+            "h-2 rounded-full bg-black transition duration-500 ease-in-out",
+            isOpen && "rotate-[-45deg]"
+          )}
+        ></span>
+        <span
+          className={clsx(
+            "h-2 w-6 rounded-full bg-black transition duration-500 ease-in-out",
+            isOpen && "bg-transparent"
+          )}
+        ></span>
+      </div>
     </button>
   );
 }
