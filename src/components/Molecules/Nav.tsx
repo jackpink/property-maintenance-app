@@ -126,7 +126,7 @@ const Nav: React.FC = () => {
       </div>
       <div
         className={clsx(
-          "  w-full rounded-md border-b-2 border-black bg-light p-2 transition-max-height  duration-500 ease-in-out sm:hidden",
+          "  w-full rounded-md border-b-2 border-black bg-light p-2 transition-max-height transition-visibility duration-500 ease-in-out sm:hidden",
           isOpen ? "visible max-h-96" : "invisible max-h-0"
         )}
       >
