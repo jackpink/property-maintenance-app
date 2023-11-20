@@ -51,14 +51,14 @@ const HomeownerPropertyPageWithParams: React.FC<
   const {
     data: property,
     error: propertyFetchError,
-    isFetching: propertyIsLoading,
+    isLoading: propertyIsLoading,
   } = api.property.getPropertyForUser.useQuery({
     id: propertyId,
   });
   const {
     data: recentJobs,
     error: recentJobsFetchError,
-    isFetching: recentJobsAreLoading,
+    isLoading: recentJobsAreLoading,
   } = api.job.getRecentJobsForProperty.useQuery({
     propertyId: propertyId,
   });
@@ -83,13 +83,11 @@ const HomeownerPropertyPageWithParams: React.FC<
       <PageTitle>{address}</PageTitle>
       <ResponsiveColumns>
         <ColumnOne>
-          {propertyIsLoading && (
+          {propertyIsLoading ? (
             <div className="h-30 w-30">
               <LoadingSpinner />
             </div>
-          )}
-
-          {!property ? (
+          ) : propertyFetchError ? (
             <div className="grid place-items-center">
               <Text>{propertyFetchError?.message}</Text>
               <BackToDashboardButton />
@@ -114,12 +112,14 @@ const HomeownerPropertyPageWithParams: React.FC<
                 selectedRoom={selectedRoom}
               />
               <PropertyDocuments propertyId={property.id} />
-              {recentJobsAreLoading && <LoadingSpinner />}
-              {recentJobs ? (
+              {recentJobsAreLoading ? (
+                <LoadingSpinner />
+              ) : recentJobsFetchError ? (
+                <Text>{recentJobsFetchError?.message}</Text>
+              ) : recentJobs ? (
                 <PropertyRecentJobs
                   recentJobs={recentJobs}
                   loading={recentJobsAreLoading}
-                  fetchErrormessage={recentJobsFetchError?.message}
                 />
               ) : (
                 <Text>Could not load recent jobs for this property.</Text>
@@ -128,16 +128,18 @@ const HomeownerPropertyPageWithParams: React.FC<
           )}
         </ColumnOne>
         <ColumnTwo>
-          {propertyIsLoading && (
+          {propertyIsLoading ? (
             <div className="h-30 w-30">
               <LoadingSpinner />
             </div>
-          )}
-          {!!property ? (
-            <EditProperty property={property} />
+          ) : propertyFetchError ? (
+            <div className="grid place-items-center">
+              <Text>{propertyFetchError?.message}</Text>
+              <BackToDashboardButton />
+            </div>
           ) : (
             <>
-              <Text>Could Not Load Property</Text>
+              <EditProperty property={property} />
             </>
           )}
         </ColumnTwo>
