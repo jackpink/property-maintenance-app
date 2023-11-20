@@ -24,7 +24,12 @@ export default {
         light: "#f7ece1",
         altPrimary: "#0E7C7B",
         altSecondary: "#86bbbd",
+      },
+      transitionProperty: {
+        'max-height': 'max-height',
+        'visibility': 'visibility'
       }
+    
       
     },
   },
