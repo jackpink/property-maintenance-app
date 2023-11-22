@@ -4,45 +4,41 @@ import clsx from "clsx";
 import { HorizontalLogo } from "../Atoms/Logo";
 import { Text } from "../Atoms/Text";
 import { NavMenuButton } from "../Atoms/Button";
+import { usePathname } from "next/navigation";
 
-const NavItems: React.FC = () => {
+type PageNavItemProps = {
+  linkHref: string;
+  linkText: string;
+};
+
+const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
+  const href = usePathname();
+  const isActive = true;
+  return (
+    <li className="mb-4">
+      <Link href="/homeowner" className="hover:text-sky-500 ">
+        <Text
+          className={clsx(
+            "font-semibold hover:text-brandSecondary",
+            "border-2 border-brandSecondary text-brandSecondary" && isActive,
+            "text-altPrimary" && !isActive
+          )}
+        >
+          {linkText}
+        </Text>
+      </Link>
+    </li>
+  );
+};
+
+const PageNavItems: React.FC = () => {
   return (
     <>
-      <li className="mb-4">
-        <Link href="/homeowner" className="hover:text-sky-500 ">
-          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
-            Dashboard
-          </Text>
-        </Link>
-      </li>
-      <li className="mb-4">
-        <Link href="/about" className="">
-          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
-            Rooms
-          </Text>
-        </Link>
-      </li>
-      <li className="mb-4">
-        <Link href="/contact" className="hover:text-sky-500">
-          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
-            Jobs
-          </Text>
-        </Link>
-      </li>
-      <li className="mb-4">
-        <Link href="/contact" className="hover:text-sky-500">
-          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
-            Documents
-          </Text>
-        </Link>
-      </li>
-      <li className="mb-4">
-        <Link href="/contact" className="hover:text-sky-500">
-          <Text className="font-semibold text-altPrimary hover:text-brandSecondary">
-            Photos
-          </Text>
-        </Link>
-      </li>
+      <PageNavItem linkHref="/homeowner" linkText="Dashboard" />
+      <PageNavItem linkHref="/rooms" linkText="Rooms" />
+      <PageNavItem linkHref="/jobs" linkText="Jobs" />
+      <PageNavItem linkHref="/photos" linkText="Photos" />
+      <PageNavItem linkHref="/documents" linkText="Documents" />
     </>
   );
 };
@@ -55,7 +51,7 @@ const PageNav: React.FC = () => {
         <div className="relative ml-auto hidden items-center sm:flex">
           <nav className="">
             <ul className="flex space-x-8">
-              <NavItems />
+              <PageNavItems />
             </ul>
           </nav>
           <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
@@ -73,7 +69,7 @@ const PageNav: React.FC = () => {
         )}
       >
         <ul className="">
-          <NavItems />
+          <PageNavItems />
         </ul>
       </div>
     </>
