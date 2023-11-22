@@ -25,6 +25,7 @@ import PropertyDocuments from "~/components/Organisms/PropertyDocuments";
 import PropertyRecentJobs from "~/components/Organisms/PropertyRecentJobs";
 import PropertyRoomSelector from "~/components/Organisms/PropertyRoomSelector";
 import PropertyAddJob from "~/components/Organisms/PropertyAddJob";
+import PageNav from "~/components/Molecules/PageNav";
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
 // search photos
@@ -82,6 +83,7 @@ const HomeownerPropertyPageWithParams: React.FC<
   return (
     <PageWithMainMenu>
       <PageTitle>{address}</PageTitle>
+      <PageNav />
       <ResponsiveColumns>
         <ColumnOne>
           {propertyIsLoading ? (
