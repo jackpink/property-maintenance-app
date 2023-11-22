@@ -14,6 +14,7 @@ import {
 import {
   ColumnOne,
   ColumnTwo,
+  PageWithMainMenu,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
 import { PageTitle } from "~/components/Atoms/Title";
@@ -79,7 +80,7 @@ const HomeownerPropertyPageWithParams: React.FC<
   };
 
   return (
-    <>
+    <PageWithMainMenu>
       <PageTitle>{address}</PageTitle>
       <ResponsiveColumns>
         <ColumnOne>
@@ -144,7 +145,7 @@ const HomeownerPropertyPageWithParams: React.FC<
           )}
         </ColumnTwo>
       </ResponsiveColumns>
-    </>
+    </PageWithMainMenu>
   );
 };
 
