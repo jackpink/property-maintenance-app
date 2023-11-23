@@ -13,15 +13,20 @@ type PageNavItemProps = {
 
 const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
   const href = usePathname();
-  const isActive = true;
+  console.log(href);
+  const isActive = false;
   return (
     <li className="mb-4">
       <Link href="/homeowner" className="hover:text-sky-500 ">
         <Text
           className={clsx(
-            "font-semibold hover:text-brandSecondary",
-            "border-2 border-brandSecondary text-brandSecondary" && isActive,
-            "text-altPrimary" && !isActive
+            "rounded-xl p-3 font-semibold hover:text-brandSecondary",
+            isActive && "border-2 border-brandSecondary",
+            !isActive && "text-altPrimary"
+          )}
+          colour={clsx(
+            isActive && "text-brandSecondary",
+            !isActive && "text-altPrimary"
           )}
         >
           {linkText}
