@@ -6,6 +6,22 @@ import { Text } from "../Atoms/Text";
 import { NavMenuButton } from "../Atoms/Button";
 import { usePathname } from "next/navigation";
 
+const checkPath = (path: string) => {
+  const page = path.substring(path.lastIndexOf("/") + 1);
+  switch (page) {
+    case "rooms":
+      return "Rooms";
+    case "jobs":
+      return "Jobs";
+    case "photos":
+      return "Photos";
+    case "documents":
+      return "Documents";
+    default:
+      return "Dashboard";
+  }
+};
+
 type PageNavItemProps = {
   linkHref: string;
   linkText: string;
@@ -14,7 +30,8 @@ type PageNavItemProps = {
 const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
   const href = usePathname();
   console.log(href);
-  const isActive = false;
+  const page = checkPath(href);
+  const isActive = linkText === page;
   return (
     <li className="mb-4">
       <Link href="/homeowner" className="hover:text-sky-500 ">
