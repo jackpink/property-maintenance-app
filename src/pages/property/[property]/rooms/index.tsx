@@ -15,7 +15,7 @@ import { PageTitle } from "~/components/Atoms/Title";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 // build the property page
 import { Text } from "~/components/Atoms/Text";
-import PageNav from "~/components/Molecules/PageNav";
+import { PropertyPageNav } from "~/components/Molecules/PageNav";
 import Properties from "~/components/Molecules/Properties";
 import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 // get params, get Property by Id
@@ -24,7 +24,7 @@ import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 // add new job ----> new job upload photos, assgin to rooms
 
 export default function HomeownerPropertyPage() {
-  const id = useRouter().query.index?.toString();
+  const id = useRouter().query.property?.toString();
 
   //const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: userId});
   if (!id) return <>loading</>;
@@ -59,7 +59,7 @@ const HomeownerPropertyPageWithParams: React.FC<
         propertyId={propertyId}
         propertyPage="Rooms"
       />
-      <PageNav propertyId={propertyId} />
+      <PropertyPageNav propertyId={propertyId} />
       <ResponsiveColumns>
         <ColumnOne>
           {propertyIsLoading ? (

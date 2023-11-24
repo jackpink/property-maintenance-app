@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 const checkPath = (path: string) => {
   const page = path.substring(path.lastIndexOf("/") + 1);
-  path.indexOf;
+
   switch (page) {
     case "rooms":
       return "Rooms";
@@ -19,8 +19,10 @@ const checkPath = (path: string) => {
       return "Photos";
     case "documents":
       return "Documents";
+    case "general":
+      return "General";
     default:
-      return "Dashboard";
+      return "General";
   }
 };
 
@@ -30,8 +32,7 @@ type PageNavItemProps = {
 };
 
 const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
-  const path = usePathname().substring(0, usePathname().lastIndexOf("/"));
-  const page = checkPath(path);
+  const page = checkPath(usePathname());
   const isActive = linkText === page;
   return (
     <li className="mb-4">
@@ -54,20 +55,22 @@ const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
   );
 };
 
-type PageNavItemsProps = {
+type PropertyPageNavItemsProps = {
   propertyId: string;
 };
 
-const PageNavItems: React.FC<PageNavItemsProps> = ({ propertyId }) => {
+const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
+  propertyId,
+}) => {
   return (
     <>
       <PageNavItem linkHref="/homeowner" linkText="Dashboard" />
       <PageNavItem
-        linkHref={`/property/rooms/${encodeURIComponent(propertyId)}`}
+        linkHref={`/property/${encodeURIComponent(propertyId)}/rooms`}
         linkText="Rooms"
       />
       <PageNavItem
-        linkHref={`/property/jobs/${encodeURIComponent(propertyId)}`}
+        linkHref={`/property/${encodeURIComponent(propertyId)}/jobs`}
         linkText="Jobs"
       />
       <PageNavItem linkHref="/photos" linkText="Photos" />
@@ -76,20 +79,57 @@ const PageNavItems: React.FC<PageNavItemsProps> = ({ propertyId }) => {
   );
 };
 
-type PageNavProps = {
+type JobPageNavItemsProps = {
+  propertyId: string;
+  jobId: string;
+};
+
+const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
+  propertyId,
+  jobId,
+}) => {
+  return (
+    <>
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/jobs/job/${encodeURIComponent(jobId)}`}
+        linkText="General"
+      />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/jobs/job/${encodeURIComponent(jobId)}/rooms`}
+        linkText="Rooms"
+      />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/jobs/job/${encodeURIComponent(jobId)}/Documents`}
+        linkText="Documents"
+      />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/jobs/job/${encodeURIComponent(jobId)}/Photos`}
+        linkText="Photos"
+      />
+    </>
+  );
+};
+
+type PropertyPageNavProps = {
   propertyId: string;
 };
 
-const PageNav: React.FC<PageNavProps> = ({ propertyId }) => {
+const PageNav: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <div className="relative flex w-full items-center justify-between px-2 pt-6">
         <div className="relative ml-auto hidden items-center sm:flex">
           <nav className="">
-            <ul className="flex space-x-8">
-              <PageNavItems propertyId={propertyId} />
-            </ul>
+            <ul className="flex space-x-8">{children}</ul>
           </nav>
           <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
         </div>
@@ -105,12 +145,34 @@ const PageNav: React.FC<PageNavProps> = ({ propertyId }) => {
           isOpen ? "visible max-h-96" : "invisible max-h-0"
         )}
       >
-        <ul className="">
-          <PageNavItems propertyId={propertyId} />
-        </ul>
+        <ul className="">{children}</ul>
       </div>
     </>
   );
 };
 
-export default PageNav;
+export const PropertyPageNav: React.FC<PropertyPageNavProps> = ({
+  propertyId,
+}) => {
+  return (
+    <PageNav>
+      <PropertyPageNavItems propertyId={propertyId} />
+    </PageNav>
+  );
+};
+
+type JobPageNavProps = {
+  propertyId: string;
+  jobId: string;
+};
+
+export const JobPageNav: React.FC<JobPageNavProps> = ({
+  propertyId,
+  jobId,
+}) => {
+  return (
+    <PageNav>
+      <JobPageNavItems propertyId={propertyId} jobId={jobId} />
+    </PageNav>
+  );
+};

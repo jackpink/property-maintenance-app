@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { type } from "os";
 
 interface IBreadcrumb {
   href: string;
@@ -65,5 +66,38 @@ export const PropertiesBreadcrumbs: React.FC<PropertiesBreadcrumbsProps> = ({
         ]
       : [{ href: "/properties", text: "Properties" }];
 
+  return <Breadcrumbs breadcrumbs={breadcrumbs} />;
+};
+
+type JobBreadcrumbsProps = {
+  address: string;
+  propertyId: string;
+  jobTitle: string;
+  jobId: string;
+};
+
+export const JobBreadcrumbs: React.FC<JobBreadcrumbsProps> = ({
+  address,
+  propertyId,
+  jobId,
+  jobTitle,
+}) => {
+  const breadcrumbs = [
+    { href: "/properties", text: "Properties" },
+    {
+      href: `/property/${encodeURIComponent(propertyId)}`,
+      text: address,
+    },
+    {
+      href: `/property/${encodeURIComponent(propertyId)}/jobs`,
+      text: "Jobs",
+    },
+    {
+      href: `/property/${encodeURIComponent(
+        propertyId
+      )}/jobs/job/${encodeURIComponent(jobId)}`,
+      text: jobTitle,
+    },
+  ];
   return <Breadcrumbs breadcrumbs={breadcrumbs} />;
 };

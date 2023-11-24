@@ -25,7 +25,7 @@ import PropertyDocuments from "~/components/Organisms/PropertyDocuments";
 import PropertyRecentJobs from "~/components/Organisms/PropertyRecentJobs";
 import PropertyRoomSelector from "~/components/Organisms/PropertyRoomSelector";
 import PropertyAddJob from "~/components/Organisms/PropertyAddJob";
-import PageNav from "~/components/Molecules/PageNav";
+import { PropertyPageNav } from "~/components/Molecules/PageNav";
 import Properties from "~/components/Molecules/Properties";
 import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 // get params, get Property by Id
@@ -34,7 +34,7 @@ import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 // add new job ----> new job upload photos, assgin to rooms
 
 export default function HomeownerPropertyPage() {
-  const id = useRouter().query.index?.toString();
+  const id = useRouter().query.property?.toString();
 
   //const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: userId});
   if (!id) return <>loading</>;
@@ -86,7 +86,7 @@ const HomeownerPropertyPageWithParams: React.FC<
     <PageWithMainMenu>
       <PageTitle>{address}</PageTitle>
       <PropertiesBreadcrumbs address={address} propertyId={propertyId} />
-      <PageNav propertyId={propertyId} />
+      <PropertyPageNav propertyId={propertyId} />
       <ResponsiveColumns>
         <ColumnOne>
           {propertyIsLoading ? (

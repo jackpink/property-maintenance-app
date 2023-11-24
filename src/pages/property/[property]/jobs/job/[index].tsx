@@ -23,6 +23,7 @@ import {
   PropertiesBreadcrumbs,
 } from "~/components/Molecules/Breadcrumbs";
 import { concatAddress } from "~/utils/utits";
+import { JobPageNav } from "~/components/Molecules/PageNav";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.index?.toString();
@@ -104,6 +105,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         jobTitle={job.title}
         jobId={job.id}
       />
+      <JobPageNav propertyId={job.Property.id} jobId={job.id} />
       <ResponsiveColumns>
         <ColumnOne>
           <JobDate date={job.date} jobId={job.id} disabled={!isHomeowner} />
