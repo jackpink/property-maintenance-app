@@ -66,7 +66,10 @@ const PageNavItems: React.FC<PageNavItemsProps> = ({ propertyId }) => {
         linkHref={`/property/rooms/${encodeURIComponent(propertyId)}`}
         linkText="Rooms"
       />
-      <PageNavItem linkHref="/jobs" linkText="Jobs" />
+      <PageNavItem
+        linkHref={`/property/jobs/${encodeURIComponent(propertyId)}`}
+        linkText="Jobs"
+      />
       <PageNavItem linkHref="/photos" linkText="Photos" />
       <PageNavItem linkHref="/documents" linkText="Documents" />
     </>
