@@ -5,9 +5,11 @@ import { HorizontalLogo } from "../Atoms/Logo";
 import { Text } from "../Atoms/Text";
 import { NavMenuButton } from "../Atoms/Button";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 
 const checkPath = (path: string) => {
   const page = path.substring(path.lastIndexOf("/") + 1);
+  path.indexOf;
   switch (page) {
     case "rooms":
       return "Rooms";
@@ -28,13 +30,12 @@ type PageNavItemProps = {
 };
 
 const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
-  const href = usePathname();
-  console.log(href);
-  const page = checkPath(href);
+  const path = usePathname().substring(0, usePathname().lastIndexOf("/"));
+  const page = checkPath(path);
   const isActive = linkText === page;
   return (
     <li className="mb-4">
-      <Link href="/homeowner" className="hover:text-sky-500 ">
+      <Link href={linkHref} className="hover:text-sky-500 ">
         <Text
           className={clsx(
             "rounded-xl p-3 font-semibold hover:text-brandSecondary",
@@ -53,11 +54,18 @@ const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
   );
 };
 
-const PageNavItems: React.FC = () => {
+type PageNavItemsProps = {
+  propertyId: string;
+};
+
+const PageNavItems: React.FC<PageNavItemsProps> = ({ propertyId }) => {
   return (
     <>
       <PageNavItem linkHref="/homeowner" linkText="Dashboard" />
-      <PageNavItem linkHref="/rooms" linkText="Rooms" />
+      <PageNavItem
+        linkHref={`/property/rooms/${encodeURIComponent(propertyId)}`}
+        linkText="Rooms"
+      />
       <PageNavItem linkHref="/jobs" linkText="Jobs" />
       <PageNavItem linkHref="/photos" linkText="Photos" />
       <PageNavItem linkHref="/documents" linkText="Documents" />
@@ -65,7 +73,11 @@ const PageNavItems: React.FC = () => {
   );
 };
 
-const PageNav: React.FC = () => {
+type PageNavProps = {
+  propertyId: string;
+};
+
+const PageNav: React.FC<PageNavProps> = ({ propertyId }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -73,7 +85,7 @@ const PageNav: React.FC = () => {
         <div className="relative ml-auto hidden items-center sm:flex">
           <nav className="">
             <ul className="flex space-x-8">
-              <PageNavItems />
+              <PageNavItems propertyId={propertyId} />
             </ul>
           </nav>
           <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
@@ -91,7 +103,7 @@ const PageNav: React.FC = () => {
         )}
       >
         <ul className="">
-          <PageNavItems />
+          <PageNavItems propertyId={propertyId} />
         </ul>
       </div>
     </>

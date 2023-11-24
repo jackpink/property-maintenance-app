@@ -83,7 +83,7 @@ const HomeownerPropertyPageWithParams: React.FC<
   return (
     <PageWithMainMenu>
       <PageTitle>{address}</PageTitle>
-      <PageNav />
+      <PageNav propertyId={propertyId} />
       <ResponsiveColumns>
         <ColumnOne>
           {propertyIsLoading ? (
