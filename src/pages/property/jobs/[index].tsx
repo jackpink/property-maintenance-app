@@ -18,6 +18,7 @@ import PageNav from "~/components/Molecules/PageNav";
 import PropertyRecentJobs from "~/components/Organisms/PropertyRecentJobs";
 import PropertyAddJob from "~/components/Organisms/PropertyAddJob";
 import { useState } from "react";
+import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
 // search photos
@@ -64,6 +65,11 @@ const HomeownerPropertyPageWithParams: React.FC<
   return (
     <PageWithMainMenu>
       <PageTitle>{address}</PageTitle>
+      <PropertiesBreadcrumbs
+        address={address}
+        propertyId={propertyId}
+        propertyPage="Jobs"
+      />
       <PageNav propertyId={propertyId} />
       <ResponsiveColumns>
         <ColumnOne>

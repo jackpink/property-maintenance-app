@@ -12,6 +12,8 @@ import DashboardProperties from "~/components/Organisms/DashboardProperties";
 import DashboardRecentJobs from "~/components/Organisms/DashboardRecentJobs";
 import HomeownerCreateProperty from "~/components/Organisms/HomeownerCreateProperty";
 import { Text } from "~/components/Atoms/Text";
+import Link from "next/link";
+import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 
 const HomeownerPage = () => {
   const { userId } = useAuth();
@@ -37,7 +39,7 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
   return (
     <PageWithMainMenu>
       <PageTitle>Properties</PageTitle>
-
+      <PropertiesBreadcrumbs />
       <ResponsiveColumns>
         <ColumnOne>
           <Text className="mb-6 border-b-2 border-black py-4 text-center font-sans text-xl font-extrabold text-slate-900">
@@ -48,9 +50,7 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
           <div className="p-2"></div>
           <DashboardProperties userId={userId} />
         </ColumnOne>
-        <ColumnTwo>
-          <DashboardRecentJobs userId={userId} />
-        </ColumnTwo>
+        <ColumnTwo></ColumnTwo>
       </ResponsiveColumns>
     </PageWithMainMenu>
   );
