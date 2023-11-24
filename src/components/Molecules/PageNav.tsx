@@ -22,7 +22,7 @@ const checkPath = (path: string) => {
     case "general":
       return "General";
     default:
-      return "General";
+      return "General" || "Dashboard";
   }
 };
 
@@ -73,8 +73,14 @@ const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
         linkHref={`/property/${encodeURIComponent(propertyId)}/jobs`}
         linkText="Jobs"
       />
-      <PageNavItem linkHref="/photos" linkText="Photos" />
-      <PageNavItem linkHref="/documents" linkText="Documents" />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(propertyId)}/photos`}
+        linkText="Photos"
+      />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(propertyId)}/documents`}
+        linkText="Documents"
+      />
     </>
   );
 };

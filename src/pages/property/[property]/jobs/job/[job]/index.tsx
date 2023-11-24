@@ -26,7 +26,7 @@ import { concatAddress } from "~/utils/utits";
 import { JobPageNav } from "~/components/Molecules/PageNav";
 
 export default function HomeownerJobPage() {
-  const id = useRouter().query.index?.toString();
+  const id = useRouter().query.job?.toString();
 
   //const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: userId});
   if (!id) return <>loading</>;
