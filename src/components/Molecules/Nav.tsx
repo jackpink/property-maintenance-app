@@ -100,12 +100,7 @@ const Nav: React.FC = () => {
           <HorizontalLogo height={40} />
         </Link>
 
-        <div className="relative ml-auto hidden items-center sm:flex">
-          <nav className="">
-            <ul className="flex space-x-8">
-              <NavItems />
-            </ul>
-          </nav>
+        <div className="relative ml-auto flex items-center ">
           <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
           <SignedIn>
             {/* Mount the UserButton component */}
@@ -118,22 +113,6 @@ const Nav: React.FC = () => {
             </Link>
           </SignedOut>
         </div>
-        <NavMenuButton
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          className="sm:hidden"
-        />
-      </div>
-      <div
-        className={clsx(
-          "  w-full rounded-md border-b-2 border-black bg-light p-2 transition-max-height transition-visibility duration-500 ease-in-out sm:hidden",
-          isOpen ? "visible max-h-96" : "invisible max-h-0"
-        )}
-      >
-        <ul className="">
-          <NavItems />
-          <UserItems />
-        </ul>
       </div>
     </>
   );
