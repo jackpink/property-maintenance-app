@@ -120,7 +120,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
             jobLoading={jobLoading}
             disabled={!isHomeowner}
           />
-          <JobDocuments job={job} disabled={!isHomeowner} />
           <JobNotes
             notes={job.notes}
             tradeNotes={job.tradeNotes}
@@ -130,9 +129,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
             disabled={!isHomeowner}
           />
         </ColumnOne>
-        <ColumnTwo>
-          <JobPhotos job={job} />
-        </ColumnTwo>
       </ResponsiveColumns>
     </>
   );

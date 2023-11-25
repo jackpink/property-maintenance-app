@@ -111,13 +111,13 @@ const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
-        )}/jobs/${encodeURIComponent(jobId)}/Documents`}
+        )}/jobs/${encodeURIComponent(jobId)}/documents`}
         linkText="Documents"
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
-        )}/jobs/${encodeURIComponent(jobId)}/Photos`}
+        )}/jobs/${encodeURIComponent(jobId)}/photos`}
         linkText="Photos"
       />
     </>

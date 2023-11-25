@@ -9,7 +9,7 @@ import { Text } from "../Atoms/Text";
 
 import { Job } from "~/pages/job/[index]";
 import { Property } from "@prisma/client";
-import JobRoomSelector from "./JobRoomSelector";
+import JobRoomSelectorPopover from "./JobRoomSelectorPopover";
 
 type Rooms = Job["rooms"];
 
@@ -42,7 +42,7 @@ export default function JobProperty({
             </p>
           );
         })}
-        <JobRoomSelector
+        <JobRoomSelectorPopover
           job={job}
           jobLoading={jobLoading}
           disabled={disabled}

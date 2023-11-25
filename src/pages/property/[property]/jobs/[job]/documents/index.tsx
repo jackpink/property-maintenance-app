@@ -109,7 +109,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       <JobPageNav propertyId={job.Property.id} jobId={job.id} />
       <ResponsiveColumns>
         <ColumnOne>
-          <JobRoomSelector job={job} jobLoading={false} />
+          <JobDocuments job={job} disabled={!isHomeowner} />
         </ColumnOne>
       </ResponsiveColumns>
     </>
