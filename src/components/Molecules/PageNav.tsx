@@ -99,25 +99,25 @@ const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
-        )}/jobs/job/${encodeURIComponent(jobId)}`}
+        )}/jobs/${encodeURIComponent(jobId)}`}
         linkText="General"
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
-        )}/jobs/job/${encodeURIComponent(jobId)}/rooms`}
+        )}/jobs/${encodeURIComponent(jobId)}/rooms`}
         linkText="Rooms"
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
-        )}/jobs/job/${encodeURIComponent(jobId)}/Documents`}
+        )}/jobs/${encodeURIComponent(jobId)}/Documents`}
         linkText="Documents"
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
-        )}/jobs/job/${encodeURIComponent(jobId)}/Photos`}
+        )}/jobs/${encodeURIComponent(jobId)}/Photos`}
         linkText="Photos"
       />
     </>

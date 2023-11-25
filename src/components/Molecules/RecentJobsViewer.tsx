@@ -21,7 +21,7 @@ const Job: React.FC<JobProps> = ({ job }) => {
     <Link
       href={`/property/${encodeURIComponent(
         job.Property.id
-      )}/jobs/job/${encodeURIComponent(job.id)}`}
+      )}/jobs/${encodeURIComponent(job.id)}`}
       className="grid w-full grid-cols-4 rounded-xl border-2 border-solid border-teal-800 hover:bg-black/20"
     >
       <div className="relative col-span-3">

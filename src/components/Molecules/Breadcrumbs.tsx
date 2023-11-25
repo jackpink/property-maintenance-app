@@ -95,7 +95,7 @@ export const JobBreadcrumbs: React.FC<JobBreadcrumbsProps> = ({
     {
       href: `/property/${encodeURIComponent(
         propertyId
-      )}/jobs/job/${encodeURIComponent(jobId)}`,
+      )}/jobs/${encodeURIComponent(jobId)}`,
       text: jobTitle,
     },
   ];

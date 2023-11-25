@@ -10,7 +10,7 @@ type JobRoomSelectorProps = {
   disabled?: boolean;
 };
 
-export default function JobRoomSelector({
+export default function JobRoomSelectorPopover({
   job,
   jobLoading,
   disabled = false,
