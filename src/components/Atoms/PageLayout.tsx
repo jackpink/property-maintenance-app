@@ -20,10 +20,10 @@ export function ColumnTwo({ children }: PropsWithChildren) {
 export function PageWithMainMenu({ children }: PropsWithChildren) {
   return (
     <div className="flex w-full flex-nowrap">
-      <div className="fixed top-0 hidden h-full w-40 flex-none overflow-hidden border border-r-4  border-altPrimary bg-altSecondary md:block">
+      <div className="fixed top-0 hidden h-full w-40 flex-none overflow-hidden border border-r-4  border-altPrimary bg-altPrimary md:block">
         <MainMenuSide />
       </div>
-      <div className="h-34 fixed bottom-0 z-40  w-full  overflow-hidden border border-t-4 border-altPrimary bg-altSecondary py-8  md:hidden">
+      <div className="h-34 fixed bottom-0 z-40  w-full  overflow-hidden border border-t-4 border-altPrimary bg-altPrimary py-8  md:hidden">
         <MainMenuBottom />
       </div>
       <div className="grow md:pl-40">{children}</div>
