@@ -9,33 +9,6 @@ interface IBreadcrumb {
 type BreadcrumbsProps = {
   breadcrumbs: IBreadcrumb[];
 };
-const RightArrow = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-4 w-4 text-black/50"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fillRule="evenodd"
-      className="text-black/50"
-      d="M10 3a.5.5 0 01.5.5v12a.5.5 0 01-1 0v-12A.5.5 0 0110 3z"
-      clipRule="evenodd"
-    />
-    <path
-      fillRule="evenodd"
-      className="text-black/50"
-      d="M6.646 7.854a.5.5 0 010 .708l-2.5 2.5a.5.5 0 01-.708-.708L5.293 8 3.438 6.146a.5.5 0 11.708-.708l2.5 2.5z"
-      clipRule="evenodd"
-    />
-    <path
-      fillRule="evenodd"
-      className="text-black/50"
-      d="M16.354 7.854a.5.5 0 000 .708l2.5 2.5a.5.5 0 00.708-.708L17.707 8l1.854-1.854a.5.5 0 10-.708-.708l-2.5 2.5z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
@@ -136,3 +109,44 @@ export const JobBreadcrumbs: React.FC<JobBreadcrumbsProps> = ({
   ];
   return <Breadcrumbs breadcrumbs={breadcrumbs} />;
 };
+
+const RightArrow = ({
+  height = 15,
+  colour = "#0A5B5A", //#f7ece1",
+}: {
+  height?: number;
+  colour?: string;
+}) => (
+  <svg
+    width={height}
+    zoomAndPan="magnify"
+    viewBox="0 0 29.108002 29.297031"
+    height={height}
+    preserveAspectRatio="xMidYMid"
+    version="1.0"
+    id="svg2"
+  >
+    <defs id="defs1">
+      <clipPath id="a6c68e75e3">
+        <path
+          d="M 96.410156,72.121094 H 242.66016 V 222.12109 H 96.410156 Z m 0,0"
+          clipRule="nonzero"
+          id="path1"
+        />
+      </clipPath>
+    </defs>
+    <g
+      clipPath="url(#a6c68e75e3)"
+      id="g2"
+      transform="matrix(0.19911416,0,0,0.19531864,-19.199738,-14.087357)"
+    >
+      <path
+        fill={colour}
+        d="M 97.035156,72.125 242.61328,146.47266 96.425781,222.125 c 23.550779,-41.46484 42.476559,-84.61719 0.609375,-150 z m 0,0"
+        fillOpacity="1"
+        fillRule="nonzero"
+        id="path2"
+      />
+    </g>
+  </svg>
+);

@@ -10,11 +10,11 @@ export const MainMenuSide = () => {
   return (
     <div className="flex h-full flex-col items-center pt-10">
       <Logo
-        height="90"
-        width="90"
+        height="120"
+        width="120"
         className=""
         colour="#c470e7"
-        textColour="#011627"
+        textColour="#f7ece1"
       />
       <div className="grid h-full flex-col content-center justify-center gap-4">
         <MainMenuButtons />
