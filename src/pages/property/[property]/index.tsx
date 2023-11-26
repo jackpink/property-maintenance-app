@@ -100,33 +100,12 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              <div className="mb-6 flex flex-wrap justify-center gap-2">
-                <PropertyPhotoSearchButton propertyId={property.id} />
-                <PropertyAddJob
-                  propertyId={property.id}
-                  createJobPopoverOpen={createJobPopoverOpen}
-                  setCreatejobPopoverOpen={setCreatejobPopoverOpen}
-                />
-              </div>
-              <PropertyRoomSelector
-                property={property}
-                loading={loading}
-                setLoading={setLoading}
-                onClickRoomAdd={onClickRoomAdd}
-                onClickRoomRemove={onClickRoomRemove}
-                checkRoomSelected={(roomId) => roomId === selectedRoom}
-                selectedRoom={selectedRoom}
-              />
-              <PropertyDocuments propertyId={property.id} />
               {recentJobsAreLoading ? (
                 <LoadingSpinner />
               ) : recentJobsFetchError ? (
                 <Text>{recentJobsFetchError?.message}</Text>
               ) : recentJobs ? (
-                <PropertyRecentJobs
-                  recentJobs={recentJobs}
-                  loading={recentJobsAreLoading}
-                />
+                <p>Property general info, type, beds, bath, cover image, </p>
               ) : (
                 <Text>Could not load recent jobs for this property.</Text>
               )}
@@ -144,9 +123,7 @@ const HomeownerPropertyPageWithParams: React.FC<
               <BackToDashboardButton />
             </div>
           ) : (
-            <>
-              <EditProperty property={property} />
-            </>
+            <></>
           )}
         </ColumnTwo>
       </ResponsiveColumns>

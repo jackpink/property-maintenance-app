@@ -64,7 +64,10 @@ const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
 }) => {
   return (
     <>
-      <PageNavItem linkHref="/homeowner" linkText="Dashboard" />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(propertyId)}`}
+        linkText="General"
+      />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(propertyId)}/rooms`}
         linkText="Rooms"
