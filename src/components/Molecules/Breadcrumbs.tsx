@@ -9,13 +9,42 @@ interface IBreadcrumb {
 type BreadcrumbsProps = {
   breadcrumbs: IBreadcrumb[];
 };
+const RightArrow = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-4 w-4 text-black/50"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      className="text-black/50"
+      d="M10 3a.5.5 0 01.5.5v12a.5.5 0 01-1 0v-12A.5.5 0 0110 3z"
+      clipRule="evenodd"
+    />
+    <path
+      fillRule="evenodd"
+      className="text-black/50"
+      d="M6.646 7.854a.5.5 0 010 .708l-2.5 2.5a.5.5 0 01-.708-.708L5.293 8 3.438 6.146a.5.5 0 11.708-.708l2.5 2.5z"
+      clipRule="evenodd"
+    />
+    <path
+      fillRule="evenodd"
+      className="text-black/50"
+      d="M16.354 7.854a.5.5 0 000 .708l2.5 2.5a.5.5 0 00.708-.708L17.707 8l1.854-1.854a.5.5 0 10-.708-.708l-2.5 2.5z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
     <div className="flex flex-row gap-2 bg-altSecondary px-8 py-6">
       {breadcrumbs.map((breadcrumb) => (
         <>
-          <span>/</span>
+          <span>
+            <RightArrow />
+          </span>
           <Breadcrumb breadcrumb={breadcrumb} />
         </>
       ))}
@@ -30,7 +59,9 @@ type BreadcrumbProps = {
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ breadcrumb }) => {
   return (
     <Link href={breadcrumb.href}>
-      <Text colour="text-altPrimary">{breadcrumb.text}</Text>
+      <Text colour="text-altPrimary hover:text-black/50 ">
+        {breadcrumb.text}
+      </Text>
     </Link>
   );
 };
