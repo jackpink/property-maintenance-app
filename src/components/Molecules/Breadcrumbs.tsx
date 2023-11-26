@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { type } from "os";
+import { Text } from "../Atoms/Text";
 
 interface IBreadcrumb {
   href: string;
@@ -12,7 +12,7 @@ type BreadcrumbsProps = {
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
-    <div className="flex flex-row gap-2 px-8 pt-10">
+    <div className="flex flex-row gap-2 bg-altSecondary px-8 py-6">
       {breadcrumbs.map((breadcrumb) => (
         <>
           <span>/</span>
@@ -28,7 +28,11 @@ type BreadcrumbProps = {
 };
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ breadcrumb }) => {
-  return <Link href={breadcrumb.href}>{breadcrumb.text}</Link>;
+  return (
+    <Link href={breadcrumb.href}>
+      <Text colour="text-altPrimary">{breadcrumb.text}</Text>
+    </Link>
+  );
 };
 
 type PropertiesBreadcrumbsProps = {
