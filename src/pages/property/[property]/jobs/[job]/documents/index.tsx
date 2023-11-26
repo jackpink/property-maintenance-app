@@ -99,13 +99,13 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
 
   return (
     <>
-      <PageTitle>{job.title}</PageTitle>
       <JobBreadcrumbs
         address={address}
         propertyId={job.Property.id}
         jobTitle={job.title}
         jobId={job.id}
       />
+      <PageTitle>{job.title}</PageTitle>
       <JobPageNav propertyId={job.Property.id} jobId={job.id} />
       <ResponsiveColumns>
         <ColumnOne>

@@ -12,14 +12,14 @@ type BreadcrumbsProps = {
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
-    <div className="flex flex-row gap-2 bg-altSecondary px-8 py-6">
+    <div className="flex flex-wrap gap-2 bg-altSecondary px-8 py-6">
       {breadcrumbs.map((breadcrumb) => (
-        <>
-          <span>
+        <div className="flex flex-nowrap items-center">
+          <span className="px-4">
             <RightArrow />
           </span>
           <Breadcrumb breadcrumb={breadcrumb} />
-        </>
+        </div>
       ))}
     </div>
   );
@@ -57,7 +57,7 @@ export const PropertiesBreadcrumbs: React.FC<PropertiesBreadcrumbsProps> = ({
           { href: "/properties", text: "Properties" },
           {
             href: `/property/${encodeURIComponent(propertyId)}`,
-            text: address,
+            text: address.split(",")[0] || address,
           },
           {
             href: `/property/${encodeURIComponent(propertyId)}/${propertyPage}`,
@@ -69,7 +69,7 @@ export const PropertiesBreadcrumbs: React.FC<PropertiesBreadcrumbsProps> = ({
           { href: "/properties", text: "Properties" },
           {
             href: `/property/${encodeURIComponent(propertyId)}`,
-            text: address,
+            text: address.split(",")[0] || address,
           },
         ]
       : [{ href: "/properties", text: "Properties" }];
@@ -94,7 +94,7 @@ export const JobBreadcrumbs: React.FC<JobBreadcrumbsProps> = ({
     { href: "/properties", text: "Properties" },
     {
       href: `/property/${encodeURIComponent(propertyId)}`,
-      text: address,
+      text: address.split(",")[0] || address,
     },
     {
       href: `/property/${encodeURIComponent(propertyId)}/jobs`,

@@ -15,6 +15,7 @@ import RoomSelectorPopover from "~/components/Molecules/RoomSelector";
 import { PageWithMainMenu } from "~/components/Atoms/PageLayout";
 import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
 import { PropertyPageNav } from "~/components/Molecules/PageNav";
+import { PageTitle } from "~/components/Atoms/Title";
 
 //const initialRoom:selectedRoom = {level: '', room: ''};
 //const initialJob: IJob = {id: '', title:" ", date: new Date(), documents: [], photos: [], notes: [], property: {apartment: '', streetnumber: '', street: '', suburb: '', postcode: '', state: '', country: '', lastjob: '', levels: []}}
@@ -87,14 +88,12 @@ const PropertyPhotoSearchPageWithParams: React.FC<
   return (
     <PageWithMainMenu>
       <div className="flex grid w-9/12 grid-cols-1  flex-col md:w-8/12 lg:w-7/12 xl:w-128">
-        <h1 className="py-8 text-center font-sans text-4xl font-extrabold text-slate-900">
-          {address}
-        </h1>
         <PropertiesBreadcrumbs
           address={address}
           propertyId={propertyId}
           propertyPage="Photos"
         />
+        <PageTitle>{address}</PageTitle>
         <PropertyPageNav propertyId={propertyId} />
         <div className="flex flex-wrap justify-between gap-8">
           <RoomSelectorForPhotoSearch
