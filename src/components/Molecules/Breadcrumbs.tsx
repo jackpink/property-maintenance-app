@@ -13,8 +13,8 @@ type BreadcrumbsProps = {
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbs }) => {
   return (
     <div className="flex flex-wrap gap-2 bg-altSecondary px-8 py-6">
-      {breadcrumbs.map((breadcrumb) => (
-        <div className="flex flex-nowrap items-center">
+      {breadcrumbs.map((breadcrumb, index) => (
+        <div key={index} className="flex flex-nowrap items-center">
           <span className="px-4">
             <RightArrow />
           </span>
