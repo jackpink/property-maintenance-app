@@ -28,10 +28,9 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
   const propertyHasNoLevels = property.levels.length === 0;
 
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Edit Property</PageSubTitle>
-      </BackgroundContainerHeader>
+    <>
+      <PageSubTitle>Edit Property</PageSubTitle>
+
       {propertyHasNoLevels && (
         <Text>
           This Property currently has no levels or rooms, start by first adding
@@ -45,7 +44,7 @@ const EditProperty: React.FC<EditPropertyProps> = ({ property }) => {
         })}
         {editPropertyMode ? null : <AddLevelButton propertyId={property.id} />}
       </div>
-    </BackgroundContainer>
+    </>
   );
 };
 

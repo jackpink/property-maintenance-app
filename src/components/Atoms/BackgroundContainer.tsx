@@ -4,7 +4,7 @@ export const BackgroundContainer: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   return (
-    <div className=" mb-8 w-full justify-center overflow-hidden rounded-3xl bg-secondary pb-4">
+    <div className=" mb-8  flex-1  justify-center overflow-hidden rounded-3xl bg-secondary pb-4">
       {children}
     </div>
   );

@@ -2,19 +2,27 @@ import { PropsWithChildren } from "react";
 import { MainMenuSide, MainMenuBottom } from "../Molecules/MainMenu";
 
 export function ResponsiveColumns({ children }: PropsWithChildren) {
-  return <div className="grid grid-cols-2 gap-4 3xl:gap-8">{children}</div>;
+  return (
+    <div className="mx-auto grid max-w-screen-2xl grid-cols-2 gap-4 3xl:gap-8">
+      {children}
+    </div>
+  );
 }
 
 export function ColumnOne({ children }: PropsWithChildren) {
   return (
-    <div className="col-span-2 mx-4 grid justify-center  3xl:col-span-1">
+    <div className="col-span-2 mx-4 flex flex-col justify-center xl:col-span-1">
       {children}
     </div>
   );
 }
 
 export function ColumnTwo({ children }: PropsWithChildren) {
-  return <div className="col-span-2 mx-4  3xl:col-span-1">{children}</div>;
+  return (
+    <div className="col-span-2 mx-4 flex flex-col xl:col-span-1">
+      {children}
+    </div>
+  );
 }
 
 export function PageWithMainMenu({ children }: PropsWithChildren) {

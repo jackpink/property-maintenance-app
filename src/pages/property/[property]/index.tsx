@@ -2,32 +2,29 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { concatAddress } from "~/components/Molecules/Properties/Property";
-import EditProperty from "~/components/Organisms/EditProperty";
-import { CTAButton } from "~/components/Atoms/Button";
-import { type ReactNode, useState } from "react";
+import { CTAButton, EditButton, GhostButton } from "~/components/Atoms/Button";
 import Link from "next/link";
-import {
-  LargeButton,
-  LargeButtonContent,
-  LargeButtonTitle,
-} from "~/components/Atoms/Button";
 import {
   ColumnOne,
   ColumnTwo,
   PageWithMainMenu,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
-import { PageTitle } from "~/components/Atoms/Title";
+import { PageSubTitle, PageTitle } from "~/components/Atoms/Title";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 // build the property page
 import { Text } from "~/components/Atoms/Text";
-import PropertyDocuments from "~/components/Organisms/PropertyDocuments";
-import PropertyRecentJobs from "~/components/Organisms/PropertyRecentJobs";
-import PropertyRoomSelector from "~/components/Organisms/PropertyRoomSelector";
-import PropertyAddJob from "~/components/Organisms/PropertyAddJob";
+
 import { PropertyPageNav } from "~/components/Molecules/PageNav";
-import Properties from "~/components/Molecules/Properties";
 import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
+import Image from "next/image";
+import house from "~/images/demo-page/house-stock-image.png";
+import {
+  BackgroundContainer,
+  BackgroundContainerHeader,
+} from "~/components/Atoms/BackgroundContainer";
+import PropertyAttributes from "~/components/Molecules/PropertyAttributes";
+
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
 // search photos
@@ -48,10 +45,6 @@ type HomeownerPropertyPageWithParamsProps = {
 const HomeownerPropertyPageWithParams: React.FC<
   HomeownerPropertyPageWithParamsProps
 > = ({ propertyId }) => {
-  const [createJobPopoverOpen, setCreatejobPopoverOpen] = useState(false);
-  const [selectedRoom, setSelectedRoom] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const {
     data: property,
     error: propertyFetchError,
@@ -59,28 +52,10 @@ const HomeownerPropertyPageWithParams: React.FC<
   } = api.property.getPropertyForUser.useQuery({
     id: propertyId,
   });
-  const {
-    data: recentJobs,
-    error: recentJobsFetchError,
-    isLoading: recentJobsAreLoading,
-  } = api.job.getRecentJobsForProperty.useQuery({
-    propertyId: propertyId,
-  });
 
   if (!!propertyFetchError) toast("Failed to fetch property");
-  if (!!recentJobsFetchError) toast("Failed to fetch Recent Jobs");
   let address = "";
   if (!!property) address = concatAddress(property);
-
-  const onClickRoomAdd = (roomId: string) => {
-    setSelectedRoom(roomId);
-    setLoading(false);
-  };
-
-  const onClickRoomRemove = (roomId: string) => {
-    setSelectedRoom("");
-    setLoading(false);
-  };
 
   return (
     <PageWithMainMenu>
@@ -100,15 +75,18 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              {recentJobsAreLoading ? (
-                <LoadingSpinner />
-              ) : recentJobsFetchError ? (
-                <Text>{recentJobsFetchError?.message}</Text>
-              ) : recentJobs ? (
-                <p>Property general info, type, beds, bath, cover image, </p>
-              ) : (
-                <Text>Could not load recent jobs for this property.</Text>
-              )}
+              <Text>Property Cover Image</Text>
+              <BackgroundContainer>
+                <BackgroundContainerHeader>
+                  <PageSubTitle>Cover Image</PageSubTitle>
+                </BackgroundContainerHeader>
+                <Image
+                  alt="House Stock Image"
+                  src={house}
+                  className="min-w-xl rounded-xl p-3"
+                />
+                <GhostButton>Update Cover Image</GhostButton>
+              </BackgroundContainer>
             </>
           )}
         </ColumnOne>
@@ -123,63 +101,22 @@ const HomeownerPropertyPageWithParams: React.FC<
               <BackToDashboardButton />
             </div>
           ) : (
-            <></>
+            <>
+              <BackgroundContainer>
+                <BackgroundContainerHeader>
+                  <PageSubTitle>General Info</PageSubTitle>
+                </BackgroundContainerHeader>
+                <div className="mx-auto flex justify-evenly pt-10">
+                  <Text>Property Type: House</Text>
+                  <EditButton height="40" onClick={() => console.log("edit")} />
+                </div>
+                <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
+              </BackgroundContainer>
+            </>
           )}
         </ColumnTwo>
       </ResponsiveColumns>
     </PageWithMainMenu>
-  );
-};
-
-// Async component not currently in use, could have potential though
-type AsyncComponentProps = {
-  Component: ReactNode;
-  loading: boolean;
-  loadingMessage: string;
-  error: boolean;
-  errorMessage: string | null;
-};
-
-const AsyncComponent: React.FC<AsyncComponentProps> = ({
-  Component,
-  loading,
-  loadingMessage,
-  error,
-  errorMessage,
-}) => {
-  return (
-    <>
-      {loading ? (
-        <p className="px-12 pb-4 text-center text-lg text-slate-700">
-          Loading {loadingMessage}
-        </p>
-      ) : error ? (
-        <p className="px-12 pb-4 text-center text-lg text-slate-700">
-          {errorMessage}
-        </p>
-      ) : (
-        { Component }
-      )}
-    </>
-  );
-};
-
-type PropertyPhotoSearchButtonProps = {
-  propertyId: string;
-};
-
-const PropertyPhotoSearchButton: React.FC<PropertyPhotoSearchButtonProps> = ({
-  propertyId,
-}) => {
-  return (
-    <Link href={"/homeowner/search/" + propertyId} className="">
-      <LargeButton>
-        <LargeButtonTitle>Search</LargeButtonTitle>
-        <LargeButtonContent>
-          Search Photos of the property by room and job
-        </LargeButtonContent>
-      </LargeButton>
-    </Link>
   );
 };
 
