@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { useState } from "react";
+import {
+  ReactElement,
+  cloneElement,
+  createContext,
+  isValidElement,
+  useContext,
+  useState,
+} from "react";
 import clsx from "clsx";
 import { HorizontalLogo } from "../Atoms/Logo";
 import { Text } from "../Atoms/Text";
@@ -12,35 +19,40 @@ const checkPath = (path: string) => {
 
   switch (page) {
     case "rooms":
-      return "Rooms";
+      return "ROOMS";
     case "jobs":
-      return "Jobs";
+      return "JOBS";
     case "photos":
-      return "Photos";
+      return "PHOTOS";
     case "documents":
-      return "Documents";
+      return "DOCUMENTS";
     case "general":
-      return "General";
+      return "GENERAL";
     default:
-      return "General" || "Dashboard";
+      return "GENERAL" || "DASHBOARD";
   }
 };
 
 type PageNavItemProps = {
   linkHref: string;
   linkText: string;
+  onlySelected?: boolean;
 };
 
-const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
+const PageNavItem: React.FC<PageNavItemProps> = ({
+  linkHref,
+  linkText,
+  onlySelected,
+}) => {
   const page = checkPath(usePathname());
   const isActive = linkText === page;
   return (
-    <li className="mb-4">
+    <li className={clsx("mb-4 w-40", onlySelected && !isActive && "hidden")}>
       <Link href={linkHref} className="hover:text-sky-500 ">
         <Text
           className={clsx(
             "rounded-xl p-3 font-semibold hover:text-brandSecondary",
-            isActive && "border-2 border-brandSecondary",
+            isActive && "border-b-4 border-brandSecondary",
             !isActive && "text-altPrimary"
           )}
           colour={clsx(
@@ -57,32 +69,39 @@ const PageNavItem: React.FC<PageNavItemProps> = ({ linkHref, linkText }) => {
 
 type PropertyPageNavItemsProps = {
   propertyId: string;
+  onlySelected?: boolean;
 };
 
 const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
   propertyId,
+  onlySelected = false,
 }) => {
   return (
     <>
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(propertyId)}`}
-        linkText="General"
+        linkText="GENERAL"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(propertyId)}/rooms`}
-        linkText="Rooms"
+        linkText="ROOMS"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(propertyId)}/jobs`}
-        linkText="Jobs"
+        linkText="JOBS"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(propertyId)}/photos`}
-        linkText="Photos"
+        linkText="PHOTOS"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(propertyId)}/documents`}
-        linkText="Documents"
+        linkText="DOCUMENTS"
+        onlySelected={onlySelected}
       />
     </>
   );
@@ -90,12 +109,14 @@ const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
 
 type JobPageNavItemsProps = {
   propertyId: string;
-  jobId: string;
+  jobId?: string;
+  onlySelected?: boolean;
 };
 
 const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
   propertyId,
-  jobId,
+  jobId = "1",
+  onlySelected = false,
 }) => {
   return (
     <>
@@ -103,26 +124,80 @@ const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
         linkHref={`/property/${encodeURIComponent(
           propertyId
         )}/jobs/${encodeURIComponent(jobId)}`}
-        linkText="General"
+        linkText="GENERAL"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
         )}/jobs/${encodeURIComponent(jobId)}/rooms`}
-        linkText="Rooms"
+        linkText="ROOMS"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
         )}/jobs/${encodeURIComponent(jobId)}/documents`}
-        linkText="Documents"
+        linkText="DOCUMENTS"
+        onlySelected={onlySelected}
       />
       <PageNavItem
         linkHref={`/property/${encodeURIComponent(
           propertyId
         )}/jobs/${encodeURIComponent(jobId)}/photos`}
-        linkText="Photos"
+        linkText="PHOTOS"
+        onlySelected={onlySelected}
       />
+    </>
+  );
+};
+
+const PageNav = ({
+  PageNavItems,
+  propertyId,
+  jobId,
+}: {
+  PageNavItems: React.FC<JobPageNavItemsProps>;
+  propertyId: string;
+  jobId?: string;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <div className="relative flex w-full  px-2 pt-6">
+        <div className="relative hidden items-center lg:flex">
+          <nav className="">
+            <ul className="flex space-x-8">
+              <PageNavItems propertyId={propertyId} jobId={jobId} />
+            </ul>
+          </nav>
+          <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
+        </div>
+        <NavMenuButton
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          className="lg:hidden"
+        />
+
+        <ul className={clsx("mx-auto lg:hidden", isOpen && "hidden")}>
+          <PageNavItems
+            propertyId={propertyId}
+            jobId={jobId}
+            onlySelected={true}
+          />
+        </ul>
+      </div>
+      <div
+        className={clsx(
+          "w-full rounded-md border-b-2 border-black bg-light p-2 transition-max-height transition-visibility duration-500 ease-in-out lg:hidden",
+          isOpen ? "visible max-h-96" : "invisible max-h-0"
+        )}
+      >
+        <ul className="mx-auto w-40">
+          <PageNavItems propertyId={propertyId} jobId={jobId} />
+        </ul>
+      </div>
     </>
   );
 };
@@ -131,42 +206,12 @@ type PropertyPageNavProps = {
   propertyId: string;
 };
 
-const PageNav: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <>
-      <div className="relative flex w-full items-center justify-between px-2 pt-6">
-        <div className="relative ml-auto hidden items-center sm:flex">
-          <nav className="">
-            <ul className="flex space-x-8">{children}</ul>
-          </nav>
-          <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
-        </div>
-        <NavMenuButton
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          className="sm:hidden"
-        />
-      </div>
-      <div
-        className={clsx(
-          "  w-full rounded-md border-b-2 border-black bg-light p-2 transition-max-height transition-visibility duration-500 ease-in-out sm:hidden",
-          isOpen ? "visible max-h-96" : "invisible max-h-0"
-        )}
-      >
-        <ul className="">{children}</ul>
-      </div>
-    </>
-  );
-};
-
 export const PropertyPageNav: React.FC<PropertyPageNavProps> = ({
   propertyId,
 }) => {
+  const OnlySelectedContext = createContext(false);
   return (
-    <PageNav>
-      <PropertyPageNavItems propertyId={propertyId} />
-    </PageNav>
+    <PageNav PageNavItems={PropertyPageNavItems} propertyId={propertyId} />
   );
 };
 
@@ -180,8 +225,10 @@ export const JobPageNav: React.FC<JobPageNavProps> = ({
   jobId,
 }) => {
   return (
-    <PageNav>
-      <JobPageNavItems propertyId={propertyId} jobId={jobId} />
-    </PageNav>
+    <PageNav
+      PageNavItems={JobPageNavItems}
+      propertyId={propertyId}
+      jobId={jobId}
+    />
   );
 };
