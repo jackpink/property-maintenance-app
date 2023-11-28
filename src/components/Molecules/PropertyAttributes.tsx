@@ -10,7 +10,7 @@ const PropertyAttributes = ({
   carSpaces: number;
 }) => {
   return (
-    <div className="grid w-96 grid-cols-3">
+    <div className="grid w-96 grid-cols-3 justify-items-center overflow-hidden rounded-lg bg-black/10 py-2">
       <div className="flex gap-4">
         <BedroomIcon height={40} />
         <Text>{bedrooms}</Text>

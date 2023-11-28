@@ -75,17 +75,18 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              <Text>Property Cover Image</Text>
               <BackgroundContainer>
                 <BackgroundContainerHeader>
                   <PageSubTitle>Cover Image</PageSubTitle>
                 </BackgroundContainerHeader>
-                <Image
-                  alt="House Stock Image"
-                  src={house}
-                  className="min-w-xl rounded-xl p-3"
-                />
-                <GhostButton>Update Cover Image</GhostButton>
+                <div className="mx-auto flex flex-col items-center pt-10">
+                  <Image
+                    alt="House Stock Image"
+                    src={house}
+                    className="min-w-xl rounded-xl p-3"
+                  />
+                  <GhostButton>Update Cover Image</GhostButton>
+                </div>
               </BackgroundContainer>
             </>
           )}
@@ -106,7 +107,7 @@ const HomeownerPropertyPageWithParams: React.FC<
                 <BackgroundContainerHeader>
                   <PageSubTitle>General Info</PageSubTitle>
                 </BackgroundContainerHeader>
-                <div className="mx-auto flex justify-evenly pt-10">
+                <div className="relative mx-auto justify-evenly pt-10">
                   <Text>Property Type: House</Text>
                   <EditButton height="40" onClick={() => console.log("edit")} />
                 </div>
