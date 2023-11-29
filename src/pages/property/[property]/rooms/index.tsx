@@ -60,24 +60,21 @@ const HomeownerPropertyPageWithParams: React.FC<
       />
       <PageTitle>{address}</PageTitle>
       <PropertyPageNav propertyId={propertyId} />
-      <ResponsiveColumns>
-        <ColumnOne>
-          {propertyIsLoading ? (
-            <div className="h-30 w-30">
-              <LoadingSpinner />
-            </div>
-          ) : propertyFetchError ? (
-            <div className="grid place-items-center">
-              <Text>{propertyFetchError?.message}</Text>
-              <BackToDashboardButton />
-            </div>
-          ) : (
-            <>
-              <EditProperty property={property} />
-            </>
-          )}
-        </ColumnOne>
-      </ResponsiveColumns>
+
+      {propertyIsLoading ? (
+        <div className="h-30 w-30">
+          <LoadingSpinner />
+        </div>
+      ) : propertyFetchError ? (
+        <div className="grid place-items-center">
+          <Text>{propertyFetchError?.message}</Text>
+          <BackToDashboardButton />
+        </div>
+      ) : (
+        <>
+          <EditProperty property={property} />
+        </>
+      )}
     </PageWithMainMenu>
   );
 };

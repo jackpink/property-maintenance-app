@@ -107,11 +107,21 @@ const HomeownerPropertyPageWithParams: React.FC<
                 <BackgroundContainerHeader>
                   <PageSubTitle>General Info</PageSubTitle>
                 </BackgroundContainerHeader>
-                <div className="relative mx-auto justify-evenly pt-10">
-                  <Text>Property Type: House</Text>
-                  <EditButton height="40" onClick={() => console.log("edit")} />
+                <div className=" relative mx-auto flex flex-col items-center pt-10">
+                  <EditButton
+                    height="40"
+                    onClick={() => console.log("edit")}
+                    className="absolute right-0"
+                  />
+                  <Text className="py-10 text-xl font-medium tracking-wider">
+                    {"Property Type:" + "   " + "House"}
+                  </Text>
+                  <PropertyAttributes
+                    bathrooms={2}
+                    bedrooms={3}
+                    carSpaces={0}
+                  />
                 </div>
-                <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
               </BackgroundContainer>
             </>
           )}
