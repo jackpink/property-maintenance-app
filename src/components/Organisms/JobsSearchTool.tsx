@@ -117,6 +117,12 @@ const Filters = ({ property }: { property: Property }) => {
     if (titleFilterSelected) {
       filters.push({ name: "Job Title", value: titleFilter });
     }
+    if (roomsFilterSelected) {
+      filters.push({
+        name: "Rooms",
+        value: roomsFilter.map((r) => r.label).join(", "),
+      });
+    }
     setCurrentFilters(filters);
   };
 
@@ -144,7 +150,7 @@ const Filters = ({ property }: { property: Property }) => {
   };
 
   return (
-    <div>
+    <div className="p-4">
       <CurrentFilters filters={currentFilters} />
       <div className="mb-4 border-0 border-b-2 border-slate-400">
         <CollapsibleFilterHeader
@@ -163,7 +169,7 @@ const Filters = ({ property }: { property: Property }) => {
       </div>
       <div className="mb-4 border-0 border-b-2 border-slate-400">
         <CollapsibleFilterHeader
-          onClick={() => setRoomsFilterOpen(!titleFilterOpen)}
+          onClick={() => setRoomsFilterOpen(!roomsFilterOpen)}
           selected={roomsFilterSelected}
           setSelected={setRoomsFilterSelected}
           open={roomsFilterOpen}

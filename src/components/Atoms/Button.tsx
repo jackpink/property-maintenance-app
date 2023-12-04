@@ -38,7 +38,7 @@ export const CTAButton: React.FC<ButtonProps> = ({
       value={value ? value : "value"}
       onClick={onClick}
       className={clsx(
-        "rounded border border-dark bg-brand/80 p-2 text-xl font-extrabold text-dark",
+        "rounded border border-dark bg-brand p-2 text-xl font-extrabold text-dark",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "animate-pulse cursor-wait",
