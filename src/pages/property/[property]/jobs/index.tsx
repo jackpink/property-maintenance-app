@@ -93,7 +93,15 @@ const HomeownerPropertyPageWithParams: React.FC<
               <BackgroundContainerHeader>
                 <PageSubTitle>Search Jobs</PageSubTitle>
               </BackgroundContainerHeader>
-              <JobsSearchTool />
+              {propertyIsLoading ? (
+                <LoadingSpinner />
+              ) : propertyFetchError ? (
+                <Text>{propertyFetchError?.message}</Text>
+              ) : property ? (
+                <JobsSearchTool property={property} />
+              ) : (
+                <Text>Could not load property.</Text>
+              )}
             </BackgroundContainer>
           </div>
         </ColumnOne>

@@ -5,8 +5,13 @@ import RoomSelectorPopover from "../Molecules/RoomSelector";
 import { Text } from "../Atoms/Text";
 import clsx from "clsx";
 import { set } from "date-fns";
+import { Room } from "@prisma/client";
+import { RoomSelector } from "../Molecules/RoomSelector";
+import { RouterOutputs } from "~/utils/api";
 
-const JobsSearchTool: React.FC = () => {
+type Property = RouterOutputs["property"]["getPropertyForUser"];
+
+const JobsSearchTool = ({ property }: { property: Property }) => {
   const [filterOpen, setFilterOpen] = useState(false);
   return (
     <div>
@@ -19,7 +24,7 @@ const JobsSearchTool: React.FC = () => {
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
-        <Filters />
+        <Filters property={property} />
       </Collapsible>
     </div>
   );
@@ -53,7 +58,7 @@ const Collapsible: React.FC<React.PropsWithChildren<{ open: boolean }>> = ({
   return (
     <div
       className={clsx(
-        open ? "visible max-h-72" : "invisible max-h-0",
+        open ? "visible max-h-full" : "invisible max-h-0",
         "transition-all duration-300"
       )}
     >
@@ -98,17 +103,44 @@ const CollapsibleFilterHeader: React.FC<{
   );
 };
 
-const Filters = () => {
+const Filters = ({ property }: { property: Property }) => {
   const [currentFilters, setCurrentFilters] = useState<Filter[]>([]);
   const [titleFilterOpen, setTitleFilterOpen] = useState(false);
   const [titleFilterSelected, setTitleFilterSelected] = useState(false);
   const [titleFilter, setTitleFilter] = useState("");
+  const [roomsFilter, setRoomsFilter] = useState<Room[]>([]);
+  const [roomsFilterOpen, setRoomsFilterOpen] = useState(false);
+  const [roomsFilterSelected, setRoomsFilterSelected] = useState(false);
+  const [loading, setLoading] = useState(false);
   const getCurrentFilters = () => {
     const filters = [];
     if (titleFilterSelected) {
       filters.push({ name: "Job Title", value: titleFilter });
     }
     setCurrentFilters(filters);
+  };
+
+  const findLevelForRoom = (roomId: string) => {
+    return property.levels.find((level) =>
+      level.rooms.find((room) => room.id === roomId)
+    );
+  };
+
+  const onClickRoomAdd = (roomId: string) => {
+    const level = property.levels.find((level) =>
+      level.rooms.find((room) => room.id === roomId)
+    );
+    if (!level) return;
+    const room = level.rooms.find((room) => room.id === roomId);
+    if (room) {
+      setRoomsFilter([...roomsFilter, room]);
+      setLoading(false);
+    }
+  };
+
+  const onClickRoomRemove = (roomId: string) => {
+    setRoomsFilter(roomsFilter.filter((room) => room.id !== roomId));
+    setLoading(false);
   };
 
   return (
@@ -126,6 +158,28 @@ const Filters = () => {
         <Collapsible open={titleFilterOpen}>
           <TitleSearchBar
             onChange={(e) => setTitleFilter(e.currentTarget.value)}
+          />
+        </Collapsible>
+      </div>
+      <div className="mb-4 border-0 border-b-2 border-slate-400">
+        <CollapsibleFilterHeader
+          onClick={() => setRoomsFilterOpen(!titleFilterOpen)}
+          selected={roomsFilterSelected}
+          setSelected={setRoomsFilterSelected}
+          open={roomsFilterOpen}
+          setOpen={setRoomsFilterOpen}
+          label={"Rooms: " + roomsFilter.map((room) => room.label).join(", ")}
+        />
+        <Collapsible open={roomsFilterOpen}>
+          <RoomSelector
+            property={property}
+            onClickRoomAdd={onClickRoomAdd}
+            onClickRoomRemove={onClickRoomRemove}
+            loading={loading}
+            setLoading={setLoading}
+            checkRoomSelected={(roomId) =>
+              roomsFilter.find((room) => room.id === roomId) !== undefined
+            }
           />
         </Collapsible>
       </div>
