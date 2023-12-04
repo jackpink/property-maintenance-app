@@ -209,10 +209,11 @@ const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
   return (
     <div className="flex flex-wrap">
       {filters.map((filter, index) => (
-        <div className="mb-2 mr-2 flex items-center rounded-full bg-slate-400 px-4 py-2">
+        <div className="mb-2 mr-2 flex items-center rounded-full bg-altPrimary px-4 py-2">
           <Text className="text-white">
             {filter.name}: {filter.value}
           </Text>
+          <button className="ml-2 text-white">X</button>
         </div>
       ))}
     </div>
