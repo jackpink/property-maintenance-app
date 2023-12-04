@@ -377,3 +377,28 @@ export function NavMenuButton({
     </button>
   );
 }
+
+export function ExpandButton({
+  isOpen,
+  setIsOpen,
+  className,
+}: NavMenuButtonProps) {
+  return (
+    <button onClick={() => setIsOpen(!isOpen)} className={className}>
+      <div className="relative h-6 w-6">
+        <span
+          className={clsx(
+            "absolute left-0 top-1/2 h-1 w-full transform rounded-full bg-black transition duration-500 ease-in-out",
+            isOpen && ""
+          )}
+        ></span>
+        <span
+          className={clsx(
+            "absolute left-0 top-1/2 h-1 w-full transform rounded-full bg-black transition duration-500 ease-in-out",
+            !isOpen && "rotate-90"
+          )}
+        ></span>
+      </div>
+    </button>
+  );
+}
