@@ -221,14 +221,48 @@ const Filters = ({ property }: { property: Property }) => {
       </div>
       <div className="mb-4 border-0 border-b-2 border-slate-400">
         <CollapsibleFilterHeader
-          onClick={() => setRoomsFilterOpen(!roomsFilterOpen)}
-          selected={roomsFilterSelected}
-          setSelected={setRoomsFilterSelected}
-          open={roomsFilterOpen}
-          setOpen={setRoomsFilterOpen}
-          label={"Rooms: " + roomsFilter.map((room) => room.label).join(", ")}
+          onClick={() =>
+            setFilters(
+              filters.map((filter) =>
+                filter.label === "Rooms"
+                  ? { ...filter, open: !filter.open }
+                  : { ...filter }
+              )
+            )
+          }
+          selected={
+            filters.find((filter) => filter.label === "Rooms")?.selected ??
+            false
+          }
+          setSelected={(selected) =>
+            setFilters(
+              filters.map((filter) =>
+                filter.label === "Rooms"
+                  ? { ...filter, selected }
+                  : { ...filter }
+              )
+            )
+          }
+          open={
+            filters.find((filter) => filter.label === "Rooms")?.open ?? false
+          }
+          setOpen={(open) =>
+            setFilters(
+              filters.map((filter) =>
+                filter.label === "Rooms" ? { ...filter, open } : { ...filter }
+              )
+            )
+          }
+          label={
+            "Rooms: " +
+            filters.find((filter) => filter.label === "Rooms")?.value
+          }
         />
-        <Collapsible open={roomsFilterOpen}>
+        <Collapsible
+          open={
+            filters.find((filter) => filter.label === "Rooms")?.open ?? false
+          }
+        >
           <RoomSelector
             property={property}
             onClickRoomAdd={onClickRoomAdd}
