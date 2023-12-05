@@ -112,6 +112,12 @@ const Filters = ({ property }: { property: Property }) => {
   const [roomsFilterOpen, setRoomsFilterOpen] = useState(false);
   const [roomsFilterSelected, setRoomsFilterSelected] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [filters, setFilters] = useState([
+    { label: "Job Title", value: "", open: false, selected: false },
+    { label: "Rooms", value: "", open: false, selected: false },
+  ]);
+
   const getCurrentFilters = () => {
     const filters = [];
     if (titleFilterSelected) {
@@ -154,14 +160,52 @@ const Filters = ({ property }: { property: Property }) => {
       <CurrentFilters filters={currentFilters} />
       <div className="mb-4 border-0 border-b-2 border-slate-400">
         <CollapsibleFilterHeader
-          onClick={() => setTitleFilterOpen(!titleFilterOpen)}
-          selected={titleFilterSelected}
-          setSelected={setTitleFilterSelected}
-          open={titleFilterOpen}
-          setOpen={setTitleFilterOpen}
-          label={"Job Title: " + titleFilter}
+          onClick={() =>
+            setFilters(
+              filters.map((filter) =>
+                filter.label === "Job Title"
+                  ? { ...filter, open: !filter.open }
+                  : { ...filter }
+              )
+            )
+          }
+          selected={
+            filters.find((filter) => filter.label === "Job Title")?.selected ??
+            false
+          }
+          setSelected={(selected) =>
+            setFilters(
+              filters.map((filter) =>
+                filter.label === "Job Title"
+                  ? { ...filter, selected }
+                  : { ...filter }
+              )
+            )
+          }
+          open={
+            filters.find((filter) => filter.label === "Job Title")?.open ??
+            false
+          }
+          setOpen={(open) =>
+            setFilters(
+              filters.map((filter) =>
+                filter.label === "Job Title"
+                  ? { ...filter, open }
+                  : { ...filter }
+              )
+            )
+          }
+          label={
+            "Job Title: " +
+            filters.find((filter) => filter.label === "Job Title")?.value
+          }
         />
-        <Collapsible open={titleFilterOpen}>
+        <Collapsible
+          open={
+            filters.find((filter) => filter.label === "Job Title")?.open ??
+            false
+          }
+        >
           <TitleSearchBar
             onChange={(e) => setTitleFilter(e.currentTarget.value)}
           />
