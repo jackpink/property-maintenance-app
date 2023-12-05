@@ -80,9 +80,9 @@ const CollapsibleHeader: React.FC<
 const CollapsibleFilterHeader: React.FC<{
   onClick: () => void;
   selected: boolean;
-  setSelected: Dispatch<SetStateAction<boolean>>;
+  setSelected: (selected: boolean) => void;
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: (open: boolean) => void;
   label: string;
 }> = ({ onClick, selected, setSelected, open, setOpen, label }) => {
   return (
@@ -119,17 +119,17 @@ const Filters = ({ property }: { property: Property }) => {
   ]);
 
   const getCurrentFilters = () => {
-    const filters = [];
-    if (titleFilterSelected) {
-      filters.push({ name: "Job Title", value: titleFilter });
+    const currentFilters = [];
+
+    for (const filter of filters) {
+      if (filter.selected)
+        currentFilters.push({
+          label: filter.label,
+          value: filter.value,
+        });
     }
-    if (roomsFilterSelected) {
-      filters.push({
-        name: "Rooms",
-        value: roomsFilter.map((r) => r.label).join(", "),
-      });
-    }
-    setCurrentFilters(filters);
+
+    setCurrentFilters(currentFilters);
   };
 
   const findLevelForRoom = (roomId: string) => {
@@ -207,7 +207,15 @@ const Filters = ({ property }: { property: Property }) => {
           }
         >
           <TitleSearchBar
-            onChange={(e) => setTitleFilter(e.currentTarget.value)}
+            onChange={(e) =>
+              setFilters(
+                filters.map((filter) =>
+                  filter.label === "Job Title"
+                    ? { ...filter, value: e.currentTarget.value }
+                    : { ...filter }
+                )
+              )
+            }
           />
         </Collapsible>
       </div>
@@ -241,7 +249,7 @@ const Filters = ({ property }: { property: Property }) => {
 };
 
 interface Filter {
-  name: string;
+  label: string;
   value: string;
 }
 
@@ -255,7 +263,7 @@ const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
       {filters.map((filter, index) => (
         <div className="mb-2 mr-2 flex items-center rounded-full bg-altPrimary px-4 py-2">
           <Text className="text-white">
-            {filter.name}: {filter.value}
+            {filter.label}: {filter.value}
           </Text>
           <button className="ml-2 text-white">X</button>
         </div>
