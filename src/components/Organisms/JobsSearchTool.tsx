@@ -8,11 +8,12 @@ import { set } from "date-fns";
 import { Room } from "@prisma/client";
 import { RoomSelector } from "../Molecules/RoomSelector";
 import { RouterOutputs } from "~/utils/api";
+import { title } from "process";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
 const JobsSearchTool = ({ property }: { property: Property }) => {
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(true);
   return (
     <div>
       <CollapsibleHeader onClick={() => setFilterOpen(!filterOpen)}>
@@ -114,7 +115,13 @@ const Filters = ({ property }: { property: Property }) => {
   const [loading, setLoading] = useState(false);
 
   const [filters, setFilters] = useState([
-    { label: "Job Title", value: "", open: false, selected: false },
+    {
+      label: "Job Title",
+      value: "",
+      open: false,
+      selected: false,
+      filterComponent: <TitleSearchBar onChange={titleSearchOnChange} />,
+    },
     { label: "Rooms", value: "", open: false, selected: false },
   ]);
 
@@ -130,6 +137,20 @@ const Filters = ({ property }: { property: Property }) => {
     }
 
     setCurrentFilters(currentFilters);
+  };
+
+  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.currentTarget.value?.toString() ?? "";
+    setFilters((prev) =>
+      prev.map((filter) =>
+        filter.label === "Job Title"
+          ? {
+              ...filter,
+              value: text,
+            }
+          : { ...filter }
+      )
+    );
   };
 
   const findLevelForRoom = (roomId: string) => {
@@ -206,17 +227,11 @@ const Filters = ({ property }: { property: Property }) => {
             false
           }
         >
-          <TitleSearchBar
-            onChange={(e) =>
-              setFilters(
-                filters.map((filter) =>
-                  filter.label === "Job Title"
-                    ? { ...filter, value: e.currentTarget.value }
-                    : { ...filter }
-                )
-              )
-            }
-          />
+          {
+            filters.find((filter) => filter.label === "Job Title")
+              ?.filterComponent
+          }
+          <TitleSearchBar onChange={titleSearchOnChange} />
         </Collapsible>
       </div>
       <div className="mb-4 border-0 border-b-2 border-slate-400">
