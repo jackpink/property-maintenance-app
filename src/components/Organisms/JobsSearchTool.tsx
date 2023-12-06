@@ -104,6 +104,50 @@ const CollapsibleFilterHeader: React.FC<{
   );
 };
 
+type Filter = {
+  label: string;
+  value: string;
+  open: boolean;
+  selected: boolean;
+  filterComponent?: JSX.Element;
+};
+
+
+const JobFilters = ({property}: {property: Property}) => {
+  const [filters, setFilters] = useState<Filter[]>([
+    {
+      label: "Job Title",
+      value: "",
+      open: false,
+      selected: false,
+      filterComponent: <TitleSearchBar onChange={titleSearchOnChange} />,
+    },
+    { label: "Rooms", value: "", open: false, selected: false },
+  ]);
+  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.currentTarget.value?.toString() ?? "";
+    setFilters((prev) =>
+      prev.map((filter) =>
+        filter.label === "Job Title"
+          ? {
+              ...filter,
+              value: text,
+            }
+          : { ...filter }
+      )
+    );
+  };
+  const filters =[
+    {
+      label: "Job Title",
+      value: "",
+      open: false,
+      selected: false,
+      filterComponent: <TitleSearchBar onChange={titleSearchOnChange} />,
+    },
+    { label: "Rooms", value: "", open: false, selected: false },
+  ];
+
 const Filters = ({ property }: { property: Property }) => {
   const [currentFilters, setCurrentFilters] = useState<Filter[]>([]);
   const [titleFilterOpen, setTitleFilterOpen] = useState(false);
@@ -139,19 +183,7 @@ const Filters = ({ property }: { property: Property }) => {
     setCurrentFilters(currentFilters);
   };
 
-  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value?.toString() ?? "";
-    setFilters((prev) =>
-      prev.map((filter) =>
-        filter.label === "Job Title"
-          ? {
-              ...filter,
-              value: text,
-            }
-          : { ...filter }
-      )
-    );
-  };
+  
 
   const findLevelForRoom = (roomId: string) => {
     return property.levels.find((level) =>
