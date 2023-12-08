@@ -9,6 +9,8 @@ import { Room } from "@prisma/client";
 import { RoomSelector } from "../Molecules/RoomSelector";
 import { RouterOutputs } from "~/utils/api";
 import { title } from "process";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { unknown } from "zod";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -106,23 +108,22 @@ const CollapsibleFilterHeader: React.FC<{
 
 type Filter = {
   label: string;
-  value: string;
+  value: string[];
   open: boolean;
   selected: boolean;
   filterComponent?: JSX.Element;
 };
 
-
-const JobFilters = ({property}: {property: Property}) => {
+const JobFilters = ({ property }: { property: Property }) => {
   const [filters, setFilters] = useState<Filter[]>([
     {
       label: "Job Title",
-      value: "",
+      value: [""],
       open: false,
       selected: false,
-      filterComponent: <TitleSearchBar onChange={titleSearchOnChange} />,
+      filterComponent: undefined,
     },
-    { label: "Rooms", value: "", open: false, selected: false },
+    { label: "Rooms", value: [""], open: false, selected: false },
   ]);
   const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value?.toString() ?? "";
@@ -131,25 +132,21 @@ const JobFilters = ({property}: {property: Property}) => {
         filter.label === "Job Title"
           ? {
               ...filter,
-              value: text,
+              value: [text],
             }
           : { ...filter }
       )
     );
   };
-  const filters =[
-    {
-      label: "Job Title",
-      value: "",
-      open: false,
-      selected: false,
-      filterComponent: <TitleSearchBar onChange={titleSearchOnChange} />,
-    },
-    { label: "Rooms", value: "", open: false, selected: false },
-  ];
+
+  return null;
+};
 
 const Filters = ({ property }: { property: Property }) => {
-  const [currentFilters, setCurrentFilters] = useState<Filter[]>([]);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [titleFilterOpen, setTitleFilterOpen] = useState(false);
   const [titleFilterSelected, setTitleFilterSelected] = useState(false);
   const [titleFilter, setTitleFilter] = useState("");
@@ -158,36 +155,52 @@ const Filters = ({ property }: { property: Property }) => {
   const [roomsFilterSelected, setRoomsFilterSelected] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [filters, setFilters] = useState([
+  const [filters, setFilters] = useState<Filter[]>([
     {
       label: "Job Title",
-      value: "",
+      value: [""],
       open: false,
       selected: false,
-      filterComponent: <TitleSearchBar onChange={titleSearchOnChange} />,
     },
-    { label: "Rooms", value: "", open: false, selected: false },
+    { label: "Rooms", value: [], open: false, selected: false },
   ]);
 
-  const getCurrentFilters = () => {
-    const currentFilters = [];
+  const setCurrentFilters = () => {
+    const params = new URLSearchParams();
+    console.log("current params", params.toString());
 
     for (const filter of filters) {
-      if (filter.selected)
-        currentFilters.push({
-          label: filter.label,
-          value: filter.value,
-        });
+      if (filter.selected) {
+        // value needs to be made url friendly
+        const encodedValue = encodeURIComponent(JSON.stringify(filter.value));
+        params.set(
+          filter.label.replace(" ", "").toLowerCase(),
+          encodedValue.toString()
+        );
+      }
     }
 
-    setCurrentFilters(currentFilters);
+    //set params
+    router.push(`${pathname}?${params.toString()}`);
   };
-
-  
 
   const findLevelForRoom = (roomId: string) => {
     return property.levels.find((level) =>
       level.rooms.find((room) => room.id === roomId)
+    );
+  };
+
+  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.currentTarget.value?.toString() ?? "";
+    setFilters((prev) =>
+      prev.map((filter) =>
+        filter.label === "Job Title"
+          ? {
+              ...filter,
+              value: [text],
+            }
+          : { ...filter }
+      )
     );
   };
 
@@ -197,9 +210,25 @@ const Filters = ({ property }: { property: Property }) => {
     );
     if (!level) return;
     const room = level.rooms.find((room) => room.id === roomId);
+    console.log("room", room);
     if (room) {
+      const newFilters = filters.map((filter) => {
+        console.log("filter", filter.label);
+        filter.label === "Rooms";
+        if (filter.label === "Rooms") {
+          console.log("filter", filter);
+          const newFilter = { ...filter, value: [...filter.value, room.id] };
+          console.log("newFilter", newFilter);
+          return newFilter;
+        } else {
+          return { ...filter };
+        }
+      });
+      console.log("newFilters", newFilters);
+      setFilters(newFilters);
       setRoomsFilter([...roomsFilter, room]);
       setLoading(false);
+      console.log("filters", filters);
     }
   };
 
@@ -207,6 +236,55 @@ const Filters = ({ property }: { property: Property }) => {
     setRoomsFilter(roomsFilter.filter((room) => room.id !== roomId));
     setLoading(false);
   };
+
+  const checkRoomSelected = (roomId: string) => {
+    const filter = filters.find((filter) => filter.label === "Rooms");
+    if (!filter) return false;
+    console.log("filter value", filter.value);
+    return filter.value.includes(roomId);
+  };
+
+  const getCurrentFilters = () => {
+    const filters: { label: string; value: string }[] = [];
+    console.log("search params", searchParams.entries().next().value);
+    searchParams.forEach((value, key) => {
+      console.log("key", key);
+      console.log("value", decodeURIComponent(value));
+      const decodedValue = decodeURIComponent(value)
+        .replace("[", "")
+        .replace("]", "")
+        .replace(/"/g, "")
+        .split(",");
+      let displayedValue;
+      if (key === "rooms") {
+        //get names from property
+        displayedValue =
+          decodedValue
+            .map(
+              (roomId) =>
+                findLevelForRoom(roomId)?.rooms.find(
+                  (room) => room.id === roomId
+                )?.label + ", "
+            )
+            .concat()
+            .toString() ?? "";
+        console.log("displayedValue", displayedValue);
+      } else {
+        console.log("decodedValue", decodedValue);
+        displayedValue = decodedValue[0]?.toString() ?? "";
+      }
+      if (key !== "property") {
+        filters.push({
+          label: key,
+          value: displayedValue,
+        });
+      }
+    });
+
+    return filters;
+  };
+
+  const currentFilters = getCurrentFilters();
 
   return (
     <div className="p-4">
@@ -259,10 +337,6 @@ const Filters = ({ property }: { property: Property }) => {
             false
           }
         >
-          {
-            filters.find((filter) => filter.label === "Job Title")
-              ?.filterComponent
-          }
           <TitleSearchBar onChange={titleSearchOnChange} />
         </Collapsible>
       </div>
@@ -302,7 +376,16 @@ const Filters = ({ property }: { property: Property }) => {
           }
           label={
             "Rooms: " +
-            filters.find((filter) => filter.label === "Rooms")?.value
+              filters
+                .find((filter) => filter.label === "Rooms")
+                ?.value.map(
+                  (roomId) =>
+                    findLevelForRoom(roomId)?.rooms.find(
+                      (room) => room.id === roomId
+                    )?.label + ", "
+                )
+                .concat()
+                .toString() ?? ""
           }
         />
         <Collapsible
@@ -316,26 +399,19 @@ const Filters = ({ property }: { property: Property }) => {
             onClickRoomRemove={onClickRoomRemove}
             loading={loading}
             setLoading={setLoading}
-            checkRoomSelected={(roomId) =>
-              roomsFilter.find((room) => room.id === roomId) !== undefined
-            }
+            checkRoomSelected={checkRoomSelected}
           />
         </Collapsible>
       </div>
-      <CTAButton onClick={getCurrentFilters} className="w-full">
+      <CTAButton onClick={setCurrentFilters} className="w-full">
         Apply Filters
       </CTAButton>
     </div>
   );
 };
 
-interface Filter {
-  label: string;
-  value: string;
-}
-
 type CurrentFiltersProps = {
-  filters: Filter[];
+  filters: { label: string; value: string }[];
 };
 
 const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
