@@ -39,7 +39,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
         rooms = decodedValue;
         console.log("displayedValue", displayedValue);
       } else if (key === "title") {
-        title = value;
+        title = decodedValue[0]?.toString() ?? "";
       } else {
         console.log("decodedValue", decodedValue);
         displayedValue = decodedValue[0]?.toString() ?? "";
@@ -52,6 +52,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
   const { title, rooms } = getCurrentFilters();
 
   console.log("rooms", rooms);
+  console.log("title", title);
 
   return (
     <div>
@@ -95,12 +96,12 @@ const SearchedJobs = ({
         <LoadingSpinner />
       ) : error ? (
         <p>error</p>
-      ) : (
+      ) : data ? (
         <>
-          {data?.map((job, index) => (
-            <RecentJobsViewer recentJobs={data} />
-          ))}
+          <RecentJobsViewer recentJobs={data} />
         </>
+      ) : (
+        <p>Please select some filters</p>
       )}
     </div>
   );
