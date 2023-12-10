@@ -20,7 +20,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
   const searchParams = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(true);
 
-  const getCurrentFilters = () => {
+  const getCurrentFilters = (): { title?: string; rooms?: string[] } => {
     let title;
     let rooms;
     console.log("search params", searchParams.entries().next().value);
@@ -54,6 +54,25 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
   console.log("rooms", rooms);
   console.log("title", title);
 
+  const getRoomObjects = () => {
+    if (!rooms) return [];
+    const roomObjects: Room[] = [];
+    rooms.forEach((roomId) => {
+      const level = property.levels.find((level) =>
+        level.rooms.find((room) => room.id === roomId)
+      );
+      if (!level) return;
+      const room = level.rooms.find((room) => room.id === roomId);
+      console.log("room", room);
+      if (room) {
+        roomObjects.push(room);
+      }
+    });
+    return roomObjects;
+  };
+
+  const roomObjects = getRoomObjects();
+
   return (
     <div>
       <CollapsibleHeader onClick={() => setFilterOpen(!filterOpen)}>
@@ -65,7 +84,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
-        <Filters property={property} />
+        <Filters property={property} title={title} rooms={roomObjects} />
       </Collapsible>
       <SearchedJobs property={property} title={title} rooms={rooms} />
     </div>
@@ -104,25 +123,6 @@ const SearchedJobs = ({
         <p>Please select some filters</p>
       )}
     </div>
-  );
-};
-
-const Accordian: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return (
-    <details className="duration-500 " style={{ listStyle: "none" }}>
-      {children}
-    </details>
-  );
-};
-
-const AccordianHeader: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return (
-    <summary
-      style={{ listStyle: "none" }}
-      className="cursor-pointer bg-inherit px-5 py-3 text-lg"
-    >
-      {children}
-    </summary>
   );
 };
 
@@ -195,17 +195,25 @@ type FilterValues = {
   roomsSelected: boolean;
 };
 
-const Filters = ({ property }: { property: Property }) => {
+const Filters = ({
+  property,
+  title,
+  rooms,
+}: {
+  property: Property;
+  title?: string;
+  rooms?: Room[];
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
   const [filterValues, setFilterValues] = useState<FilterValues>({
-    titleValue: "",
+    titleValue: title ?? "",
     titleOpen: false,
-    titleSelected: false,
-    roomsValue: [],
+    titleSelected: title ? true : false,
+    roomsValue: rooms ?? [],
     roomsOpen: false,
-    roomsSelected: false,
+    roomsSelected: rooms ? true : false,
   });
 
   const findLevelForRoom = (roomId: string) => {
@@ -323,7 +331,10 @@ const TitleFilter = ({
         label={"Job Title: " + filterValues.titleValue}
       />
       <Collapsible open={filterValues.titleOpen}>
-        <TitleSearchBar onChange={titleSearchOnChange} />
+        <TitleSearchBar
+          onChange={titleSearchOnChange}
+          title={filterValues.titleValue}
+        />
       </Collapsible>
     </div>
   );
@@ -459,14 +470,17 @@ const FilterIcon = () => (
 
 const TitleSearchBar = ({
   onChange,
+  title,
 }: {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  title: string;
 }) => {
   return (
     <div className="relative mb-4 flex w-full flex-wrap items-stretch rounded-full border-2 border-dark p-2">
       <FilterIcon />
       <input
         type="search"
+        value={title}
         className="relative m-0 -mr-0.5 flex-auto rounded-l border border-solid border-none  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-700  focus:outline-none"
         placeholder="Search by job title"
         onChange={onChange}
