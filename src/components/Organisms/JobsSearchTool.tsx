@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CTAButton } from "../Atoms/Button";
+import { CTAButton, GhostButton } from "../Atoms/Button";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
 import { Text } from "../Atoms/Text";
 import { RouterOutputs, api } from "~/utils/api";
@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleHeader } from "../Atoms/Collapsible";
 import TitleFilter, { type TitleFilterValues } from "./FilterTitle";
 import RoomsFilter, { RoomsFilterValues } from "./FilterRooms";
 import { Room } from "@prisma/client";
+import clsx from "clsx";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -69,11 +70,31 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
 
   const roomObjects = getRoomObjects();
 
+  const numberOfCurrentFilters = () => {
+    let count = 0;
+    if (title) count++;
+    if (rooms) count++;
+    return count;
+  };
+
   return (
     <div>
       <CollapsibleHeader onClick={() => setFilterOpen(!filterOpen)}>
-        <CTAButton className="w-full">
-          <div className="flex w-full">FILTER</div>
+        <CTAButton className=" w-full bg-brand/60">
+          <div className="flex w-full justify-between gap-8">
+            <FilterIcon />
+            {numberOfCurrentFilters() === 0
+              ? "NO FILTERS APLLIED"
+              : numberOfCurrentFilters() === 1
+              ? numberOfCurrentFilters() + " FILTER"
+              : numberOfCurrentFilters() + " FILTERS"}
+            <div
+              className={clsx(
+                "h-4 w-4 rotate-[-45deg] border-b-4 border-l-4 border-black transition-transform duration-500",
+                filterOpen && "translate-y-[10px] rotate-[135deg]"
+              )}
+            ></div>
+          </div>
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
@@ -272,3 +293,38 @@ const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
     </div>
   );
 };
+
+const FilterIcon = () => (
+  <svg
+    width="22.686863"
+    zoomAndPan="magnify"
+    viewBox="0 0 22.686863 28.613504"
+    height="28.613504"
+    preserveAspectRatio="xMidYMid"
+    version="1.0"
+    id="svg2"
+  >
+    <defs id="defs1">
+      <clipPath id="ea9d3b552b">
+        <path
+          d="M 97.554688,68 H 231.80469 V 217.67578 H 97.554688 Z m 0,0"
+          clip-rule="nonzero"
+          id="path1"
+        />
+      </clipPath>
+    </defs>
+    <g
+      clip-path="url(#ea9d3b552b)"
+      id="g2"
+      transform="matrix(0.16962552,0,0,0.19208226,-16.607703,-13.098359)"
+    >
+      <path
+        fill="#000000"
+        d="m 180.41016,148.37109 v 0.0156 c 0,-0.008 0,-0.008 0,-0.0156 z m -31.25782,0.008 c 0,0.008 0.008,0.008 0.008,0.0156 z M 176.9375,187.5 c -0.008,0.008 -0.008,0.008 -0.0156,0.0156 z M 102.93359,72.230469 c -0.52734,0 -0.78125,0.363281 -0.85937,0.519531 -0.0859,0.160156 -0.24609,0.570312 0.0625,1.003906 l 50.34375,72.320314 c 0.33203,0.46484 0.50781,1.02734 0.50781,1.60937 v 63.69922 l 23.58594,-23.51953 v -40.17969 c 0,-0.58203 0.17578,-1.14453 0.51562,-1.61718 l 50.33594,-72.312504 c 0.30859,-0.433594 0.15234,-0.84375 0.0625,-1.003906 -0.0781,-0.15625 -0.33203,-0.519531 -0.85937,-0.519531 z m 48.82813,144.925781 c -0.36328,0 -0.72656,-0.0703 -1.08203,-0.21094 -1.0625,-0.4414 -1.74219,-1.46094 -1.74219,-2.60547 V 148.0625 L 98.808594,76.054688 c -1.070313,-1.535157 -1.195313,-3.515626 -0.328125,-5.171876 0.871093,-1.664062 2.582031,-2.691406 4.453121,-2.691406 h 123.69532 c 1.875,0 3.58203,1.027344 4.45312,2.691406 0.86719,1.65625 0.74219,3.636719 -0.32422,5.171876 L 180.625,148.0625 v 40.30469 c 0,0.75 -0.30078,1.47656 -0.83984,1.99609 l -26.03125,25.96484 c -0.54297,0.54688 -1.26563,0.82813 -1.99219,0.82813"
+        fill-opacity="1"
+        fill-rule="nonzero"
+        id="path2"
+      />
+    </g>
+  </svg>
+);
