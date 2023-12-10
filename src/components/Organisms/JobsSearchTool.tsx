@@ -18,6 +18,7 @@ import {
   CollapsibleFilterHeader,
   CollapsibleHeader,
 } from "../Atoms/Collapsible";
+import TitleFilter, { type titleFilterValues } from "./FilterTitle";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -82,10 +83,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
     <div>
       <CollapsibleHeader onClick={() => setFilterOpen(!filterOpen)}>
         <CTAButton className="w-full">
-          <div className="flex w-full">
-            <FilterIcon />
-            FILTER
-          </div>
+          <div className="flex w-full">FILTER</div>
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
@@ -131,18 +129,7 @@ const SearchedJobs = ({
   );
 };
 
-type Filter = {
-  label: string;
-  value: string[];
-  open: boolean;
-  selected: boolean;
-  filterComponent?: JSX.Element;
-};
-
-type FilterValues = {
-  titleValue: string;
-  titleOpen: boolean;
-  titleSelected: boolean;
+type roomsFilterValues = {
   roomsValue: Room[];
   roomsOpen: boolean;
   roomsSelected: boolean;
@@ -160,14 +147,21 @@ const Filters = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [filterValues, setFilterValues] = useState<FilterValues>({
-    titleValue: title ?? "",
-    titleOpen: false,
-    titleSelected: title ? true : false,
-    roomsValue: rooms ?? [],
-    roomsOpen: false,
-    roomsSelected: rooms ? true : false,
-  });
+  const [titleFilterValues, setTitleFilterValues] = useState<titleFilterValues>(
+    {
+      titleValue: title ?? "",
+      titleOpen: false,
+      titleSelected: title ? true : false,
+    }
+  );
+
+  const [roomsFilterValues, setRoomsFilterValues] = useState<roomsFilterValues>(
+    {
+      roomsValue: rooms ?? [],
+      roomsOpen: false,
+      roomsSelected: rooms ? true : false,
+    }
+  );
 
   const findLevelForRoom = (roomId: string) => {
     return property.levels.find((level) =>
@@ -179,15 +173,15 @@ const Filters = ({
     const params = new URLSearchParams();
     console.log("current params", params.toString());
 
-    if (filterValues.titleSelected) {
-      params.set("title", encodeURIComponent(filterValues.titleValue));
+    if (titleFilterValues.titleSelected) {
+      params.set("title", encodeURIComponent(titleFilterValues.titleValue));
     }
 
-    if (filterValues.roomsSelected) {
+    if (roomsFilterValues.roomsSelected) {
       params.set(
         "rooms",
         encodeURIComponent(
-          JSON.stringify(filterValues.roomsValue.map((room) => room.id))
+          JSON.stringify(roomsFilterValues.roomsValue.map((room) => room.id))
         )
       );
     }
@@ -242,54 +236,16 @@ const Filters = ({
     <>
       <CurrentFilters filters={currentFilters} />
       <TitleFilter
-        filterValues={filterValues}
-        setFilterValues={setFilterValues}
+        filterValues={titleFilterValues}
+        setFilterValues={setTitleFilterValues}
       />
       <RoomsFilter
         property={property}
-        filterValues={filterValues}
-        setFilterValues={setFilterValues}
+        filterValues={roomsFilterValues}
+        setFilterValues={setRoomsFilterValues}
       />
       <CTAButton onClick={setCurrentFilters}>Apply Filters</CTAButton>
     </>
-  );
-};
-
-const TitleFilter = ({
-  filterValues,
-  setFilterValues,
-}: {
-  filterValues: FilterValues;
-  setFilterValues: Dispatch<SetStateAction<FilterValues>>;
-}) => {
-  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value?.toString() ?? "";
-    setFilterValues((prev) => ({ ...prev, titleValue: text }));
-  };
-
-  return (
-    <div className="mb-4 border-0 border-b-2 border-slate-400">
-      <CollapsibleFilterHeader
-        onClick={() =>
-          setFilterValues((prev) => ({ ...prev, titleOpen: !prev.titleOpen }))
-        }
-        selected={filterValues.titleSelected}
-        setSelected={(selected) =>
-          setFilterValues((prev) => ({ ...prev, titleSelected: selected }))
-        }
-        open={filterValues.titleOpen}
-        setOpen={(open) =>
-          setFilterValues((prev) => ({ ...prev, titleOpen: open }))
-        }
-        label={"Job Title: " + filterValues.titleValue}
-      />
-      <Collapsible open={filterValues.titleOpen}>
-        <TitleSearchBar
-          onChange={titleSearchOnChange}
-          title={filterValues.titleValue}
-        />
-      </Collapsible>
-    </div>
   );
 };
 
@@ -299,8 +255,8 @@ const RoomsFilter = ({
   setFilterValues,
 }: {
   property: Property;
-  filterValues: FilterValues;
-  setFilterValues: Dispatch<SetStateAction<FilterValues>>;
+  filterValues: roomsFilterValues;
+  setFilterValues: Dispatch<SetStateAction<roomsFilterValues>>;
 }) => {
   const onClickRoomAdd = (roomId: string) => {
     const level = property.levels.find((level) =>
@@ -402,42 +358,6 @@ const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
           </button>
         </div>
       ))}
-    </div>
-  );
-};
-
-const FilterIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 20 20"
-    fill="#000000"
-    className="h-5 w-5"
-  >
-    <path
-      fillRule="evenodd"
-      d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const TitleSearchBar = ({
-  onChange,
-  title,
-}: {
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  title: string;
-}) => {
-  return (
-    <div className="relative mb-4 flex w-full flex-wrap items-stretch rounded-full border-2 border-dark p-2">
-      <FilterIcon />
-      <input
-        type="search"
-        value={title}
-        className="relative m-0 -mr-0.5 flex-auto rounded-l border border-solid border-none  bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 transition duration-200 ease-in-out focus:z-[3]  focus:text-neutral-700  focus:outline-none"
-        placeholder="Search by job title"
-        onChange={onChange}
-      />
     </div>
   );
 };
