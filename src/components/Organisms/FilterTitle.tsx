@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { Collapsible, CollapsibleFilterHeader } from "../Atoms/Collapsible";
 
-export type titleFilterValues = {
+export type TitleFilterValues = {
   titleValue: string;
   titleOpen: boolean;
   titleSelected: boolean;
@@ -11,8 +11,8 @@ const TitleFilter = ({
   filterValues,
   setFilterValues,
 }: {
-  filterValues: titleFilterValues;
-  setFilterValues: Dispatch<SetStateAction<titleFilterValues>>;
+  filterValues: TitleFilterValues;
+  setFilterValues: Dispatch<SetStateAction<TitleFilterValues>>;
 }) => {
   const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value?.toString() ?? "";

@@ -1,24 +1,14 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { CTAButton, ExpandButton } from "../Atoms/Button";
+import { useState } from "react";
+import { CTAButton } from "../Atoms/Button";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
-import RoomSelectorPopover from "../Molecules/RoomSelector";
 import { Text } from "../Atoms/Text";
-import clsx from "clsx";
-import { set } from "date-fns";
-import { Room } from "@prisma/client";
-import { RoomSelector } from "../Molecules/RoomSelector";
 import { RouterOutputs, api } from "~/utils/api";
-
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { unknown } from "zod";
-import { on } from "events";
 import RecentJobsViewer from "../Molecules/RecentJobsViewer";
-import {
-  Collapsible,
-  CollapsibleFilterHeader,
-  CollapsibleHeader,
-} from "../Atoms/Collapsible";
-import TitleFilter, { type titleFilterValues } from "./FilterTitle";
+import { Collapsible, CollapsibleHeader } from "../Atoms/Collapsible";
+import TitleFilter, { type TitleFilterValues } from "./FilterTitle";
+import RoomsFilter, { RoomsFilterValues } from "./FilterRooms";
+import { Room } from "@prisma/client";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -129,12 +119,6 @@ const SearchedJobs = ({
   );
 };
 
-type roomsFilterValues = {
-  roomsValue: Room[];
-  roomsOpen: boolean;
-  roomsSelected: boolean;
-};
-
 const Filters = ({
   property,
   title,
@@ -147,7 +131,7 @@ const Filters = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [titleFilterValues, setTitleFilterValues] = useState<titleFilterValues>(
+  const [titleFilterValues, setTitleFilterValues] = useState<TitleFilterValues>(
     {
       titleValue: title ?? "",
       titleOpen: false,
@@ -155,7 +139,7 @@ const Filters = ({
     }
   );
 
-  const [roomsFilterValues, setRoomsFilterValues] = useState<roomsFilterValues>(
+  const [roomsFilterValues, setRoomsFilterValues] = useState<RoomsFilterValues>(
     {
       roomsValue: rooms ?? [],
       roomsOpen: false,
@@ -246,79 +230,6 @@ const Filters = ({
       />
       <CTAButton onClick={setCurrentFilters}>Apply Filters</CTAButton>
     </>
-  );
-};
-
-const RoomsFilter = ({
-  property,
-  filterValues,
-  setFilterValues,
-}: {
-  property: Property;
-  filterValues: roomsFilterValues;
-  setFilterValues: Dispatch<SetStateAction<roomsFilterValues>>;
-}) => {
-  const onClickRoomAdd = (roomId: string) => {
-    const level = property.levels.find((level) =>
-      level.rooms.find((room) => room.id === roomId)
-    );
-    if (!level) return;
-    const room = level.rooms.find((room) => room.id === roomId);
-    console.log("room", room);
-    if (room) {
-      setFilterValues((prev) => ({
-        ...prev,
-        roomsValue: [...prev.roomsValue, room],
-      }));
-    }
-  };
-
-  const onClickRoomRemove = (roomId: string) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      roomsValue: prev.roomsValue.filter((room) => room.id !== roomId),
-    }));
-  };
-
-  const checkRoomSelected = (roomId: string) => {
-    return (
-      filterValues.roomsValue.find((room) => room.id === roomId) !== undefined
-    );
-  };
-
-  return (
-    <div className="mb-4 border-0 border-b-2 border-slate-400">
-      <CollapsibleFilterHeader
-        onClick={() =>
-          setFilterValues((prev) => ({ ...prev, roomsOpen: !prev.roomsOpen }))
-        }
-        selected={filterValues.roomsSelected}
-        setSelected={(selected) =>
-          setFilterValues((prev) => ({ ...prev, roomsSelected: selected }))
-        }
-        open={filterValues.roomsOpen}
-        setOpen={(open) =>
-          setFilterValues((prev) => ({ ...prev, roomsOpen: open }))
-        }
-        label={
-          "Rooms: " +
-          filterValues.roomsValue
-            .map((room) => room.label)
-            .concat()
-            .toString()
-        }
-      />
-      <Collapsible open={filterValues.roomsOpen}>
-        <RoomSelector
-          property={property}
-          onClickRoomAdd={onClickRoomAdd}
-          onClickRoomRemove={onClickRoomRemove}
-          loading={false}
-          setLoading={() => {}}
-          checkRoomSelected={checkRoomSelected}
-        />
-      </Collapsible>
-    </div>
   );
 };
 
