@@ -249,7 +249,9 @@ const Filters = ({
         filterValues={roomsFilterValues}
         setFilterValues={setRoomsFilterValues}
       />
-      <CTAButton onClick={setCurrentFilters}>Apply Filters</CTAButton>
+      <CTAButton onClick={setCurrentFilters} className="w-full">
+        Apply Filters
+      </CTAButton>
     </>
   );
 };
@@ -271,25 +273,46 @@ const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
     //set params
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  const onClickClearAll = () => {
+    router.push(`${pathname}`);
+  };
+
+  const capitalise = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const addSpaces = (string: string) => {
+    return string.replaceAll(",", ", ");
+  };
+
   return (
-    <div className="flex flex-wrap">
-      {filters.map((filter, index) => (
-        <div
-          key={index}
-          className="mb-2 mr-2 flex items-center rounded-full bg-altPrimary px-4 py-2"
-        >
-          <Text className="text-white">
-            {filter.label}: {filter.value}
-          </Text>
-          <button
-            value={filter.label}
-            onClick={onClickClose}
-            className="ml-2 text-white"
+    <div className="p-4">
+      <div className="flex w-full justify-end pb-2">
+        <GhostButton onClick={onClickClearAll} className="right-0">
+          CLEAR FILTERS
+        </GhostButton>
+      </div>
+
+      <div className="flex flex-wrap">
+        {filters.map((filter, index) => (
+          <div
+            key={index}
+            className="mb-2 mr-2 flex items-center rounded-full bg-altPrimary px-4 py-2"
           >
-            X
-          </button>
-        </div>
-      ))}
+            <Text className="text-white">
+              {capitalise(filter.label)}: {addSpaces(filter.value)}
+            </Text>
+            <button
+              value={filter.label}
+              onClick={onClickClose}
+              className="ml-2 text-white"
+            >
+              X
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

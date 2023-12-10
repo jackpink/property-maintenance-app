@@ -33,7 +33,7 @@ const TitleFilter = ({
         setOpen={(open) =>
           setFilterValues((prev) => ({ ...prev, titleOpen: open }))
         }
-        label={"Job Title: " + filterValues.titleValue}
+        label={"Title: " + filterValues.titleValue}
       />
       <Collapsible open={filterValues.titleOpen}>
         <TitleSearchBar
