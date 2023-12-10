@@ -11,6 +11,7 @@ import { RouterOutputs } from "~/utils/api";
 import { title } from "process";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { unknown } from "zod";
+import { on } from "events";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -27,7 +28,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
-        <JobFilters property={property} />
+        <Filters property={property} />
       </Collapsible>
     </div>
   );
@@ -114,150 +115,53 @@ type Filter = {
   filterComponent?: JSX.Element;
 };
 
-const JobFilters = ({ property }: { property: Property }) => {
-  const [roomSelectorLoading, setRoomSelectorLoading] = useState(false);
-  const [filters, setFilters] = useState<Filter[]>([
-    {
-      label: "Job Title",
-      value: [""],
-      open: false,
-      selected: false,
-      filterComponent: undefined,
-    },
-    {
-      label: "Rooms",
-      value: [],
-      open: false,
-      selected: false,
-      filterComponent: undefined,
-    },
-  ]);
-  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value?.toString() ?? "";
-    setFilters((prev) =>
-      prev.map((filter) =>
-        filter.label === "Job Title"
-          ? {
-              ...filter,
-              value: [text],
-            }
-          : { ...filter }
-      )
-    );
-  };
-
-  const onClickRoomAdd = (roomId: string) => {
-    console.log("onCLickRoomAdd filters", filters);
-    const level = property.levels.find((level) =>
-      level.rooms.find((room) => room.id === roomId)
-    );
-    if (!level) return;
-    const room = level.rooms.find((room) => room.id === roomId);
-    console.log("room", room);
-    if (room) {
-      const newFilters = filters.map((filter) => {
-        console.log("filter", filter.label);
-        filter.label === "Rooms";
-        if (filter.label === "Rooms") {
-          console.log("filter", filter);
-          const newFilter = { ...filter, value: [...filter.value, room.id] };
-          console.log("newFilter", newFilter);
-          return newFilter;
-        } else {
-          return { ...filter };
-        }
-      });
-      console.log("newFilters", newFilters);
-      setFilters(newFilters);
-      setRoomSelectorLoading(false);
-      console.log("filters", filters);
-    }
-  };
-
-  const onClickRoomRemove = (roomId: string) => {
-    setRoomSelectorLoading(false);
-  };
-
-  const checkRoomSelected = (roomId: string) => {
-    const filter = filters.find((filter) => filter.label === "Rooms");
-    if (!filter) return false;
-    console.log("filter value", filter.value);
-    return filter.value.includes(roomId);
-  };
-
-  useEffect(() => {
-    setFilters((prev) =>
-      prev.map((filter) =>
-        filter.label === "Job Title"
-          ? {
-              ...filter,
-              filterComponent: (
-                <TitleSearchBar onChange={titleSearchOnChange} />
-              ),
-            }
-          : filter.label === "Rooms"
-          ? {
-              ...filter,
-              filterComponent: (
-                <RoomSelector
-                  property={property}
-                  onClickRoomAdd={onClickRoomAdd}
-                  onClickRoomRemove={onClickRoomRemove}
-                  loading={roomSelectorLoading}
-                  setLoading={setRoomSelectorLoading}
-                  checkRoomSelected={checkRoomSelected}
-                />
-              ),
-            }
-          : { ...filter }
-      )
-    );
-  }, []);
-
-  return (
-    <Filters property={property} filters={filters} setFilters={setFilters} />
-  );
+type FilterValues = {
+  titleValue: string;
+  titleOpen: boolean;
+  titleSelected: boolean;
+  roomsValue: Room[];
+  roomsOpen: boolean;
+  roomsSelected: boolean;
 };
 
-const Filters = ({
-  property,
-  filters,
-  setFilters,
-}: {
-  property: Property;
-  filters: Filter[];
-  setFilters: Dispatch<SetStateAction<Filter[]>>;
-}) => {
+const Filters = ({ property }: { property: Property }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-
-  const [roomsFilter, setRoomsFilter] = useState<Room[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const setCurrentFilters = () => {
-    const params = new URLSearchParams();
-    console.log("current params", params.toString());
-
-    for (const filter of filters) {
-      if (filter.selected) {
-        // value needs to be made url friendly
-        const encodedValue = encodeURIComponent(JSON.stringify(filter.value));
-        params.set(
-          filter.label.replace(" ", "").toLowerCase(),
-          encodedValue.toString()
-        );
-      }
-    }
-
-    //set params
-    router.push(`${pathname}?${params.toString()}`);
-  };
+  const [filterValues, setFilterValues] = useState<FilterValues>({
+    titleValue: "",
+    titleOpen: false,
+    titleSelected: false,
+    roomsValue: [],
+    roomsOpen: false,
+    roomsSelected: false,
+  });
 
   const findLevelForRoom = (roomId: string) => {
     return property.levels.find((level) =>
       level.rooms.find((room) => room.id === roomId)
     );
+  };
+
+  const setCurrentFilters = () => {
+    const params = new URLSearchParams();
+    console.log("current params", params.toString());
+
+    if (filterValues.titleSelected) {
+      params.set("title", encodeURIComponent(filterValues.titleValue));
+    }
+
+    if (filterValues.roomsSelected) {
+      params.set(
+        "rooms",
+        encodeURIComponent(
+          JSON.stringify(filterValues.roomsValue.map((room) => room.id))
+        )
+      );
+    }
+
+    //set params
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const getCurrentFilters = () => {
@@ -280,7 +184,7 @@ const Filters = ({
               (roomId) =>
                 findLevelForRoom(roomId)?.rooms.find(
                   (room) => room.id === roomId
-                )?.label + ", "
+                )?.label
             )
             .concat()
             .toString() ?? "";
@@ -302,124 +206,127 @@ const Filters = ({
 
   const currentFilters = getCurrentFilters();
 
-  console.log("filters", filters);
+  return (
+    <>
+      <CurrentFilters filters={currentFilters} />
+      <TitleFilter
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+      />
+      <RoomsFilter
+        property={property}
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+      />
+      <CTAButton onClick={setCurrentFilters}>Apply Filters</CTAButton>
+    </>
+  );
+};
+
+const TitleFilter = ({
+  filterValues,
+  setFilterValues,
+}: {
+  filterValues: FilterValues;
+  setFilterValues: Dispatch<SetStateAction<FilterValues>>;
+}) => {
+  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.currentTarget.value?.toString() ?? "";
+    setFilterValues((prev) => ({ ...prev, titleValue: text }));
+  };
 
   return (
-    <div className="p-4">
-      <CurrentFilters filters={currentFilters} />
-      <div className="mb-4 border-0 border-b-2 border-slate-400">
-        <CollapsibleFilterHeader
-          onClick={() =>
-            setFilters(
-              filters.map((filter) =>
-                filter.label === "Job Title"
-                  ? { ...filter, open: !filter.open }
-                  : { ...filter }
-              )
-            )
-          }
-          selected={
-            filters.find((filter) => filter.label === "Job Title")?.selected ??
-            false
-          }
-          setSelected={(selected) =>
-            setFilters(
-              filters.map((filter) =>
-                filter.label === "Job Title"
-                  ? { ...filter, selected }
-                  : { ...filter }
-              )
-            )
-          }
-          open={
-            filters.find((filter) => filter.label === "Job Title")?.open ??
-            false
-          }
-          setOpen={(open) =>
-            setFilters(
-              filters.map((filter) =>
-                filter.label === "Job Title"
-                  ? { ...filter, open }
-                  : { ...filter }
-              )
-            )
-          }
-          label={
-            "Job Title: " +
-            filters.find((filter) => filter.label === "Job Title")?.value
-          }
+    <div className="mb-4 border-0 border-b-2 border-slate-400">
+      <CollapsibleFilterHeader
+        onClick={() =>
+          setFilterValues((prev) => ({ ...prev, titleOpen: !prev.titleOpen }))
+        }
+        selected={filterValues.titleSelected}
+        setSelected={(selected) =>
+          setFilterValues((prev) => ({ ...prev, titleSelected: selected }))
+        }
+        open={filterValues.titleOpen}
+        setOpen={(open) =>
+          setFilterValues((prev) => ({ ...prev, titleOpen: open }))
+        }
+        label={"Job Title: " + filterValues.titleValue}
+      />
+      <Collapsible open={filterValues.titleOpen}>
+        <TitleSearchBar onChange={titleSearchOnChange} />
+      </Collapsible>
+    </div>
+  );
+};
+
+const RoomsFilter = ({
+  property,
+  filterValues,
+  setFilterValues,
+}: {
+  property: Property;
+  filterValues: FilterValues;
+  setFilterValues: Dispatch<SetStateAction<FilterValues>>;
+}) => {
+  const onClickRoomAdd = (roomId: string) => {
+    const level = property.levels.find((level) =>
+      level.rooms.find((room) => room.id === roomId)
+    );
+    if (!level) return;
+    const room = level.rooms.find((room) => room.id === roomId);
+    console.log("room", room);
+    if (room) {
+      setFilterValues((prev) => ({
+        ...prev,
+        roomsValue: [...prev.roomsValue, room],
+      }));
+    }
+  };
+
+  const onClickRoomRemove = (roomId: string) => {
+    setFilterValues((prev) => ({
+      ...prev,
+      roomsValue: prev.roomsValue.filter((room) => room.id !== roomId),
+    }));
+  };
+
+  const checkRoomSelected = (roomId: string) => {
+    return (
+      filterValues.roomsValue.find((room) => room.id === roomId) !== undefined
+    );
+  };
+
+  return (
+    <div className="mb-4 border-0 border-b-2 border-slate-400">
+      <CollapsibleFilterHeader
+        onClick={() =>
+          setFilterValues((prev) => ({ ...prev, roomsOpen: !prev.roomsOpen }))
+        }
+        selected={filterValues.roomsSelected}
+        setSelected={(selected) =>
+          setFilterValues((prev) => ({ ...prev, roomsSelected: selected }))
+        }
+        open={filterValues.roomsOpen}
+        setOpen={(open) =>
+          setFilterValues((prev) => ({ ...prev, roomsOpen: open }))
+        }
+        label={
+          "Rooms: " +
+          filterValues.roomsValue
+            .map((room) => room.label)
+            .concat()
+            .toString()
+        }
+      />
+      <Collapsible open={filterValues.roomsOpen}>
+        <RoomSelector
+          property={property}
+          onClickRoomAdd={onClickRoomAdd}
+          onClickRoomRemove={onClickRoomRemove}
+          loading={false}
+          setLoading={() => {}}
+          checkRoomSelected={checkRoomSelected}
         />
-        <Collapsible
-          open={
-            filters.find((filter) => filter.label === "Job Title")?.open ??
-            false
-          }
-        >
-          {
-            filters.find((filter) => filter.label === "Job Title")
-              ?.filterComponent
-          }
-        </Collapsible>
-      </div>
-      <div className="mb-4 border-0 border-b-2 border-slate-400">
-        <CollapsibleFilterHeader
-          onClick={() =>
-            setFilters(
-              filters.map((filter) =>
-                filter.label === "Rooms"
-                  ? { ...filter, open: !filter.open }
-                  : { ...filter }
-              )
-            )
-          }
-          selected={
-            filters.find((filter) => filter.label === "Rooms")?.selected ??
-            false
-          }
-          setSelected={(selected) =>
-            setFilters(
-              filters.map((filter) =>
-                filter.label === "Rooms"
-                  ? { ...filter, selected }
-                  : { ...filter }
-              )
-            )
-          }
-          open={
-            filters.find((filter) => filter.label === "Rooms")?.open ?? false
-          }
-          setOpen={(open) =>
-            setFilters(
-              filters.map((filter) =>
-                filter.label === "Rooms" ? { ...filter, open } : { ...filter }
-              )
-            )
-          }
-          label={
-            "Rooms: " +
-              filters
-                .find((filter) => filter.label === "Rooms")
-                ?.value.map(
-                  (roomId) =>
-                    findLevelForRoom(roomId)?.rooms.find(
-                      (room) => room.id === roomId
-                    )?.label + ", "
-                )
-                .concat()
-                .toString() ?? ""
-          }
-        />
-        <Collapsible
-          open={
-            filters.find((filter) => filter.label === "Rooms")?.open ?? false
-          }
-        >
-          {filters.find((filter) => filter.label === "Rooms")?.filterComponent}
-        </Collapsible>
-      </div>
-      <CTAButton onClick={setCurrentFilters} className="w-full">
-        Apply Filters
-      </CTAButton>
+      </Collapsible>
     </div>
   );
 };
@@ -429,14 +336,35 @@ type CurrentFiltersProps = {
 };
 
 const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const onClickClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(e.currentTarget.value);
+    //remove filter from url
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(e.currentTarget.value);
+    //set params
+    router.push(`${pathname}?${params.toString()}`);
+  };
   return (
     <div className="flex flex-wrap">
       {filters.map((filter, index) => (
-        <div className="mb-2 mr-2 flex items-center rounded-full bg-altPrimary px-4 py-2">
+        <div
+          key={index}
+          className="mb-2 mr-2 flex items-center rounded-full bg-altPrimary px-4 py-2"
+        >
           <Text className="text-white">
             {filter.label}: {filter.value}
           </Text>
-          <button className="ml-2 text-white">X</button>
+          <button
+            value={filter.label}
+            onClick={onClickClose}
+            className="ml-2 text-white"
+          >
+            X
+          </button>
         </div>
       ))}
     </div>
