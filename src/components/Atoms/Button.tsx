@@ -378,11 +378,17 @@ export function NavMenuButton({
   );
 }
 
+type ExpandButtonProps = {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  className?: string;
+};
+
 export function ExpandButton({
   isOpen,
   setIsOpen,
   className,
-}: NavMenuButtonProps) {
+}: ExpandButtonProps) {
   return (
     <button onClick={() => setIsOpen(!isOpen)} className={className}>
       <div className="relative h-6 w-6">
