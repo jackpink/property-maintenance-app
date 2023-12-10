@@ -7,16 +7,52 @@ import clsx from "clsx";
 import { set } from "date-fns";
 import { Room } from "@prisma/client";
 import { RoomSelector } from "../Molecules/RoomSelector";
-import { RouterOutputs } from "~/utils/api";
-import { title } from "process";
+import { RouterOutputs, api } from "~/utils/api";
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { unknown } from "zod";
 import { on } from "events";
+import RecentJobsViewer from "../Molecules/RecentJobsViewer";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
 const JobsSearchTool = ({ property }: { property: Property }) => {
+  const searchParams = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(true);
+
+  const getCurrentFilters = () => {
+    let title;
+    let rooms;
+    console.log("search params", searchParams.entries().next().value);
+    searchParams.forEach((value, key) => {
+      console.log("key", key);
+      console.log("value", decodeURIComponent(value));
+      const decodedValue = decodeURIComponent(value)
+        .replace("[", "")
+        .replace("]", "")
+        .replace(/"/g, "")
+        .split(",");
+      let displayedValue;
+      if (key === "rooms") {
+        //get names from property
+
+        rooms = decodedValue;
+        console.log("displayedValue", displayedValue);
+      } else if (key === "title") {
+        title = value;
+      } else {
+        console.log("decodedValue", decodedValue);
+        displayedValue = decodedValue[0]?.toString() ?? "";
+      }
+    });
+
+    return { title, rooms };
+  };
+
+  const { title, rooms } = getCurrentFilters();
+
+  console.log("rooms", rooms);
+
   return (
     <div>
       <CollapsibleHeader onClick={() => setFilterOpen(!filterOpen)}>
@@ -30,11 +66,45 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
       <Collapsible open={filterOpen}>
         <Filters property={property} />
       </Collapsible>
+      <SearchedJobs property={property} title={title} rooms={rooms} />
     </div>
   );
 };
 
 export default JobsSearchTool;
+
+const SearchedJobs = ({
+  property,
+  title,
+  rooms,
+}: {
+  property: Property;
+  title?: string;
+  rooms?: string[];
+}) => {
+  const { data, isLoading, error } =
+    api.job.getFilteredJobsforProperty.useQuery({
+      propertyId: property.id,
+      title: title,
+      rooms: rooms,
+    });
+
+  return (
+    <div className="flex flex-col space-y-4">
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <p>error</p>
+      ) : (
+        <>
+          {data?.map((job, index) => (
+            <RecentJobsViewer recentJobs={data} />
+          ))}
+        </>
+      )}
+    </div>
+  );
+};
 
 const Accordian: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
