@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CTAButton, ExpandButton } from "../Atoms/Button";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
 import RoomSelectorPopover from "../Molecules/RoomSelector";
@@ -27,7 +27,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
-        <Filters property={property} />
+        <JobFilters property={property} />
       </Collapsible>
     </div>
   );
@@ -115,6 +115,7 @@ type Filter = {
 };
 
 const JobFilters = ({ property }: { property: Property }) => {
+  const [roomSelectorLoading, setRoomSelectorLoading] = useState(false);
   const [filters, setFilters] = useState<Filter[]>([
     {
       label: "Job Title",
@@ -123,7 +124,13 @@ const JobFilters = ({ property }: { property: Property }) => {
       selected: false,
       filterComponent: undefined,
     },
-    { label: "Rooms", value: [""], open: false, selected: false },
+    {
+      label: "Rooms",
+      value: [],
+      open: false,
+      selected: false,
+      filterComponent: undefined,
+    },
   ]);
   const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value?.toString() ?? "";
@@ -139,31 +146,94 @@ const JobFilters = ({ property }: { property: Property }) => {
     );
   };
 
-  return null;
+  const onClickRoomAdd = (roomId: string) => {
+    console.log("onCLickRoomAdd filters", filters);
+    const level = property.levels.find((level) =>
+      level.rooms.find((room) => room.id === roomId)
+    );
+    if (!level) return;
+    const room = level.rooms.find((room) => room.id === roomId);
+    console.log("room", room);
+    if (room) {
+      const newFilters = filters.map((filter) => {
+        console.log("filter", filter.label);
+        filter.label === "Rooms";
+        if (filter.label === "Rooms") {
+          console.log("filter", filter);
+          const newFilter = { ...filter, value: [...filter.value, room.id] };
+          console.log("newFilter", newFilter);
+          return newFilter;
+        } else {
+          return { ...filter };
+        }
+      });
+      console.log("newFilters", newFilters);
+      setFilters(newFilters);
+      setRoomSelectorLoading(false);
+      console.log("filters", filters);
+    }
+  };
+
+  const onClickRoomRemove = (roomId: string) => {
+    setRoomSelectorLoading(false);
+  };
+
+  const checkRoomSelected = (roomId: string) => {
+    const filter = filters.find((filter) => filter.label === "Rooms");
+    if (!filter) return false;
+    console.log("filter value", filter.value);
+    return filter.value.includes(roomId);
+  };
+
+  useEffect(() => {
+    setFilters((prev) =>
+      prev.map((filter) =>
+        filter.label === "Job Title"
+          ? {
+              ...filter,
+              filterComponent: (
+                <TitleSearchBar onChange={titleSearchOnChange} />
+              ),
+            }
+          : filter.label === "Rooms"
+          ? {
+              ...filter,
+              filterComponent: (
+                <RoomSelector
+                  property={property}
+                  onClickRoomAdd={onClickRoomAdd}
+                  onClickRoomRemove={onClickRoomRemove}
+                  loading={roomSelectorLoading}
+                  setLoading={setRoomSelectorLoading}
+                  checkRoomSelected={checkRoomSelected}
+                />
+              ),
+            }
+          : { ...filter }
+      )
+    );
+  }, []);
+
+  return (
+    <Filters property={property} filters={filters} setFilters={setFilters} />
+  );
 };
 
-const Filters = ({ property }: { property: Property }) => {
+const Filters = ({
+  property,
+  filters,
+  setFilters,
+}: {
+  property: Property;
+  filters: Filter[];
+  setFilters: Dispatch<SetStateAction<Filter[]>>;
+}) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  const [titleFilterOpen, setTitleFilterOpen] = useState(false);
-  const [titleFilterSelected, setTitleFilterSelected] = useState(false);
-  const [titleFilter, setTitleFilter] = useState("");
   const [roomsFilter, setRoomsFilter] = useState<Room[]>([]);
-  const [roomsFilterOpen, setRoomsFilterOpen] = useState(false);
-  const [roomsFilterSelected, setRoomsFilterSelected] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const [filters, setFilters] = useState<Filter[]>([
-    {
-      label: "Job Title",
-      value: [""],
-      open: false,
-      selected: false,
-    },
-    { label: "Rooms", value: [], open: false, selected: false },
-  ]);
 
   const setCurrentFilters = () => {
     const params = new URLSearchParams();
@@ -188,60 +258,6 @@ const Filters = ({ property }: { property: Property }) => {
     return property.levels.find((level) =>
       level.rooms.find((room) => room.id === roomId)
     );
-  };
-
-  const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value?.toString() ?? "";
-    setFilters((prev) =>
-      prev.map((filter) =>
-        filter.label === "Job Title"
-          ? {
-              ...filter,
-              value: [text],
-            }
-          : { ...filter }
-      )
-    );
-  };
-
-  const onClickRoomAdd = (roomId: string) => {
-    const level = property.levels.find((level) =>
-      level.rooms.find((room) => room.id === roomId)
-    );
-    if (!level) return;
-    const room = level.rooms.find((room) => room.id === roomId);
-    console.log("room", room);
-    if (room) {
-      const newFilters = filters.map((filter) => {
-        console.log("filter", filter.label);
-        filter.label === "Rooms";
-        if (filter.label === "Rooms") {
-          console.log("filter", filter);
-          const newFilter = { ...filter, value: [...filter.value, room.id] };
-          console.log("newFilter", newFilter);
-          return newFilter;
-        } else {
-          return { ...filter };
-        }
-      });
-      console.log("newFilters", newFilters);
-      setFilters(newFilters);
-      setRoomsFilter([...roomsFilter, room]);
-      setLoading(false);
-      console.log("filters", filters);
-    }
-  };
-
-  const onClickRoomRemove = (roomId: string) => {
-    setRoomsFilter(roomsFilter.filter((room) => room.id !== roomId));
-    setLoading(false);
-  };
-
-  const checkRoomSelected = (roomId: string) => {
-    const filter = filters.find((filter) => filter.label === "Rooms");
-    if (!filter) return false;
-    console.log("filter value", filter.value);
-    return filter.value.includes(roomId);
   };
 
   const getCurrentFilters = () => {
@@ -285,6 +301,8 @@ const Filters = ({ property }: { property: Property }) => {
   };
 
   const currentFilters = getCurrentFilters();
+
+  console.log("filters", filters);
 
   return (
     <div className="p-4">
@@ -337,7 +355,10 @@ const Filters = ({ property }: { property: Property }) => {
             false
           }
         >
-          <TitleSearchBar onChange={titleSearchOnChange} />
+          {
+            filters.find((filter) => filter.label === "Job Title")
+              ?.filterComponent
+          }
         </Collapsible>
       </div>
       <div className="mb-4 border-0 border-b-2 border-slate-400">
@@ -393,14 +414,7 @@ const Filters = ({ property }: { property: Property }) => {
             filters.find((filter) => filter.label === "Rooms")?.open ?? false
           }
         >
-          <RoomSelector
-            property={property}
-            onClickRoomAdd={onClickRoomAdd}
-            onClickRoomRemove={onClickRoomRemove}
-            loading={loading}
-            setLoading={setLoading}
-            checkRoomSelected={checkRoomSelected}
-          />
+          {filters.find((filter) => filter.label === "Rooms")?.filterComponent}
         </Collapsible>
       </div>
       <CTAButton onClick={setCurrentFilters} className="w-full">
