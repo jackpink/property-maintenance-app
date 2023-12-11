@@ -69,6 +69,7 @@ const RoomsFilter = ({
             .map((room) => room.label)
             .concat()
             .toString()
+            .replaceAll(",", ", ")
         }
       />
       <Collapsible open={filterValues.roomsOpen}>

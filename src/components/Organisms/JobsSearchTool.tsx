@@ -10,6 +10,7 @@ import TitleFilter, { type TitleFilterValues } from "./FilterTitle";
 import RoomsFilter, { RoomsFilterValues } from "./FilterRooms";
 import { Room } from "@prisma/client";
 import clsx from "clsx";
+import { instanceOfTradeInfo } from "../Molecules/AddTradePopover";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -78,7 +79,7 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
   };
 
   return (
-    <div>
+    <div className="px-1 py-4">
       <CollapsibleHeader onClick={() => setFilterOpen(!filterOpen)}>
         <CTAButton className=" w-full bg-brand/60">
           <div className="flex w-full justify-between gap-8">
@@ -116,22 +117,53 @@ const SearchedJobs = ({
   title?: string;
   rooms?: string[];
 }) => {
-  const { data, isLoading, error } =
-    api.job.getFilteredJobsforProperty.useQuery({
-      propertyId: property.id,
-      title: title,
-      rooms: rooms,
-    });
+  const {
+    data: jobs,
+    isLoading,
+    error,
+  } = api.job.getFilteredJobsforProperty.useQuery({
+    propertyId: property.id,
+    title: title,
+    rooms: rooms,
+  });
+
+  type Job = RouterOutputs["job"]["getFilteredJobsforProperty"][number];
+
+  const getJobCompletedBy = (job: Job) => {
+    if (job.TradeUser) {
+      return job.TradeUser.companyName;
+    } else if (
+      job.nonUserTradeInfo &&
+      instanceOfTradeInfo(job.nonUserTradeInfo) &&
+      job.nonUserTradeInfo.name
+    ) {
+      return job.nonUserTradeInfo.name;
+    } else {
+      return "No trade assigned";
+    }
+  };
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4 px-6 py-8">
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
         <p>error</p>
-      ) : data ? (
+      ) : jobs ? (
         <>
-          <RecentJobsViewer recentJobs={data} />
+          {jobs.map((job) => (
+            <a
+              href={`/property/${job.Property.id}/jobs/${job.id}`}
+              className="cursor-pointer rounded-lg border-2 border-black hover:bg-black/20"
+            >
+              <div className="flex justify-between p-2">
+                <h3 className="text-3xl font-bold">{job.title}</h3>
+                <Text>{job.date.toDateString()}</Text>
+              </div>
+              <div className="flex justify-between pb-2 pt-6"></div>
+              <Text>{getJobCompletedBy(job)}</Text>
+            </a>
+          ))}
         </>
       ) : (
         <p>Please select some filters</p>
