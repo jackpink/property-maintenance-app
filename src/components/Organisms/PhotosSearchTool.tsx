@@ -8,10 +8,11 @@ import RecentJobsViewer from "../Molecules/RecentJobsViewer";
 import { Collapsible, CollapsibleHeader } from "../Atoms/Collapsible";
 import TitleFilter, { type TitleFilterValues } from "./FilterTitle";
 import RoomsFilter, { RoomsFilterValues } from "./FilterRooms";
-import { Room } from "@prisma/client";
+import { Job, Room } from "@prisma/client";
 import clsx from "clsx";
 import { instanceOfTradeInfo } from "../Molecules/AddTradePopover";
 import PhotoViewer from "../Molecules/PhotoViewer";
+import JobsFilter, { JobsFilterValues } from "./FilterJobs";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -143,13 +144,13 @@ const SearchedPhotos = ({
 
 const Filters = ({
   property,
-  title,
   rooms,
+  jobs,
   parentElementOpen,
 }: {
   property: Property;
-  title?: string;
   rooms?: Room[];
+  jobs?: Job[];
   parentElementOpen: boolean;
 }) => {
   const searchParams = useSearchParams();
@@ -163,6 +164,12 @@ const Filters = ({
       roomsSelected: rooms ? true : false,
     }
   );
+
+  const [jobsFilterValues, setJobsFilterValues] = useState<JobsFilterValues>({
+    jobsValue: jobs ?? [],
+    jobsOpen: false,
+    jobsSelected: rooms ? true : false,
+  });
 
   const findLevelForRoom = (roomId: string) => {
     return property.levels.find((level) =>
@@ -243,6 +250,12 @@ const Filters = ({
         property={property}
         filterValues={roomsFilterValues}
         setFilterValues={setRoomsFilterValues}
+        parentElementOpen={parentElementOpen}
+      />
+      <JobsFilter
+        roomIds={roomsFilterValues.roomsValue.map((room) => room.id)}
+        filterValues={null}
+        setFilterValues={null}
         parentElementOpen={parentElementOpen}
       />
       <CTAButton onClick={setCurrentFilters} className="w-full">

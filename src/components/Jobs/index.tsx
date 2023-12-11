@@ -55,20 +55,18 @@ const Jobs: React.FC<Props> = ({ jobs, selectedJobs, setSelectedJobs }) => {
   };
 
   return (
-    <JobPopover selectedJobs={selectedJobs}>
-      <Timeline>
-        {jobs.map((job, index) => {
-          return (
-            <Element
-              job={job}
-              key={index}
-              selectedEvents={selectedJobs}
-              onClick={EventClicked}
-            />
-          );
-        })}
-      </Timeline>
-    </JobPopover>
+    <Timeline>
+      {jobs.map((job, index) => {
+        return (
+          <Element
+            job={job}
+            key={index}
+            selectedEvents={selectedJobs}
+            onClick={EventClicked}
+          />
+        );
+      })}
+    </Timeline>
   );
 };
 
