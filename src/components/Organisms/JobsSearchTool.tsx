@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CTAButton, GhostButton } from "../Atoms/Button";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
 import { Text } from "../Atoms/Text";
@@ -99,7 +99,12 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
         </CTAButton>
       </CollapsibleHeader>
       <Collapsible open={filterOpen}>
-        <Filters property={property} title={title} rooms={roomObjects} />
+        <Filters
+          property={property}
+          title={title}
+          rooms={roomObjects}
+          parentElementOpen={filterOpen}
+        />
       </Collapsible>
       <SearchedJobs property={property} title={title} rooms={rooms} />
     </div>
@@ -144,7 +149,7 @@ const SearchedJobs = ({
   };
 
   return (
-    <div className="flex flex-col space-y-4 px-6 py-8">
+    <div className="mx-auto flex max-w-4xl flex-col space-y-4 px-6 py-8">
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
@@ -154,7 +159,7 @@ const SearchedJobs = ({
           {jobs.map((job) => (
             <a
               href={`/property/${job.Property.id}/jobs/${job.id}`}
-              className="cursor-pointer rounded-lg border-2 border-black hover:bg-black/20"
+              className="cursor-pointer rounded-lg border-2 border-black  hover:bg-black/20"
             >
               <div className="flex justify-between p-2">
                 <h3 className="text-3xl font-bold">{job.title}</h3>
@@ -176,10 +181,12 @@ const Filters = ({
   property,
   title,
   rooms,
+  parentElementOpen,
 }: {
   property: Property;
   title?: string;
   rooms?: Room[];
+  parentElementOpen: boolean;
 }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -269,17 +276,26 @@ const Filters = ({
 
   const currentFilters = getCurrentFilters();
 
+  useEffect(() => {
+    if (!parentElementOpen) {
+      setTitleFilterValues((prev) => ({ ...prev, titleOpen: false }));
+      setRoomsFilterValues((prev) => ({ ...prev, roomsOpen: false }));
+    }
+  }, [parentElementOpen]);
+
   return (
     <>
       <CurrentFilters filters={currentFilters} />
       <TitleFilter
         filterValues={titleFilterValues}
         setFilterValues={setTitleFilterValues}
+        parentElementOpen={parentElementOpen}
       />
       <RoomsFilter
         property={property}
         filterValues={roomsFilterValues}
         setFilterValues={setRoomsFilterValues}
+        parentElementOpen={parentElementOpen}
       />
       <CTAButton onClick={setCurrentFilters} className="w-full">
         Apply Filters

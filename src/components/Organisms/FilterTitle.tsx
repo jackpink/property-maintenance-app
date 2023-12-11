@@ -10,9 +10,11 @@ export type TitleFilterValues = {
 const TitleFilter = ({
   filterValues,
   setFilterValues,
+  parentElementOpen,
 }: {
   filterValues: TitleFilterValues;
   setFilterValues: Dispatch<SetStateAction<TitleFilterValues>>;
+  parentElementOpen: boolean;
 }) => {
   const titleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value?.toString() ?? "";
@@ -35,7 +37,7 @@ const TitleFilter = ({
         }
         label={"Title: " + filterValues.titleValue}
       />
-      <Collapsible open={filterValues.titleOpen}>
+      <Collapsible open={filterValues.titleOpen && parentElementOpen}>
         <TitleSearchBar
           onChange={titleSearchOnChange}
           title={filterValues.titleValue}

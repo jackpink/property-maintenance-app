@@ -81,45 +81,32 @@ const HomeownerPropertyPageWithParams: React.FC<
       <PageTitle>{address}</PageTitle>
 
       <PropertyPageNav propertyId={propertyId} />
-      <ResponsiveColumns>
-        <ColumnOne>
-          <div className="grid  gap-4">
+
+      <div className="w-full">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto flex justify-center py-8">
             <PropertyAddJob
               propertyId={propertyId}
               createJobPopoverOpen={createJobPopoverOpen}
               setCreatejobPopoverOpen={setCreatejobPopoverOpen}
             />
-            <BackgroundContainer>
-              <BackgroundContainerHeader>
-                <PageSubTitle>Search Jobs</PageSubTitle>
-              </BackgroundContainerHeader>
-              {propertyIsLoading ? (
-                <LoadingSpinner />
-              ) : propertyFetchError ? (
-                <Text>{propertyFetchError?.message}</Text>
-              ) : property ? (
-                <JobsSearchTool property={property} />
-              ) : (
-                <Text>Could not load property.</Text>
-              )}
-            </BackgroundContainer>
           </div>
-        </ColumnOne>
-        <ColumnTwo>
-          {recentJobsAreLoading ? (
-            <LoadingSpinner />
-          ) : recentJobsFetchError ? (
-            <Text>{recentJobsFetchError?.message}</Text>
-          ) : recentJobs ? (
-            <PropertyRecentJobs
-              recentJobs={recentJobs}
-              loading={recentJobsAreLoading}
-            />
-          ) : (
-            <Text>Could not load recent jobs for this property.</Text>
-          )}
-        </ColumnTwo>
-      </ResponsiveColumns>
+          <BackgroundContainer>
+            <BackgroundContainerHeader>
+              <PageSubTitle>Search Jobs</PageSubTitle>
+            </BackgroundContainerHeader>
+            {propertyIsLoading ? (
+              <LoadingSpinner />
+            ) : propertyFetchError ? (
+              <Text>{propertyFetchError?.message}</Text>
+            ) : property ? (
+              <JobsSearchTool property={property} />
+            ) : (
+              <Text>Could not load property.</Text>
+            )}
+          </BackgroundContainer>
+        </div>
+      </div>
     </PageWithMainMenu>
   );
 };

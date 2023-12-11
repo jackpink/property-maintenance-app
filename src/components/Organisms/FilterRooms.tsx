@@ -16,10 +16,12 @@ const RoomsFilter = ({
   property,
   filterValues,
   setFilterValues,
+  parentElementOpen,
 }: {
   property: Property;
   filterValues: RoomsFilterValues;
   setFilterValues: Dispatch<SetStateAction<RoomsFilterValues>>;
+  parentElementOpen: boolean;
 }) => {
   const onClickRoomAdd = (roomId: string) => {
     const level = property.levels.find((level) =>
@@ -50,7 +52,7 @@ const RoomsFilter = ({
   };
 
   return (
-    <div className="mb-4 border-0 border-b-2 border-slate-400">
+    <div className=" mb-4 border-0 border-b-2 border-slate-400">
       <CollapsibleFilterHeader
         onClick={() =>
           setFilterValues((prev) => ({ ...prev, roomsOpen: !prev.roomsOpen }))
@@ -72,7 +74,7 @@ const RoomsFilter = ({
             .replaceAll(",", ", ")
         }
       />
-      <Collapsible open={filterValues.roomsOpen}>
+      <Collapsible open={filterValues.roomsOpen && parentElementOpen}>
         <RoomSelector
           property={property}
           onClickRoomAdd={onClickRoomAdd}
