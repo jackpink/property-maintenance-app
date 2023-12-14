@@ -254,8 +254,8 @@ const Filters = ({
       />
       <JobsFilter
         roomIds={roomsFilterValues.roomsValue.map((room) => room.id)}
-        filterValues={null}
-        setFilterValues={null}
+        filterValues={jobsFilterValues}
+        setFilterValues={setJobsFilterValues}
         parentElementOpen={parentElementOpen}
       />
       <CTAButton onClick={setCurrentFilters} className="w-full">

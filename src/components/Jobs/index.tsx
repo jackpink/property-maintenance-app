@@ -30,7 +30,8 @@ export type SelectedJobs = Job[];
 type Props = {
   jobs: Jobs;
   selectedJobs: SelectedJobs;
-  setSelectedJobs: Dispatch<SetStateAction<SelectedJobs>>;
+  onClickJobAdd: (jobId: string) => void;
+  onClickJobRemove: (jobId: string) => void;
 };
 
 const getByID = (id: string, jobs: Jobs) => {
@@ -41,19 +42,12 @@ const getByID = (id: string, jobs: Jobs) => {
   return job;
 };
 
-const Jobs: React.FC<Props> = ({ jobs, selectedJobs, setSelectedJobs }) => {
-  const EventClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const newSelectedJobID: string = event.currentTarget.value;
-    console.log("button clicked", newSelectedJobID);
-    const newSelectedJob = getByID(newSelectedJobID, jobs);
-    if (!!newSelectedJob) {
-      const elementSelected = checkIfSelected(newSelectedJob.id, selectedJobs);
-      if (elementSelected) setSelectedJobs([]);
-      //remove from selected jobs
-      else setSelectedJobs((j) => [...j, newSelectedJob]);
-    }
-  };
-
+const Jobs: React.FC<Props> = ({
+  jobs,
+  selectedJobs,
+  onClickJobAdd,
+  onClickJobRemove,
+}) => {
   return (
     <Timeline>
       {jobs.map((job, index) => {
@@ -62,7 +56,8 @@ const Jobs: React.FC<Props> = ({ jobs, selectedJobs, setSelectedJobs }) => {
             job={job}
             key={index}
             selectedEvents={selectedJobs}
-            onClick={EventClicked}
+            onClickJobAdd={onClickJobAdd}
+            onClickJobRemove={onClickJobRemove}
           />
         );
       })}
@@ -80,7 +75,8 @@ type SelectedEvents = SelectedEvent[];
 
 export interface ElementProps {
   job: Job;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  onClickJobAdd: (jobId: string) => void;
+  onClickJobRemove: (jobId: string) => void;
   selectedEvents: SelectedEvents;
 }
 /* a potentially handy typescript function, but also could indicate badly writen code
@@ -101,49 +97,52 @@ const checkIfSelected = (jobId: string, selectedEvents: SelectedEvents) => {
 };
 
 const Element: React.FC<ElementProps> = (props) => {
-  const [checked, setChecked] = useState(false);
-
-  const { job, selectedEvents, onClick } = props;
-  useEffect(() => {
-    const checkElement = checkIfSelected(job.id, selectedEvents);
-    console.log("CHECKING EVENTS", checkElement, job.id, selectedEvents);
-    setChecked(checkIfSelected(job.id, selectedEvents));
-  }, [job.id, selectedEvents]);
+  const { job, selectedEvents, onClickJobAdd, onClickJobRemove } = props;
+  const selected = checkIfSelected(job.id, selectedEvents);
 
   return (
     <li className="relative table-cell text-sm">
       <div className="flex flex-wrap">
         <span className="my-3 flex-1 whitespace-nowrap bg-black"></span>
-        <button
-          value={job.id}
-          onClick={onClick}
-          className={clsx(
-            "h-8",
-            "w-8",
-            "flex-none",
-            "border-2",
-            "border-solid",
-            "border-black",
-            "rounded-2xl",
-            "whitespace-nowrap",
-            {
-              "bg-emerald-600": checked,
-              "after:content-['✓']": checked,
-            }
-          )}
-          id="element-radio"
-        ></button>
+        {selected ? (
+          <button
+            value={job.id}
+            onClick={(e) => onClickJobRemove(e.currentTarget.value)}
+            className="h-8 w-8 flex-none whitespace-nowrap rounded-2xl border-2 border-solid border-black bg-emerald-600 after:content-['✓']"
+            id="element-radio"
+          ></button>
+        ) : (
+          <button
+            value={job.id}
+            onClick={(e) => onClickJobAdd(e.currentTarget.value)}
+            className="h-8 w-8 flex-none whitespace-nowrap rounded-2xl border-2 border-solid border-black"
+            id="element-radio"
+          ></button>
+        )}
+
         <span className="my-3 flex-1 whitespace-nowrap bg-black"></span>
         <span className="w-0 flex-1 basis-full"></span>
-        <button
-          value={job.id}
-          onClick={onClick}
-          className="top-24 min-w-max basis-full px-4"
-        >
-          <p className="text-lg">{job.title}</p>
-          <p className="italic">Your Company</p>
-          <p className="text-xs">{job.date.toDateString()}</p>
-        </button>
+        {selected ? (
+          <button
+            value={job.id}
+            onClick={(e) => onClickJobRemove(e.currentTarget.value)}
+            className="top-24 min-w-max basis-full px-4"
+          >
+            <p className="text-lg">{job.title}</p>
+            <p className="italic">Your Company</p>
+            <p className="text-xs">{job.date.toDateString()}</p>
+          </button>
+        ) : (
+          <button
+            value={job.id}
+            onClick={(e) => onClickJobAdd(e.currentTarget.value)}
+            className="top-24 min-w-max basis-full px-4"
+          >
+            <p className="text-lg">{job.title}</p>
+            <p className="italic">Your Company</p>
+            <p className="text-xs">{job.date.toDateString()}</p>
+          </button>
+        )}
       </div>
     </li>
   );

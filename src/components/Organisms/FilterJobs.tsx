@@ -32,6 +32,22 @@ const JobsFilter = ({
     error,
   } = api.job.getJobsForRooms.useQuery({ roomIds: roomIds });
 
+  const onClickJobAdd = (jobId: string) => {
+    const job = jobs?.find((job) => job.id === jobId);
+    if (!job) return;
+    setFilterValues((prev) => ({
+      ...prev,
+      jobsValue: [...prev.jobsValue, job],
+    }));
+  };
+
+  const onClickJobRemove = (jobId: string) => {
+    setFilterValues((prev) => ({
+      ...prev,
+      jobsValue: prev.jobsValue.filter((job) => job.id !== jobId),
+    }));
+  };
+
   return (
     <div className=" mb-4 border-0 border-b-2 border-slate-400">
       <CollapsibleFilterHeader
@@ -61,7 +77,12 @@ const JobsFilter = ({
         ) : error ? (
           <Text>{error?.message}</Text>
         ) : jobs ? (
-          <Jobs jobs={jobs} selectedJobs={} setSelectedJobs={} />
+          <Jobs
+            jobs={jobs}
+            selectedJobs={filterValues.jobsValue}
+            onClickJobAdd={onClickJobAdd}
+            onClickJobRemove={onClickJobRemove}
+          />
         ) : (
           <Text>Could not load jobs.</Text>
         )}
