@@ -1,5 +1,5 @@
 import { Job, Room } from "@prisma/client";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, use, useEffect } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import { Collapsible, CollapsibleFilterHeader } from "../Atoms/Collapsible";
 import { RoomSelector } from "../Molecules/RoomSelector";
@@ -10,7 +10,7 @@ import { Text } from "../Atoms/Text";
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
 export type JobsFilterValues = {
-  jobsValue: Job[];
+  jobsValue: number[];
   jobsOpen: boolean;
   jobsSelected: boolean;
 };
@@ -32,19 +32,21 @@ const JobsFilter = ({
     error,
   } = api.job.getJobsForRooms.useQuery({ roomIds: roomIds });
 
-  const onClickJobAdd = (jobId: string) => {
-    const job = jobs?.find((job) => job.id === jobId);
-    if (!job) return;
+  const onClickJobAdd = (jobIndex: number) => {
+    console.log("Adding to ", filterValues.jobsValue);
     setFilterValues((prev) => ({
       ...prev,
-      jobsValue: [...prev.jobsValue, job],
+      jobsValue: [...prev.jobsValue, jobIndex],
     }));
   };
 
-  const onClickJobRemove = (jobId: string) => {
+  const onClickJobRemove = (jobIndex: number) => {
+    console.log("Removing from ", filterValues.jobsValue);
     setFilterValues((prev) => ({
       ...prev,
-      jobsValue: prev.jobsValue.filter((job) => job.id !== jobId),
+      jobsValue: prev.jobsValue.filter(
+        (selectedJobIndex) => selectedJobIndex !== jobIndex
+      ),
     }));
   };
 
@@ -65,7 +67,7 @@ const JobsFilter = ({
         label={
           "Rooms: " +
           filterValues.jobsValue
-            .map((job) => job.title)
+            .map((jobIndex) => jobs?.[jobIndex]?.title ?? "")
             .concat()
             .toString()
             .replaceAll(",", ", ")

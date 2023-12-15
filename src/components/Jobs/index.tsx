@@ -29,9 +29,9 @@ export type SelectedJobs = Job[];
 
 type Props = {
   jobs: Jobs;
-  selectedJobs: SelectedJobs;
-  onClickJobAdd: (jobId: string) => void;
-  onClickJobRemove: (jobId: string) => void;
+  selectedJobs: number[];
+  onClickJobAdd: (jobIndex: number) => void;
+  onClickJobRemove: (jobIndex: number) => void;
 };
 
 const getByID = (id: string, jobs: Jobs) => {
@@ -55,9 +55,10 @@ const Jobs: React.FC<Props> = ({
           <Element
             job={job}
             key={index}
-            selectedEvents={selectedJobs}
+            selected={selectedJobs.includes(index)}
             onClickJobAdd={onClickJobAdd}
             onClickJobRemove={onClickJobRemove}
+            index={index}
           />
         );
       })}
@@ -75,9 +76,10 @@ type SelectedEvents = SelectedEvent[];
 
 export interface ElementProps {
   job: Job;
-  onClickJobAdd: (jobId: string) => void;
-  onClickJobRemove: (jobId: string) => void;
-  selectedEvents: SelectedEvents;
+  onClickJobAdd: (jobIndex: number) => void;
+  onClickJobRemove: (jobIndex: number) => void;
+  selected: boolean;
+  index: number;
 }
 /* a potentially handy typescript function, but also could indicate badly writen code
 function ensure<T>(argument: T | undefined | null, message: string = 'This value was promised to be there.'): T {
@@ -97,8 +99,7 @@ const checkIfSelected = (jobId: string, selectedEvents: SelectedEvents) => {
 };
 
 const Element: React.FC<ElementProps> = (props) => {
-  const { job, selectedEvents, onClickJobAdd, onClickJobRemove } = props;
-  const selected = checkIfSelected(job.id, selectedEvents);
+  const { job, selected, onClickJobAdd, onClickJobRemove, index } = props;
 
   return (
     <li className="relative table-cell text-sm">
@@ -106,15 +107,15 @@ const Element: React.FC<ElementProps> = (props) => {
         <span className="my-3 flex-1 whitespace-nowrap bg-black"></span>
         {selected ? (
           <button
-            value={job.id}
-            onClick={(e) => onClickJobRemove(e.currentTarget.value)}
+            value={index}
+            onClick={(e) => onClickJobRemove(+e.currentTarget.value)}
             className="h-8 w-8 flex-none whitespace-nowrap rounded-2xl border-2 border-solid border-black bg-emerald-600 after:content-['✓']"
             id="element-radio"
           ></button>
         ) : (
           <button
-            value={job.id}
-            onClick={(e) => onClickJobAdd(e.currentTarget.value)}
+            value={index}
+            onClick={(e) => onClickJobAdd(+e.currentTarget.value)}
             className="h-8 w-8 flex-none whitespace-nowrap rounded-2xl border-2 border-solid border-black"
             id="element-radio"
           ></button>
@@ -124,8 +125,8 @@ const Element: React.FC<ElementProps> = (props) => {
         <span className="w-0 flex-1 basis-full"></span>
         {selected ? (
           <button
-            value={job.id}
-            onClick={(e) => onClickJobRemove(e.currentTarget.value)}
+            value={index}
+            onClick={(e) => onClickJobRemove(+e.currentTarget.value)}
             className="top-24 min-w-max basis-full px-4"
           >
             <p className="text-lg">{job.title}</p>
@@ -134,8 +135,8 @@ const Element: React.FC<ElementProps> = (props) => {
           </button>
         ) : (
           <button
-            value={job.id}
-            onClick={(e) => onClickJobAdd(e.currentTarget.value)}
+            value={index}
+            onClick={(e) => onClickJobAdd(+e.currentTarget.value)}
             className="top-24 min-w-max basis-full px-4"
           >
             <p className="text-lg">{job.title}</p>

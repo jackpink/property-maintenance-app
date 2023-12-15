@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CTAButton, GhostButton } from "../Atoms/Button";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
 import { Text } from "../Atoms/Text";
@@ -22,10 +22,9 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
 
   const getCurrentFilters = (): { rooms?: string[] } => {
     let rooms;
-    console.log("search params", searchParams.entries().next().value);
+    let jobs;
+
     searchParams.forEach((value, key) => {
-      console.log("key", key);
-      console.log("value", decodeURIComponent(value));
       const decodedValue = decodeURIComponent(value)
         .replace("[", "")
         .replace("]", "")
@@ -36,11 +35,10 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
         //get names from property
 
         rooms = decodedValue;
-        console.log("displayedValue", displayedValue);
-      } else if (key === "title") {
+      } else if (key === "jobs") {
         //title = decodedValue[0]?.toString() ?? "";
+        jobs = decodedValue;
       } else {
-        console.log("decodedValue", decodedValue);
         displayedValue = decodedValue[0]?.toString() ?? "";
       }
     });
@@ -50,7 +48,6 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
 
   const { rooms } = getCurrentFilters();
 
-  console.log("rooms", rooms);
   const getRoomObjects = () => {
     if (!rooms) return [];
     const roomObjects: Room[] = [];
@@ -60,7 +57,6 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
       );
       if (!level) return;
       const room = level.rooms.find((room) => room.id === roomId);
-      console.log("room", room);
       if (room) {
         roomObjects.push(room);
       }
@@ -150,7 +146,7 @@ const Filters = ({
 }: {
   property: Property;
   rooms?: Room[];
-  jobs?: Job[];
+  jobs?: number[];
   parentElementOpen: boolean;
 }) => {
   const searchParams = useSearchParams();
@@ -179,14 +175,21 @@ const Filters = ({
 
   const setCurrentFilters = () => {
     const params = new URLSearchParams();
-    console.log("current params", params.toString());
 
     if (roomsFilterValues.roomsSelected) {
+      console.log("ROOMS AND SLECTED", jobsFilterValues.jobsSelected, jobs);
       params.set(
         "rooms",
         encodeURIComponent(
           JSON.stringify(roomsFilterValues.roomsValue.map((room) => room.id))
         )
+      );
+    }
+    if (jobsFilterValues.jobsSelected) {
+      console.log("JOBS AND SLECTED", jobsFilterValues.jobsValue);
+      params.set(
+        "jobs",
+        encodeURIComponent(JSON.stringify(jobsFilterValues.jobsValue))
       );
     }
 
@@ -196,10 +199,8 @@ const Filters = ({
 
   const getCurrentFilters = () => {
     const filters: { label: string; value: string }[] = [];
-    console.log("search params", searchParams.entries().next().value);
+
     searchParams.forEach((value, key) => {
-      console.log("key", key);
-      console.log("value", decodeURIComponent(value));
       const decodedValue = decodeURIComponent(value)
         .replace("[", "")
         .replace("]", "")
@@ -218,9 +219,13 @@ const Filters = ({
             )
             .concat()
             .toString() ?? "";
-        console.log("displayedValue", displayedValue);
+      } else if (key === "jobs") {
+        console.log("Decoded Vlaue of jobs", decodedValue);
+        displayedValue =
+          decodedValue.length === 1
+            ? "1 Job Selected"
+            : decodedValue.length.toString() + " Jobs Selected" ?? "";
       } else {
-        console.log("decodedValue", decodedValue);
         displayedValue = decodedValue[0]?.toString() ?? "";
       }
       if (key !== "property") {
@@ -241,7 +246,7 @@ const Filters = ({
       setRoomsFilterValues((prev) => ({ ...prev, roomsOpen: false }));
     }
   }, [parentElementOpen]);
-
+  console.log("jobsFilterValues", jobsFilterValues.jobsValue);
   return (
     <>
       <CurrentFilters filters={currentFilters} />
@@ -253,7 +258,7 @@ const Filters = ({
         parentElementOpen={parentElementOpen}
       />
       <JobsFilter
-        roomIds={roomsFilterValues.roomsValue.map((room) => room.id)}
+        roomIds={rooms?.map((room) => room.id) ?? []}
         filterValues={jobsFilterValues}
         setFilterValues={setJobsFilterValues}
         parentElementOpen={parentElementOpen}
@@ -275,7 +280,6 @@ const CurrentFilters = ({ filters }: CurrentFiltersProps) => {
   const pathname = usePathname();
 
   const onClickClose = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(e.currentTarget.value);
     //remove filter from url
     const params = new URLSearchParams(searchParams.toString());
     params.delete(e.currentTarget.value);
