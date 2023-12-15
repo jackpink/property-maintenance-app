@@ -65,7 +65,7 @@ const JobsFilter = ({
           setFilterValues((prev) => ({ ...prev, jobsOpen: open }))
         }
         label={
-          "Rooms: " +
+          "Jobs: " +
           filterValues.jobsValue
             .map((jobIndex) => jobs?.[jobIndex]?.title ?? "")
             .concat()

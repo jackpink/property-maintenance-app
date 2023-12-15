@@ -175,9 +175,24 @@ const Filters = ({
 
   const setCurrentFilters = () => {
     const params = new URLSearchParams();
-
+    const currentSelectedRooms = decodeURIComponent(
+      searchParams.get("rooms") ?? ""
+    )
+      .replace("[", "")
+      .replace("]", "")
+      .replace(/"/g, "")
+      .split(",");
+    console.log("currentSelectedRooms", currentSelectedRooms);
+    const roomsHasChanged = !roomsFilterValues.roomsValue
+      .map(
+        (room) =>
+          currentSelectedRooms.find(
+            (currentRoom) => currentRoom === room.id
+          ) === undefined
+      )
+      .includes(false);
+    console.log("roomHasChanged", roomsHasChanged);
     if (roomsFilterValues.roomsSelected) {
-      console.log("ROOMS AND SLECTED", jobsFilterValues.jobsSelected, jobs);
       params.set(
         "rooms",
         encodeURIComponent(
