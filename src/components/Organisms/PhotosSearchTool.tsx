@@ -13,6 +13,7 @@ import clsx from "clsx";
 import { instanceOfTradeInfo } from "../Molecules/AddTradePopover";
 import PhotoViewer from "../Molecules/PhotoViewer";
 import JobsFilter, { JobsFilterValues } from "./FilterJobs";
+import { set } from "date-fns";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -20,7 +21,7 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
   const searchParams = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(true);
 
-  const getCurrentFilters = (): { rooms?: string[] } => {
+  const getCurrentFilters = (): { rooms?: string[]; jobs?: string[] } => {
     let rooms;
     let jobs;
 
@@ -38,15 +39,16 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
       } else if (key === "jobs") {
         //title = decodedValue[0]?.toString() ?? "";
         jobs = decodedValue;
+        // how to get jobIds from indexes
       } else {
         displayedValue = decodedValue[0]?.toString() ?? "";
       }
     });
 
-    return { rooms };
+    return { rooms, jobs };
   };
 
-  const { rooms } = getCurrentFilters();
+  const { rooms, jobs } = getCurrentFilters();
 
   const getRoomObjects = () => {
     if (!rooms) return [];
@@ -79,7 +81,7 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
           <div className="flex w-full justify-between gap-8">
             <FilterIcon />
             {numberOfCurrentFilters() === 0
-              ? "NO FILTERS APLLIED"
+              ? "NO FILTERS APPLIED"
               : numberOfCurrentFilters() === 1
               ? numberOfCurrentFilters() + " FILTER"
               : numberOfCurrentFilters() + " FILTERS"}
@@ -99,7 +101,11 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
           parentElementOpen={filterOpen}
         />
       </Collapsible>
-      <SearchedPhotos property={property} rooms={rooms} />
+      <SearchedPhotos
+        property={property}
+        roomIds={rooms ?? []}
+        jobIndices={jobs}
+      />
     </div>
   );
 };
@@ -108,17 +114,77 @@ export default PhotosSearchTool;
 
 const SearchedPhotos = ({
   property,
-  rooms,
+  roomIds,
+  jobIndices,
 }: {
   property: Property;
-  rooms?: string[];
+  roomIds: string[];
+  jobIndices: string[];
+}) => {
+  const {
+    data: jobs,
+    isLoading,
+    error,
+  } = api.job.getJobsForRooms.useQuery({
+    roomIds: roomIds,
+  });
+  console.log("jobIndices", jobIndices);
+
+  return (
+    <div className="mx-auto flex max-w-4xl flex-col space-y-4 px-6 py-8">
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <p>error</p>
+      ) : jobs ? (
+        <>
+          {jobs.map((job, index) => (
+            <>
+              {!jobIndices ? (
+                <>
+                  <Text key={index}>{job.title}</Text>
+                  <PhotosForJobAndRooms
+                    key={index}
+                    jobId={job.id}
+                    roomIds={roomIds}
+                  />
+                </>
+              ) : (
+                jobIndices?.includes(index.toString()) && (
+                  <>
+                    <Text key={index}>{job.title}</Text>
+                    <PhotosForJobAndRooms
+                      key={index}
+                      jobId={job.id}
+                      roomIds={roomIds}
+                    />
+                  </>
+                )
+              )}
+            </>
+          ))}
+        </>
+      ) : (
+        <p>Please select some filters</p>
+      )}
+    </div>
+  );
+};
+
+const PhotosForJobAndRooms = ({
+  jobId,
+  roomIds,
+}: {
+  jobId: string;
+  roomIds: string[];
 }) => {
   const {
     data: photos,
     isLoading,
     error,
-  } = api.photo.getFilteredPhotosForProperty.useQuery({
-    roomIds: rooms,
+  } = api.photo.getPhotosForJobAndRooms.useQuery({
+    jobId: jobId,
+    roomIds: roomIds,
   });
 
   return (
@@ -132,7 +198,7 @@ const SearchedPhotos = ({
           <PhotoViewer photos={photos} />
         </>
       ) : (
-        <p>Please select some filters</p>
+        <p>Could not find photos</p>
       )}
     </div>
   );
@@ -183,14 +249,22 @@ const Filters = ({
       .replace(/"/g, "")
       .split(",");
     console.log("currentSelectedRooms", currentSelectedRooms);
-    const roomsHasChanged = !roomsFilterValues.roomsValue
-      .map(
-        (room) =>
-          currentSelectedRooms.find(
-            (currentRoom) => currentRoom === room.id
-          ) === undefined
-      )
-      .includes(false);
+    ////// LOOOOOK HEEREEE
+    const roomsHasChanged =
+      currentSelectedRooms
+        .map(
+          (roomId) =>
+            roomsFilterValues.roomsValue.find((room) => room.id === roomId) ===
+            undefined
+        )
+        .includes(true) ||
+      roomsFilterValues.roomsValue
+        .map(
+          (room) =>
+            currentSelectedRooms.find((roomId) => roomId === room.id) ===
+            undefined
+        )
+        .includes(true);
     console.log("roomHasChanged", roomsHasChanged);
     if (roomsFilterValues.roomsSelected) {
       params.set(
@@ -200,7 +274,13 @@ const Filters = ({
         )
       );
     }
-    if (jobsFilterValues.jobsSelected) {
+    if (roomsHasChanged) {
+      setJobsFilterValues((prev) => ({
+        ...prev,
+        jobsValue: [],
+        jobsSelected: false,
+      }));
+    } else if (jobsFilterValues.jobsSelected) {
       console.log("JOBS AND SLECTED", jobsFilterValues.jobsValue);
       params.set(
         "jobs",
