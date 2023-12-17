@@ -58,7 +58,7 @@ const HomeownerPropertyPageWithParams: React.FC<
       <PropertiesBreadcrumbs
         address={address}
         propertyId={propertyId}
-        propertyPage="Rooms"
+        propertyPage="Documents"
       />
       <PropertyPageNav propertyId={propertyId} />
       <ResponsiveColumns>

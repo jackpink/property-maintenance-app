@@ -60,7 +60,9 @@ export const PropertiesBreadcrumbs: React.FC<PropertiesBreadcrumbsProps> = ({
             text: address.split(",")[0] || address,
           },
           {
-            href: `/property/${encodeURIComponent(propertyId)}/${propertyPage}`,
+            href: `/property/${encodeURIComponent(
+              propertyId
+            )}/${propertyPage.toLowerCase()}`,
             text: propertyPage,
           },
         ]

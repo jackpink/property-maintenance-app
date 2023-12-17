@@ -119,7 +119,7 @@ const SearchedPhotos = ({
 }: {
   property: Property;
   roomIds: string[];
-  jobIndices: string[];
+  jobIndices?: string[];
 }) => {
   const {
     data: jobs,
@@ -230,7 +230,7 @@ const Filters = ({
   const [jobsFilterValues, setJobsFilterValues] = useState<JobsFilterValues>({
     jobsValue: jobs ?? [],
     jobsOpen: false,
-    jobsSelected: rooms ? true : false,
+    jobsSelected: jobs ? true : false,
   });
 
   const findLevelForRoom = (roomId: string) => {

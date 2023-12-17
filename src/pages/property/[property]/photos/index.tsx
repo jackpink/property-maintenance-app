@@ -67,7 +67,7 @@ const HomeownerPropertyPageWithParams: React.FC<
       <PropertiesBreadcrumbs
         address={address}
         propertyId={propertyId}
-        propertyPage="Jobs"
+        propertyPage="Photos"
       />
       <PageTitle>{address}</PageTitle>
 
