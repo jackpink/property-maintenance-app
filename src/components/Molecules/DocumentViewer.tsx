@@ -12,13 +12,30 @@ import {
 } from "../Atoms/Button";
 import { UploadDocumentWrapper, UploadFor } from "./UploadDocument";
 
+const defaultDocumentsForPropertyBySection = {
+  1: ["Occupancy Certifcate", "Certificate of Classification"],
+  2: [
+    "Architectural Plans",
+    "Structural Plans",
+    "Electrical Plans",
+    "Mechanical Plans",
+    "Plumbing Plans",
+    "Sanitary Plans",
+    "Fire Protection Plans",
+    "Electrical Load Schedule",
+    "Structural Analysis",
+    "Structural Design",
+  ],
+  3: ["Inspection Report", "Structural Report"],
+};
+
 type DocumentsProps = {
   documents: Document[];
   uploadFor: UploadFor;
   propertyId: string;
+  sectionId?: number;
   jobId?: string;
   refetchDataForPage: () => void;
-  defaultDocuments: string[];
 };
 // jobId should not be undefined if uploadFor is JOB
 
@@ -28,10 +45,26 @@ const DocumentViewer: React.FC<DocumentsProps> = ({
   documents,
   uploadFor,
   propertyId,
+  sectionId,
   jobId,
   refetchDataForPage,
-  defaultDocuments,
 }) => {
+  let defaultDocuments: string[] = [];
+
+  if (sectionId && sectionId in defaultDocumentsForPropertyBySection) {
+    switch (sectionId) {
+      case 1:
+        defaultDocuments = defaultDocumentsForPropertyBySection[1];
+        break;
+      case 2:
+        defaultDocuments = defaultDocumentsForPropertyBySection[2];
+        break;
+      case 3:
+        defaultDocuments = defaultDocumentsForPropertyBySection[3];
+        break;
+    }
+  }
+
   return (
     <div className="relative mb-4  w-full overflow-x-auto py-4">
       <div className="mx-12 flex gap-4">

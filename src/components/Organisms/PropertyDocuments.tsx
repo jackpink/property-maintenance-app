@@ -33,8 +33,26 @@ export default function PropertyDocuments({
 
   const ctx = api.useContext();
 
-  const defaultDocumentsForProperty = ["Building Plans", "Contract of Sale"]; //If documents label matches, then remove
-  if (!!documents) {
+  const defaultDocumentsForProperty = ["Building Plans", "Contract of Sale"];
+
+  const defaultDocumentsForPropertyBySection = {
+    1: ["Occupancy Certifcate", "Certificate of Classification"],
+    2: [
+      "Architectural Plans",
+      "Structural Plans",
+      "Electrical Plans",
+      "Mechanical Plans",
+      "Plumbing Plans",
+      "Sanitary Plans",
+      "Fire Protection Plans",
+      "Electrical Load Schedule",
+      "Structural Analysis",
+      "Structural Design",
+    ],
+    3: ["Inspection Report", "Structural Report"],
+  };
+  //If documents label matches, then remove
+  /*if (!!documents) {
     for (const document of documents) {
       const index = defaultDocumentsForProperty.indexOf(document.label);
       console.log("INDEX", index);
@@ -42,6 +60,7 @@ export default function PropertyDocuments({
     }
   }
   console.log("defaul;t docs", defaultDocumentsForProperty);
+  */
 
   const refetchDataForPage = () => {
     void ctx.document.getDocumentsForProperty.invalidate();
@@ -66,8 +85,8 @@ export default function PropertyDocuments({
                 documents={documents}
                 uploadFor="PROPERTY"
                 propertyId={propertyId}
+                sectionId={section.id}
                 refetchDataForPage={refetchDataForPage}
-                defaultDocuments={defaultDocumentsForProperty}
               />
             </>
           ))
