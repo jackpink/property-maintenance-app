@@ -57,17 +57,38 @@ model Property {
 }
 
 model Document {
-  id         String    @id @default(cuid())
-  createdAt  DateTime  @default(now())
-  label      String
-  filename   String
-  Job        Job?      @relation(fields: [jobId], references: [id])
-  jobId      String?
-  Property   Property? @relation(fields: [propertyId], references: [id])
-  propertyId String?
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  label          String
+  filename       String
+  DocumentType   DocumentType? @relation(fields: [documentTypeId], references: [id])
+  documentTypeId Int?
+  Job            Job?          @relation(fields: [jobId], references: [id])
+  jobId          String?
+  Property       Property?     @relation(fields: [propertyId], references: [id])
+  propertyId     String?
+  Product        Product?      @relation(fields: [productId], references: [id])
+  productId      String?
 
   @@index([jobId])
   @@index([propertyId])
+  @@index([documentTypeId])
+  @@index([productId])
+}
+
+model DocumentType {
+  id        Int                @id @default(autoincrement())
+  createdAt DateTime           @default(now())
+  label     String
+  parent    DocumentTypeParent
+  order     Int?
+  documents Document[]
+}
+
+enum DocumentTypeParent {
+  PROPERTY
+  JOB
+  PRODUCT
 }
 
 model Photo {
@@ -120,19 +141,20 @@ model HomeownerUser {
 }
 
 model Product {
-  id             String   @id @default(cuid())
-  createdAt      DateTime @default(now())
+  id             String     @id @default(cuid())
+  createdAt      DateTime   @default(now())
   label          String
-  notes          String?  @db.VarChar(2000)
-  tradeNotes     String?  @db.VarChar(2000)
-  Room           Room?    @relation(fields: [roomId], references: [id])
+  notes          String?    @db.VarChar(2000)
+  tradeNotes     String?    @db.VarChar(2000)
+  Room           Room?      @relation(fields: [roomId], references: [id])
   roomId         String?
-  Job            Job?     @relation(fields: [jobId], references: [id])
+  Job            Job?       @relation(fields: [jobId], references: [id])
   jobId          String?
   installDate    DateTime
   warrantyPeriod Int?
   manufacturer   String?
   model          String?
+  Documents      Document[]
 
   @@index([roomId])
   @@index([jobId])
