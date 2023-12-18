@@ -283,6 +283,22 @@ export const jobRouter = createTRPCRouter({
     })
     return room.jobs;
   }),
+  getJobsForRooms: privateProcedure
+  .input(z.object({roomIds: z.array(z.string())}))
+  .query(async ({ctx, input}) => {
+    const jobs = await ctx.prisma.job.findMany({
+      where: {
+        rooms: {
+          some: {
+            id: {
+              in: input.roomIds
+            }
+          }
+        }
+      }
+    })
+    return jobs;
+  }),
   updateDateForJob: privateProcedure
   .input(z.object({jobId: z.string(), date: z.date()}))
   .mutation( async ({ ctx, input }) => {
@@ -387,4 +403,66 @@ export const jobRouter = createTRPCRouter({
     const history = getJobHistory(input.jobId);
     return history;
   }),
+  getFilteredJobsforProperty: privateProcedure
+  .input(z.object({ propertyId: z.string(), title: z.string().optional(), rooms: z.array(z.string()).optional()}))
+  .query(async ({ ctx, input }) => {
+    if (input.rooms && input.title) {
+      const jobs = await ctx.prisma.job.findMany({
+        where: {
+          propertyId: input.propertyId,
+          title: {
+            contains: input.title
+          },
+          rooms: {
+            some: {
+              id: {
+                in: input.rooms
+              }
+            }
+          }
+        },
+        include: {
+          Property: true,
+          TradeUser: true
+        }
+      })
+      return jobs;
+    }
+    else if (input.title) {
+      const jobs = await ctx.prisma.job.findMany({
+        where: {
+          propertyId: input.propertyId,
+          title: {
+            contains: input.title
+          }
+        },
+        include: {
+          Property: true,
+          TradeUser: true
+        }
+      })
+      return jobs;
+    } else if (input.rooms) {
+      const jobs = await ctx.prisma.job.findMany({
+        where: {
+          propertyId: input.propertyId,
+          rooms: {
+            some: {
+              id: {
+                in: input.rooms
+              }
+            }
+          }
+        },
+        include: {
+          Property: true,
+          TradeUser: true
+        }
+      })
+      return jobs;
+    } else {
+      
+      return [];
+    }
+  })
 });

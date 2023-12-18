@@ -227,5 +227,47 @@ export const photoRouter = createTRPCRouter({
   })
   return photos;
   }),
+  getPhotosForJobAndRooms: privateProcedure
+  .input(z.object({ jobId: z.string(), roomIds: z.array(z.string())}))
+  .query(async ({ ctx, input }) => {
+    const photos = ctx.prisma.photo.findMany({
+      where: {
+        jobId: input.jobId,
+        roomId: {
+          in: input.roomIds
+        }
+      }
+  })
+  return photos;
+  }
+  ),
+  getFilteredPhotosForProperty: privateProcedure
+  .input(z.object({ jobIds: z.array(z.string()).optional(), roomIds: z.array(z.string()).optional()}))
+  .query(async ({ ctx, input }) => {
+    if (!input.jobIds && !input.roomIds) return [];
+    else if (!input.jobIds) {
+      const photos = ctx.prisma.photo.findMany({
+        where: {
+          roomId: {
+            in: input.roomIds
+          }
+        }
+      })
+      return photos;
+    } else { 
+      const photos = ctx.prisma.photo.findMany({
+        where: {
+          jobId: {
+            in: input.jobIds
+          },
+          roomId: {
+            in: input.roomIds
+          }
+        }
+      })
+      return photos;
+    }
+  
+  }),
   
 });

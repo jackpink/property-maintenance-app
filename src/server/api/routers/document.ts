@@ -103,6 +103,18 @@ export const documentRouter = createTRPCRouter({
       }
   })
   return documents;
+  }),
+
+  getDocumentSectionsForProperty: privateProcedure
+  .query(async ({ ctx }) => {
+  const documentSections = ctx.prisma.documentType.findMany(
+      {
+        where: {
+          parent: "PROPERTY"
+      }
+    }
+    )
+    return documentSections;
   })
   
 });
