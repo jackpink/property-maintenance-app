@@ -25,6 +25,12 @@ export default function PropertyDocuments({
   const { data: documents, isLoading: loading } =
     api.document.getDocumentsForProperty.useQuery({ propertyId: propertyId });
 
+  const {
+    data: sections,
+    isLoading: sectionsLoading,
+    error: sectionsError,
+  } = api.document.getDocumentSectionsForProperty.useQuery();
+
   const ctx = api.useContext();
 
   const defaultDocumentsForProperty = ["Building Plans", "Contract of Sale"]; //If documents label matches, then remove
@@ -48,18 +54,25 @@ export default function PropertyDocuments({
         <PageSubTitle>Documents</PageSubTitle>
       </BackgroundContainerHeader>
       <div className="grid place-items-center">
-        {!!documents ? (
-          <DocumentViewer
-            documents={documents}
-            uploadFor="PROPERTY"
-            propertyId={propertyId}
-            refetchDataForPage={refetchDataForPage}
-            defaultDocuments={defaultDocumentsForProperty}
-          />
-        ) : loading ? (
+        {loading || sectionsLoading ? (
           <LoadingSpinner />
+        ) : sectionsError ? (
+          <p>{sectionsError.message}</p>
+        ) : !!sections && !!documents ? (
+          sections.map((section, index) => (
+            <>
+              <PageSubTitle>{section.label}</PageSubTitle>
+              <DocumentViewer
+                documents={documents}
+                uploadFor="PROPERTY"
+                propertyId={propertyId}
+                refetchDataForPage={refetchDataForPage}
+                defaultDocuments={defaultDocumentsForProperty}
+              />
+            </>
+          ))
         ) : (
-          <p>error</p>
+          <p>No documents found</p>
         )}
 
         <GhostButton
