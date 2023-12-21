@@ -12,6 +12,7 @@ import {
 } from "../Atoms/Button";
 import { UploadDocumentWrapper, UploadFor } from "./UploadDocument";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
+import { type } from "os";
 
 const defaultDocumentsForPropertyBySection = {
   1: ["Occupancy Certifcate", "Certificate of Classification"],
@@ -33,7 +34,7 @@ const defaultDocumentsForPropertyBySection = {
 type DocumentsProps = {
   uploadFor: UploadFor;
   propertyId: string;
-  documentGroupId: number;
+  documentGroupId?: number;
   jobId?: string;
   refetchDataForPage: () => void;
 };
@@ -42,6 +43,126 @@ type DocumentsProps = {
 // Add a search bar eventually
 
 const DocumentViewer: React.FC<DocumentsProps> = ({
+  uploadFor,
+  propertyId,
+  documentGroupId,
+  jobId,
+  refetchDataForPage,
+}) => {
+  return (
+    <div className="relative mb-4  w-full overflow-x-auto py-4">
+      <div className="mx-12 flex flex-col gap-4">
+        {jobId ? (
+          <DocumentViewerForJob
+            uploadFor={uploadFor}
+            jobId={jobId}
+            refetchDataForPage={refetchDataForPage}
+          />
+        ) : documentGroupId ? (
+          <DocumentViewerForGroup
+            uploadFor={uploadFor}
+            propertyId={propertyId}
+            documentGroupId={documentGroupId}
+            refetchDataForPage={refetchDataForPage}
+          />
+        ) : (
+          <DocumentViewerForProperty
+            uploadFor={uploadFor}
+            propertyId={propertyId}
+            refetchDataForPage={refetchDataForPage}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+type DocumentViewerForJobProps = {
+  uploadFor: UploadFor;
+  jobId: string;
+  refetchDataForPage: () => void;
+};
+
+const DocumentViewerForJob: React.FC<DocumentViewerForJobProps> = ({
+  uploadFor,
+  jobId,
+  refetchDataForPage,
+}) => {
+  const {
+    data: documents,
+    isLoading: loading,
+    error,
+  } = api.document.getDocumentsForJobWithNoGroup.useQuery({
+    jobId: jobId,
+  });
+
+  let defaultDocuments: string[] = [];
+
+  return (
+    <>
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <Text>There was an error loading the documents</Text>
+      ) : documents ? (
+        <>
+          {documents.map((document, index) => (
+            <Document document={document} key={index} />
+          ))}
+        </>
+      ) : (
+        <Text>There are no documents for this property</Text>
+      )}
+    </>
+  );
+};
+
+type DocumentViewerForPropertyProps = {
+  uploadFor: UploadFor;
+  propertyId: string;
+  refetchDataForPage: () => void;
+};
+
+const DocumentViewerForProperty: React.FC<DocumentViewerForPropertyProps> = ({
+  uploadFor,
+  propertyId,
+  refetchDataForPage,
+}) => {
+  const {
+    data: documents,
+    isLoading: loading,
+    error,
+  } = api.document.getDocumentsForPropertyWithNoGroup.useQuery({
+    propertyId: propertyId,
+  });
+
+  return (
+    <>
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <Text>There was an error loading the documents</Text>
+      ) : documents ? (
+        <>
+          {documents.map((document, index) => (
+            <Document document={document} key={index} />
+          ))}
+        </>
+      ) : (
+        <Text>There are no documents for this property</Text>
+      )}
+    </>
+  );
+};
+
+type DocumentViewerForGroupProps = {
+  uploadFor: UploadFor;
+  propertyId: string;
+  documentGroupId: number;
+  jobId?: string;
+  refetchDataForPage: () => void;
+};
+
+const DocumentViewerForGroup: React.FC<DocumentViewerForGroupProps> = ({
   uploadFor,
   propertyId,
   documentGroupId,
@@ -77,34 +198,49 @@ const DocumentViewer: React.FC<DocumentsProps> = ({
   }
 
   return (
-    <div className="relative mb-4  w-full overflow-x-auto py-4">
-      <div className="mx-12 flex gap-4">
-        {loading ? (
-          <LoadingSpinner />
-        ) : error ? (
-          <Text>There was an error loading the documents</Text>
-        ) : documents ? (
-          <>
-            {defaultDocuments.map((defaultDocumentLabel, index) => (
-              <AddDefaultDocumentButton
-                label={defaultDocumentLabel}
-                uploadFor={uploadFor}
-                propertyId={propertyId}
-                jobId={jobId}
-                refetchDataForPage={refetchDataForPage}
-                key={index}
-              />
-            ))}
+    <>
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <Text>There was an error loading the documents</Text>
+      ) : documents ? (
+        <>
+          {defaultDocuments.map((defaultDocumentLabel, index) => {
+            const defaultDocumentIsUploaded = documents.find(
+              (document) => document.label === defaultDocumentLabel
+            );
+            if (!defaultDocumentIsUploaded) {
+              return (
+                <AddDefaultDocumentButton
+                  label={defaultDocumentLabel}
+                  uploadFor={uploadFor}
+                  propertyId={propertyId}
+                  documentGroupId={documentGroupId}
+                  jobId={jobId}
+                  refetchDataForPage={refetchDataForPage}
+                  key={index}
+                />
+              );
+            } else {
+              return (
+                <Document document={defaultDocumentIsUploaded} key={index} />
+              );
+            }
+          })}
 
-            {documents.map((document, index) => (
-              <Document document={document} key={index} />
-            ))}
-          </>
-        ) : (
-          <Text>There are no documents for this property</Text>
-        )}
-      </div>
-    </div>
+          {documents.map((document, index) => {
+            const documentIsDefault = defaultDocuments.find(
+              (defaultDoc) => defaultDoc === document.label
+            );
+            if (!documentIsDefault) {
+              return <Document document={document} key={index} />;
+            }
+          })}
+        </>
+      ) : (
+        <Text>There are no documents for this property</Text>
+      )}
+    </>
   );
 };
 
@@ -151,6 +287,7 @@ type AddDefaultDocumentButtonProps = {
   label: string;
   uploadFor: UploadFor;
   propertyId: string;
+  documentGroupId: number;
   jobId?: string;
   refetchDataForPage: () => void;
 };
@@ -159,6 +296,7 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
   label,
   uploadFor,
   propertyId,
+  documentGroupId,
   refetchDataForPage,
   jobId,
 }) => {
@@ -168,6 +306,7 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
       label={label}
       uploadFor={uploadFor}
       propertyId={propertyId}
+      documentGroupId={documentGroupId}
       jobId={jobId}
       refetchDataForPage={refetchDataForPage}
     >

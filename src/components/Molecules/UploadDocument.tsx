@@ -28,11 +28,20 @@ type UploadDocumentWrapperProps = {
   refetchDataForPage: () => void;
   propertyId: string;
   jobId?: string;
+  documentGroupId?: number;
 };
 
 export const UploadDocumentWrapper: React.FC<
   React.PropsWithChildren<UploadDocumentWrapperProps>
-> = ({ label, uploadFor, refetchDataForPage, propertyId, jobId, children }) => {
+> = ({
+  label,
+  uploadFor,
+  refetchDataForPage,
+  propertyId,
+  jobId,
+  documentGroupId,
+  children,
+}) => {
   const [uploading, setUploading] = useState(false);
 
   const inputId = useId();
@@ -42,6 +51,9 @@ export const UploadDocumentWrapper: React.FC<
 
   const { mutateAsync: createDocumentRecord } =
     api.document.createDocumentRecord.useMutation();
+
+  const { mutateAsync: createDocumentRecordForGroup } =
+    api.document.createDocumentRecordForGroup.useMutation();
 
   const uploadFile = async (file: File) => {
     // Need to check that file is correct type (ie jpeg/png/tif/etc)
@@ -62,12 +74,28 @@ export const UploadDocumentWrapper: React.FC<
         uploadFor
       );
       let newDocument;
-      if (uploadFor === "JOB" && jobId) {
-        console.log("creating document record for JOB");
+      if (uploadFor === "JOB" && documentGroupId && jobId) {
+        // create document record for job and group
+        newDocument = await createDocumentRecordForGroup({
+          filename: fileName,
+          label: label,
+          jobId: jobId,
+          documentGroupId: documentGroupId,
+        });
+      } else if (uploadFor === "JOB" && jobId) {
+        // create document record for job
         newDocument = await createDocumentRecord({
           filename: fileName,
           label: label,
           jobId: jobId,
+        });
+      } else if (uploadFor === "PROPERTY" && documentGroupId) {
+        // create document record for property and group
+        newDocument = await createDocumentRecordForGroup({
+          filename: fileName,
+          label: label,
+          propertyId: propertyId,
+          documentGroupId: documentGroupId,
         });
       } else if (uploadFor === "PROPERTY") {
         console.log("creating document record for JOB");

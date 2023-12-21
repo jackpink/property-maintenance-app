@@ -60,7 +60,8 @@ export default function PropertyDocuments({
   */
 
   const refetchDataForPage = () => {
-    void ctx.document.getDocumentsForProperty.invalidate();
+    void ctx.document.getDocumentsForPropertyWithNoGroup.invalidate();
+    void ctx.document.getDocumentsForGroupForProperty.invalidate();
     setUploadDocumentPopover(false);
   };
 
@@ -89,6 +90,13 @@ export default function PropertyDocuments({
         ) : (
           <p>No documents found</p>
         )}
+
+        <PageSubTitle>Other</PageSubTitle>
+        <DocumentViewer
+          uploadFor="PROPERTY"
+          propertyId={propertyId}
+          refetchDataForPage={refetchDataForPage}
+        />
 
         <GhostButton
           className=""
