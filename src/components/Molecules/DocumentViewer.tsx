@@ -11,6 +11,7 @@ import {
   PlusIcon,
 } from "../Atoms/Button";
 import { UploadDocumentWrapper, UploadFor } from "./UploadDocument";
+import LoadingSpinner from "../Atoms/LoadingSpinner";
 
 const defaultDocumentsForPropertyBySection = {
   1: ["Occupancy Certifcate", "Certificate of Classification"],
@@ -30,10 +31,9 @@ const defaultDocumentsForPropertyBySection = {
 };
 
 type DocumentsProps = {
-  documents: Document[];
   uploadFor: UploadFor;
   propertyId: string;
-  sectionId?: number;
+  documentGroupId: number;
   jobId?: string;
   refetchDataForPage: () => void;
 };
@@ -42,17 +42,28 @@ type DocumentsProps = {
 // Add a search bar eventually
 
 const DocumentViewer: React.FC<DocumentsProps> = ({
-  documents,
   uploadFor,
   propertyId,
-  sectionId,
+  documentGroupId,
   jobId,
   refetchDataForPage,
 }) => {
+  const {
+    data: documents,
+    isLoading: loading,
+    error,
+  } = api.document.getDocumentsForGroupForProperty.useQuery({
+    documentGroupId: documentGroupId,
+    propertyId: propertyId,
+  });
+
   let defaultDocuments: string[] = [];
 
-  if (sectionId && sectionId in defaultDocumentsForPropertyBySection) {
-    switch (sectionId) {
+  if (
+    documentGroupId &&
+    documentGroupId in defaultDocumentsForPropertyBySection
+  ) {
+    switch (documentGroupId) {
       case 1:
         defaultDocuments = defaultDocumentsForPropertyBySection[1];
         break;
@@ -68,20 +79,30 @@ const DocumentViewer: React.FC<DocumentsProps> = ({
   return (
     <div className="relative mb-4  w-full overflow-x-auto py-4">
       <div className="mx-12 flex gap-4">
-        {defaultDocuments.map((defaultDocumentLabel, index) => (
-          <AddDefaultDocumentButton
-            label={defaultDocumentLabel}
-            uploadFor={uploadFor}
-            propertyId={propertyId}
-            jobId={jobId}
-            refetchDataForPage={refetchDataForPage}
-            key={index}
-          />
-        ))}
+        {loading ? (
+          <LoadingSpinner />
+        ) : error ? (
+          <Text>There was an error loading the documents</Text>
+        ) : documents ? (
+          <>
+            {defaultDocuments.map((defaultDocumentLabel, index) => (
+              <AddDefaultDocumentButton
+                label={defaultDocumentLabel}
+                uploadFor={uploadFor}
+                propertyId={propertyId}
+                jobId={jobId}
+                refetchDataForPage={refetchDataForPage}
+                key={index}
+              />
+            ))}
 
-        {documents.map((document, index) => (
-          <Document document={document} key={index} />
-        ))}
+            {documents.map((document, index) => (
+              <Document document={document} key={index} />
+            ))}
+          </>
+        ) : (
+          <Text>There are no documents for this property</Text>
+        )}
       </div>
     </div>
   );

@@ -105,16 +105,28 @@ export const documentRouter = createTRPCRouter({
   return documents;
   }),
 
-  getDocumentSectionsForProperty: privateProcedure
+  getDocumentGroupsForProperty: privateProcedure
   .query(async ({ ctx }) => {
-  const documentSections = ctx.prisma.documentType.findMany(
+  const documentGroups = ctx.prisma.documentGroup.findMany(
       {
         where: {
           parent: "PROPERTY"
       }
     }
     )
-    return documentSections;
+    return documentGroups;
+  }),
+  getDocumentsForGroupForProperty: privateProcedure
+  .input(z.object({ documentGroupId: z.number(), propertyId: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const documents = ctx.prisma.document.findMany({
+      where: {
+        documentGroupId: input.documentGroupId
+      }
   })
+  return documents;
+  }
+  ),
+
   
 });

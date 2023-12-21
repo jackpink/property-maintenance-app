@@ -22,20 +22,17 @@ export default function PropertyDocuments({
 }: PropertyDocumentProps) {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
 
-  const { data: documents, isLoading: loading } =
-    api.document.getDocumentsForProperty.useQuery({ propertyId: propertyId });
-
   const {
-    data: sections,
-    isLoading: sectionsLoading,
-    error: sectionsError,
-  } = api.document.getDocumentSectionsForProperty.useQuery();
+    data: documentGroups,
+    isLoading: loading,
+    error: error,
+  } = api.document.getDocumentGroupsForProperty.useQuery();
 
   const ctx = api.useContext();
 
   const defaultDocumentsForProperty = ["Building Plans", "Contract of Sale"];
 
-  const defaultDocumentsForPropertyBySection = {
+  const defaultDocumentsForPropertyByGroup = {
     1: ["Occupancy Certifcate", "Certificate of Classification"],
     2: [
       "Architectural Plans",
@@ -73,19 +70,18 @@ export default function PropertyDocuments({
         <PageSubTitle>Documents</PageSubTitle>
       </BackgroundContainerHeader>
       <div className="grid place-items-center">
-        {loading || sectionsLoading ? (
+        {loading ? (
           <LoadingSpinner />
-        ) : sectionsError ? (
-          <p>{sectionsError.message}</p>
-        ) : !!sections && !!documents ? (
-          sections.map((section, index) => (
+        ) : error ? (
+          <p>{error.message}</p>
+        ) : !!documentGroups ? (
+          documentGroups.map((documentGroup, index) => (
             <>
-              <PageSubTitle>{section.label}</PageSubTitle>
+              <PageSubTitle>{documentGroup.label}</PageSubTitle>
               <DocumentViewer
-                documents={documents}
                 uploadFor="PROPERTY"
                 propertyId={propertyId}
-                sectionId={section.id}
+                documentGroupId={documentGroup.id}
                 refetchDataForPage={refetchDataForPage}
               />
             </>
