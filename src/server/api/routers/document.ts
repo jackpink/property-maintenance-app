@@ -54,6 +54,22 @@ export const documentRouter = createTRPCRouter({
     return document;
 
   }),
+  createDocumentRecordForGroup: privateProcedure
+  .input(z.object({filename: z.string(), label:z.string(), documentGroupId: z.number(), jobId: z.string().optional(), propertyId: z.string().optional()}))  
+  .mutation(async ({ ctx, input }) => {
+    const document = await ctx.prisma.document.create({
+      data: {
+        filename: input.filename,
+        label: input.label,
+        jobId: input.jobId ? input.jobId : null,
+        propertyId: input.propertyId ? input.propertyId : null,
+        documentGroupId: input.documentGroupId
+
+      }
+    });
+    return document;
+
+  }),
 
   getDocument: privateProcedure
   .input(z.object({ filename: z.string() }))
@@ -84,22 +100,24 @@ export const documentRouter = createTRPCRouter({
     }
   }),
 
-  getDocumentsForJob: privateProcedure
+  getDocumentsForJobWithNoGroup: privateProcedure
   .input(z.object({ jobId: z.string()}))
   .query(async ({ ctx, input }) => {
     const documents = ctx.prisma.document.findMany({
       where: {
-        jobId: input.jobId
+        jobId: input.jobId,
+        documentGroupId: null
       }
   })
   return documents;
   }),
-  getDocumentsForProperty: privateProcedure
+  getDocumentsForPropertyWithNoGroup: privateProcedure
   .input(z.object({ propertyId: z.string()}))
   .query(async ({ ctx, input }) => {
     const documents = ctx.prisma.document.findMany({
       where: {
-        propertyId: input.propertyId
+        propertyId: input.propertyId,
+        documentGroupId: null
       }
   })
   return documents;
