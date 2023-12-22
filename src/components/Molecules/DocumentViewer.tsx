@@ -14,6 +14,12 @@ import {
 import { UploadDocumentWrapper, UploadFor } from "./UploadDocument";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
 import { type } from "os";
+import {
+  DownloadIcon,
+  GreenTickIcon,
+  UploadIcon,
+  ViewIcon,
+} from "../Atoms/Icons";
 
 const defaultDocumentsForPropertyBySection = {
   1: ["Occupancy Certifcate", "Certificate of Classification"],
@@ -255,16 +261,26 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
   });
   console.log("docuemnt url", pdfUrl);
   return (
-    <div className="flex flex-nowrap gap-4">
-      <div className="w-10 grow-0 bg-green-500"></div>
+    <div className="flex flex-nowrap items-center	gap-1 sm:gap-4">
+      <GreenTickIcon width={28} height={28} />
       <DocumentIcon width="40" height="40" />
       <div className="grow text-left">
-        <p className="pl-10 text-lg font-medium">{document.label}</p>
+        <p className="text-lg font-medium md:pl-10">{document.label}</p>
       </div>
       <div className="flex grow-0 gap-4 ">
-        <GhostButton onClick={() => setDocumentOpen(true)}>VIEW</GhostButton>
+        <GhostButton onClick={() => setDocumentOpen(true)}>
+          <div className="flex">
+            <ViewIcon />
+            <p className="hidden pl-2 lg:block">VIEW</p>
+          </div>
+        </GhostButton>
         <a href={pdfUrl}>
-          <GhostButton>DOWNLOAD</GhostButton>
+          <GhostButton>
+            <div className="flex">
+              <DownloadIcon />
+              <p className="hidden pl-2 lg:block">DOWNLOAD</p>
+            </div>
+          </GhostButton>
         </a>
       </div>
       {!!pdfUrl && (
@@ -310,11 +326,11 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
 }) => {
   console.log("add default", uploadFor, label);
   return (
-    <div className="flex flex-nowrap gap-4">
-      <div className="w-10 grow-0 bg-red-500"></div>
+    <div className="flex flex-nowrap gap-1 sm:gap-4">
+      <div className="w-7 grow-0"></div>
       <DocumentIcon width="40" height="40" />
       <div className="grow">
-        <p className="pl-10 text-lg font-medium">{label}</p>
+        <p className="text-lg font-medium md:pl-10">{label}</p>
       </div>
       <div className="flex grow-0 gap-4 ">
         <UploadDocumentWrapper
@@ -325,7 +341,9 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
           jobId={jobId}
           refetchDataForPage={refetchDataForPage}
         >
-          <p>UPLOAD</p>
+          <div className="border-1 flex rounded-lg border border-dark p-2">
+            <UploadIcon /> <p className="hidden pl-2 md:block">UPLOAD</p>
+          </div>
         </UploadDocumentWrapper>
       </div>
     </div>
