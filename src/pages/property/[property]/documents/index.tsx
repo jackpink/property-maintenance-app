@@ -9,6 +9,7 @@ import {
   ColumnOne,
   ColumnTwo,
   PageWithMainMenu,
+  PageWithSingleColumn,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
 import { PageTitle } from "~/components/Atoms/Title";
@@ -61,24 +62,22 @@ const HomeownerPropertyPageWithParams: React.FC<
         propertyPage="Documents"
       />
       <PropertyPageNav propertyId={propertyId} />
-      <ResponsiveColumns>
-        <ColumnOne>
-          {propertyIsLoading ? (
-            <div className="h-30 w-30">
-              <LoadingSpinner />
-            </div>
-          ) : propertyFetchError ? (
-            <div className="grid place-items-center">
-              <Text>{propertyFetchError?.message}</Text>
-              <BackToDashboardButton />
-            </div>
-          ) : (
-            <>
-              <PropertyDocuments propertyId={property.id} />
-            </>
-          )}
-        </ColumnOne>
-      </ResponsiveColumns>
+      <PageWithSingleColumn>
+        {propertyIsLoading ? (
+          <div className="h-30 w-30">
+            <LoadingSpinner />
+          </div>
+        ) : propertyFetchError ? (
+          <div className="grid place-items-center">
+            <Text>{propertyFetchError?.message}</Text>
+            <BackToDashboardButton />
+          </div>
+        ) : (
+          <>
+            <PropertyDocuments propertyId={property.id} />
+          </>
+        )}
+      </PageWithSingleColumn>
     </PageWithMainMenu>
   );
 };
