@@ -82,6 +82,25 @@ type DocumentButtonProps = {
   loading?: boolean;
 };
 
+export function DocumentIcon({
+  width = "20",
+  height = "20",
+}: {
+  width: string;
+  height: string;
+}) {
+  return (
+    <svg width={width} height={height} viewBox="0 0 130 170">
+      <g id="layer1" transform="translate(-246.43 -187.36)">
+        <path
+          id="rect7452"
+          d="m246.43 187.36v170h130v-141.34l-28.625-28.656h-101.38zm97.5 5 27.5 27.531h-27.5v-27.531zm-72.5 61.188h80v7h-80v-7zm0 30.625h80v7h-80v-7zm0 30.656h80v7h-80v-7z"
+        />
+      </g>
+    </svg>
+  );
+}
+
 export function DocumentButton({
   label,
   onClick,

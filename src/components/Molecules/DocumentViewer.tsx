@@ -7,6 +7,7 @@ import {
   CTAButton,
   DefaultDocumentButton,
   DocumentButton,
+  DocumentIcon,
   GhostButton,
   PlusIcon,
 } from "../Atoms/Button";
@@ -254,11 +255,18 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
   });
   console.log("docuemnt url", pdfUrl);
   return (
-    <div className="mx-auto flex flex-none items-center ">
-      <DocumentButton
-        label={document.label}
-        onClick={() => setDocumentOpen(true)}
-      />
+    <div className="flex flex-nowrap gap-4">
+      <div className="w-10 grow-0 bg-green-500"></div>
+      <DocumentIcon width="40" height="40" />
+      <div className="grow text-left">
+        <p className="pl-10 text-lg font-medium">{document.label}</p>
+      </div>
+      <div className="flex grow-0 gap-4 ">
+        <GhostButton onClick={() => setDocumentOpen(true)}>VIEW</GhostButton>
+        <a href={pdfUrl}>
+          <GhostButton>DOWNLOAD</GhostButton>
+        </a>
+      </div>
       {!!pdfUrl && (
         <Popover popoveropen={documentOpen} setPopoverOpen={setDocumentOpen}>
           <div className="h-screen">
@@ -302,16 +310,25 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
 }) => {
   console.log("add default", uploadFor, label);
   return (
-    <UploadDocumentWrapper
-      label={label}
-      uploadFor={uploadFor}
-      propertyId={propertyId}
-      documentGroupId={documentGroupId}
-      jobId={jobId}
-      refetchDataForPage={refetchDataForPage}
-    >
-      <DefaultDocumentButton label={label} />
-    </UploadDocumentWrapper>
+    <div className="flex flex-nowrap gap-4">
+      <div className="w-10 grow-0 bg-red-500"></div>
+      <DocumentIcon width="40" height="40" />
+      <div className="grow">
+        <p className="pl-10 text-lg font-medium">{label}</p>
+      </div>
+      <div className="flex grow-0 gap-4 ">
+        <UploadDocumentWrapper
+          label={label}
+          uploadFor={uploadFor}
+          propertyId={propertyId}
+          documentGroupId={documentGroupId}
+          jobId={jobId}
+          refetchDataForPage={refetchDataForPage}
+        >
+          <p>UPLOAD</p>
+        </UploadDocumentWrapper>
+      </div>
+    </div>
   );
 };
 export default DocumentViewer;
