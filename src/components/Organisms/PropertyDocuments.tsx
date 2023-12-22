@@ -66,55 +66,47 @@ export default function PropertyDocuments({
   };
 
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Documents</PageSubTitle>
-      </BackgroundContainerHeader>
-      <div className="grid place-items-center">
-        {loading ? (
-          <LoadingSpinner />
-        ) : error ? (
-          <p>{error.message}</p>
-        ) : !!documentGroups ? (
-          documentGroups.map((documentGroup, index) => (
-            <>
-              <PageSubTitle>{documentGroup.label}</PageSubTitle>
-              <DocumentViewer
-                uploadFor="PROPERTY"
-                propertyId={propertyId}
-                documentGroupId={documentGroup.id}
-                refetchDataForPage={refetchDataForPage}
-              />
-            </>
-          ))
-        ) : (
-          <p>No documents found</p>
-        )}
+    <div className="grid place-items-center">
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : !!documentGroups ? (
+        documentGroups.map((documentGroup, index) => (
+          <>
+            <PageSubTitle>{documentGroup.label}</PageSubTitle>
+            <DocumentViewer
+              uploadFor="PROPERTY"
+              propertyId={propertyId}
+              documentGroupId={documentGroup.id}
+              refetchDataForPage={refetchDataForPage}
+            />
+          </>
+        ))
+      ) : (
+        <p>No documents found</p>
+      )}
 
-        <PageSubTitle>Other</PageSubTitle>
-        <DocumentViewer
+      <PageSubTitle>Other</PageSubTitle>
+      <DocumentViewer
+        uploadFor="PROPERTY"
+        propertyId={propertyId}
+        refetchDataForPage={refetchDataForPage}
+      />
+
+      <GhostButton className="" onClick={() => setUploadDocumentPopover(true)}>
+        UPLOAD OTHER DOCUMENT
+      </GhostButton>
+      <Popover
+        popoveropen={uploadDocumentPopover}
+        setPopoverOpen={setUploadDocumentPopover}
+      >
+        <UploadDocumentWithLabelInput
           uploadFor="PROPERTY"
-          propertyId={propertyId}
           refetchDataForPage={refetchDataForPage}
+          propertyId={propertyId}
         />
-
-        <GhostButton
-          className=""
-          onClick={() => setUploadDocumentPopover(true)}
-        >
-          UPLOAD OTHER DOCUMENT
-        </GhostButton>
-        <Popover
-          popoveropen={uploadDocumentPopover}
-          setPopoverOpen={setUploadDocumentPopover}
-        >
-          <UploadDocumentWithLabelInput
-            uploadFor="PROPERTY"
-            refetchDataForPage={refetchDataForPage}
-            propertyId={propertyId}
-          />
-        </Popover>
-      </div>
-    </BackgroundContainer>
+      </Popover>
+    </div>
   );
 }

@@ -38,3 +38,11 @@ export function PageWithMainMenu({ children }: PropsWithChildren) {
     </div>
   );
 }
+
+export function PageWithSingleColumn({ children }: PropsWithChildren) {
+  return (
+    <div className="w-full">
+      <div className="mx-auto max-w-7xl">{children}</div>
+    </div>
+  );
+}
