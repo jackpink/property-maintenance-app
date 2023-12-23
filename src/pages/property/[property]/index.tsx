@@ -80,17 +80,8 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              <Link href={path}>
-                <p className="rounded-lg border bg-altSecondary pl-10 text-2xl text-altPrimary">
-                  Overview
-                </p>
-              </Link>
               <TabListComponent title="Overview" href={path} selected={true} />
-              <Link href={path + "/cover_image"}>
-                <p className="rounded-lg border pl-10 text-2xl text-dark hover:bg-altSecondary">
-                  Cover Image
-                </p>
-              </Link>
+
               <TabListComponent
                 title="Cover Image"
                 href={path + "/cover_image"}
@@ -118,9 +109,10 @@ const HomeownerPropertyPageWithParams: React.FC<
                   className="absolute right-0"
                 />
                 <TabAttributeComponent
+                  title="Property Type"
                   StandardComponent={<PropertyType />}
                   EditableComponent={<EditablePropertyType />}
-                  exists={true}
+                  exists={property?.type ? true : false}
                 />
 
                 <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
@@ -142,15 +134,25 @@ const HomeownerPropertyPageWithParams: React.FC<
 };
 
 const PropertyType: React.FC = () => (
-  <Text className="py-10 text-xl font-medium tracking-wider">
+  <Text className=" text-xl font-medium tracking-wider">
     {"Property Type:" + "   " + "House"}
   </Text>
 );
 
 const EditablePropertyType: React.FC = () => (
-  <TextSpan className="py-10 text-xl font-medium tracking-wider">
-    {"Property Type:"}
-  </TextSpan>
+  <>
+    <TextSpan className="text-xl font-medium tracking-wider">
+      {"Property Type:"}
+    </TextSpan>
+    <select className="">
+      <option value="house">House</option>
+      <option value="apartment">Apartment</option>
+      <option value="unit">Unit</option>
+      <option value="townhouse">Townhouse</option>
+      <option value="villa">Villa</option>
+      <option value="duplex">Duplex</option>
+    </select>
+  </>
 );
 
 const BackToDashboardButton: React.FC = () => {

@@ -27,30 +27,37 @@ export const TabListComponent = ({
 };
 
 export const TabAttributeComponent = ({
+  title,
   EditableComponent,
   StandardComponent,
   exists,
 }: {
+  title: string;
   EditableComponent: ReactNode;
   StandardComponent: ReactNode;
   exists: boolean;
 }) => {
   const [editMode, setEditMode] = useState(false);
   return (
-    <>
-      {!exists ? (
-        <>Add BUtton</>
-      ) : editMode ? (
-        <div className="flex">
+    <div className="flex py-10">
+      {editMode ? (
+        <>
           {EditableComponent}
           <button onClick={() => setEditMode(false)}>Close</button>
-        </div>
+        </>
+      ) : !exists ? (
+        <button
+          className="text-lg text-brandSecondary"
+          onClick={() => setEditMode(true)}
+        >
+          + Add {title}
+        </button>
       ) : (
-        <div className="flex">
+        <>
           {StandardComponent}
           <button onClick={() => setEditMode(true)}>Edit</button>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
