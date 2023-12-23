@@ -47,6 +47,14 @@ model Property {
   postcode        String
   state           String
   country         String
+  type            String?
+  bedrooms        Int?
+  bathrooms       Int?
+  carSpaces       Int?
+  landSize        Int?
+  floorSize       Int?
+  height          Int?
+  wallType        WallType?
   levels          Level[]
   jobs            Job[]
   documents       Document[]
@@ -56,36 +64,44 @@ model Property {
   @@index([homeownerUserId])
 }
 
+enum WallType {
+  BRICK
+  CONCRETE
+  TIMBER
+  PLASTERBOARD
+  OTHER
+}
+
 model Document {
-  id             String        @id @default(cuid())
-  createdAt      DateTime      @default(now())
-  label          String
-  filename       String
-  DocumentType   DocumentType? @relation(fields: [documentTypeId], references: [id])
-  documentTypeId Int?
-  Job            Job?          @relation(fields: [jobId], references: [id])
-  jobId          String?
-  Property       Property?     @relation(fields: [propertyId], references: [id])
-  propertyId     String?
-  Product        Product?      @relation(fields: [productId], references: [id])
-  productId      String?
+  id              String         @id @default(cuid())
+  createdAt       DateTime       @default(now())
+  label           String
+  filename        String
+  DocumentGroup   DocumentGroup? @relation(fields: [documentGroupId], references: [id])
+  documentGroupId Int?
+  Job             Job?           @relation(fields: [jobId], references: [id])
+  jobId           String?
+  Property        Property?      @relation(fields: [propertyId], references: [id])
+  propertyId      String?
+  Product         Product?       @relation(fields: [productId], references: [id])
+  productId       String?
 
   @@index([jobId])
   @@index([propertyId])
-  @@index([documentTypeId])
+  @@index([documentGroupId])
   @@index([productId])
 }
 
-model DocumentType {
-  id        Int                @id @default(autoincrement())
-  createdAt DateTime           @default(now())
+model DocumentGroup {
+  id        Int                 @id @default(autoincrement())
+  createdAt DateTime            @default(now())
   label     String
-  parent    DocumentTypeParent
+  parent    DocumentGroupParent
   order     Int?
   documents Document[]
 }
 
-enum DocumentTypeParent {
+enum DocumentGroupParent {
   PROPERTY
   JOB
   PRODUCT
