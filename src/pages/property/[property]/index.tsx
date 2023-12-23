@@ -13,7 +13,7 @@ import {
 import { PageSubTitle, PageTitle } from "~/components/Atoms/Title";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 // build the property page
-import { Text } from "~/components/Atoms/Text";
+import { Text, TextSpan } from "~/components/Atoms/Text";
 
 import { PropertyPageNav } from "~/components/Molecules/PageNav";
 import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
@@ -24,6 +24,10 @@ import {
   BackgroundContainerHeader,
 } from "~/components/Atoms/BackgroundContainer";
 import PropertyAttributes from "~/components/Molecules/PropertyAttributes";
+import {
+  TabAttributeComponent,
+  TabListComponent,
+} from "~/components/Atoms/TabLists";
 
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
@@ -45,6 +49,7 @@ type HomeownerPropertyPageWithParamsProps = {
 const HomeownerPropertyPageWithParams: React.FC<
   HomeownerPropertyPageWithParamsProps
 > = ({ propertyId }) => {
+  const path = useRouter().asPath;
   const {
     data: property,
     error: propertyFetchError,
@@ -75,19 +80,22 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              <BackgroundContainer>
-                <BackgroundContainerHeader>
-                  <PageSubTitle>Cover Image</PageSubTitle>
-                </BackgroundContainerHeader>
-                <div className="mx-auto flex flex-col items-center pt-10">
-                  <Image
-                    alt="House Stock Image"
-                    src={house}
-                    className="min-w-xl rounded-xl p-3"
-                  />
-                  <GhostButton>Update Cover Image</GhostButton>
-                </div>
-              </BackgroundContainer>
+              <Link href={path}>
+                <p className="rounded-lg border bg-altSecondary pl-10 text-2xl text-altPrimary">
+                  Overview
+                </p>
+              </Link>
+              <TabListComponent title="Overview" href={path} selected={true} />
+              <Link href={path + "/cover_image"}>
+                <p className="rounded-lg border pl-10 text-2xl text-dark hover:bg-altSecondary">
+                  Cover Image
+                </p>
+              </Link>
+              <TabListComponent
+                title="Cover Image"
+                href={path + "/cover_image"}
+                selected={false}
+              />
             </>
           )}
         </ColumnOne>
@@ -103,26 +111,28 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              <BackgroundContainer>
-                <BackgroundContainerHeader>
-                  <PageSubTitle>General Info</PageSubTitle>
-                </BackgroundContainerHeader>
-                <div className=" relative mx-auto flex flex-col items-center pt-10">
-                  <EditButton
-                    height="40"
-                    onClick={() => console.log("edit")}
-                    className="absolute right-0"
-                  />
-                  <Text className="py-10 text-xl font-medium tracking-wider">
-                    {"Property Type:" + "   " + "House"}
-                  </Text>
-                  <PropertyAttributes
-                    bathrooms={2}
-                    bedrooms={3}
-                    carSpaces={0}
-                  />
-                </div>
-              </BackgroundContainer>
+              <div className=" relative mx-auto flex flex-col items-center pt-10">
+                <EditButton
+                  height="40"
+                  onClick={() => console.log("edit")}
+                  className="absolute right-0"
+                />
+                <TabAttributeComponent
+                  StandardComponent={<PropertyType />}
+                  EditableComponent={<EditablePropertyType />}
+                  exists={true}
+                />
+
+                <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
+              </div>
+              <div className="mx-auto flex flex-col items-center pt-10">
+                <Image
+                  alt="House Stock Image"
+                  src={house}
+                  className="min-w-xl rounded-xl p-3"
+                />
+                <GhostButton>Update Cover Image</GhostButton>
+              </div>
             </>
           )}
         </ColumnTwo>
@@ -130,6 +140,18 @@ const HomeownerPropertyPageWithParams: React.FC<
     </PageWithMainMenu>
   );
 };
+
+const PropertyType: React.FC = () => (
+  <Text className="py-10 text-xl font-medium tracking-wider">
+    {"Property Type:" + "   " + "House"}
+  </Text>
+);
+
+const EditablePropertyType: React.FC = () => (
+  <TextSpan className="py-10 text-xl font-medium tracking-wider">
+    {"Property Type:"}
+  </TextSpan>
+);
 
 const BackToDashboardButton: React.FC = () => {
   return (
