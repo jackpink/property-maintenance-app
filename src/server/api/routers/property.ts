@@ -261,5 +261,72 @@ export const propertyRouter = createTRPCRouter({
       }
     });
     return property;
+  }),
+  updateProperty: privateProcedure
+  .input(z.object({ id: z.string(), type: z.string().optional(), roomInfo: z.object({ bedrooms: z.number(), bathrooms: z.number(), carSpaces: z.number()}).optional(), landSize: z.number().optional(), floorSize: z.number().optional(), height: z.number().optional(), wallType: z.string().optional()}))
+  .mutation(async ({ctx, input}) => {
+    if (input.type) {
+      const property = await ctx.prisma.property.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          type: input.type
+        }
+      });
+      return property;
+    } else if (input.roomInfo) {
+      const property = await ctx.prisma.property.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          bedrooms: input.roomInfo.bedrooms,
+          bathrooms: input.roomInfo.bathrooms,
+          carSpaces: input.roomInfo.carSpaces
+        }
+      });
+      return property;
+    } else if (input.landSize) {
+      const property = await ctx.prisma.property.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          landSize: input.landSize
+        }
+      });
+      return property;
+    } else if (input.floorSize) {
+      const property = await ctx.prisma.property.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          floorSize: input.floorSize
+        }
+      });
+      return property;
+    }   else if (input.height) {
+      const property = await ctx.prisma.property.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          height: input.height
+        }
+      });
+      return property;
+    } else if (input.wallType) {
+      const property = await ctx.prisma.property.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          wallType: input.wallType
+        }
+      });
+      return property;
+    }
   })
 });
