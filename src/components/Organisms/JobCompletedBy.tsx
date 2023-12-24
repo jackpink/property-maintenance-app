@@ -11,6 +11,8 @@ import {
   BackgroundContainerHeader,
 } from "../Atoms/BackgroundContainer";
 import { PageSubTitle } from "../Atoms/Title";
+import { TabAttributeComponent } from "../Atoms/TabLists";
+import { on } from "events";
 
 type JobCompletedByProps = {
   tradeInfo: Prisma.JsonValue | null;
@@ -61,19 +63,37 @@ export default function JobCompletedBy({
   };
   // Does job have a Trade User?
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Job Completed By</PageSubTitle>
-      </BackgroundContainerHeader>
-      <AddTradePopover
-        tradeInfo={tradeInfo}
-        editPopoverOpen={editTradeInfoOpen}
-        setEditPopoverOpen={setEditTradeInfoOpen}
-        form={form}
-        setForm={setForm}
-        onClickUpdate={onClickUpdate}
-        disabled={disabled}
+    <>
+      <TabAttributeComponent
+        title="Contractor"
+        StandardComponent={<ContractorInformation />}
+        EditableComponent={
+          <AddTradePopover
+            form={form}
+            setForm={setForm}
+            open={editTradeInfoOpen}
+            setOpen={setEditTradeInfoOpen}
+            disabled={disabled}
+            onClickUpdate={onClickUpdate}
+          />
+        }
+        exists={!!tradeInfo}
+        onConfirmEdit={() => onClickUpdate()}
       />
-    </BackgroundContainer>
+    </>
   );
 }
+
+const ContractorInformation: React.FC<{ tradeInfo?: ITradeInfo }> = ({
+  tradeInfo,
+}) => {
+  return (
+    <>
+      <p className="text-2xl font-medium">Contractor</p>
+      <div className="pl-6">
+        <span className="text-xl font-medium">Name:</span>
+        <span>{tradeInfo?.name ?? "Test"}</span>
+      </div>
+    </>
+  );
+};

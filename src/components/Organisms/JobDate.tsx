@@ -45,10 +45,7 @@ export default function JobDate({
   };
 
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle className="">Job Completed On </PageSubTitle>
-      </BackgroundContainerHeader>
+    <>
       <EditDatePopover
         currentDate={date}
         newDate={newDate}
@@ -65,6 +62,6 @@ export default function JobDate({
           <></>
         )}
       </EditDatePopover>
-    </BackgroundContainer>
+    </>
   );
 }
