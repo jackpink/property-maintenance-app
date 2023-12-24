@@ -11,18 +11,21 @@ const PropertyAttributes = ({
   carSpaces: number;
 }) => {
   return (
-    <div className="grid w-96 grid-cols-3 justify-items-center overflow-hidden rounded-lg bg-black/10 py-2">
-      <div className="flex gap-4">
+    <div className="flex">
+      <div className="flex pr-7">
         <BedroomIcon height={40} />
-        <Text>{bedrooms}</Text>
+        <div className="pl-2"></div>
+        <span className="w-9 pl-1 text-xl">{bedrooms}</span>
       </div>
-      <div className="flex gap-4">
+      <div className="flex pr-7">
         <BathroomIcon height={35} />
-        <span>{bathrooms}</span>
+        <div className="pl-2"></div>
+        <span className="w-9 pl-1 text-xl">{bathrooms}</span>
       </div>
-      <div className="flex gap-4">
+      <div className="flex pr-7">
         <CarSpaceIcon height={35} />
-        <span>{carSpaces}</span>
+        <div className="pl-2"></div>
+        <span className="w-9 pl-1 text-xl">{carSpaces}</span>
       </div>
     </div>
   );
@@ -44,22 +47,26 @@ export const EditablePropertyAttributes = ({
   >;
 }) => {
   return (
-    <div className="grid w-96 grid-cols-3 justify-items-center overflow-hidden rounded-lg bg-black/10 py-2">
-      <div className="flex gap-4">
+    <div className="flex">
+      <div className="flex pr-7">
         <BedroomIcon height={40} />
+        <div className="pl-2"></div>
         <input
           type="number"
           id="quantity"
           name="quantity"
           min="0"
           max="20"
+          autoFocus
           onChange={(e) =>
             setValues({ ...values, bedrooms: parseInt(e.currentTarget.value) })
           }
-        ></input>
+          className="w-9"
+        />
       </div>
-      <div className="flex gap-4">
+      <div className="flex pr-7">
         <BathroomIcon height={35} />
+        <div className="pl-2"></div>
         <input
           type="number"
           id="quantity"
@@ -69,10 +76,12 @@ export const EditablePropertyAttributes = ({
           onChange={(e) =>
             setValues({ ...values, bathrooms: parseInt(e.currentTarget.value) })
           }
-        ></input>
+          className="w-9"
+        />
       </div>
-      <div className="flex gap-4">
+      <div className="flex pr-7">
         <CarSpaceIcon height={35} />
+        <div className="pl-2"></div>
         <input
           type="number"
           id="quantity"
@@ -82,7 +91,8 @@ export const EditablePropertyAttributes = ({
           onChange={(e) =>
             setValues({ ...values, carSpaces: parseInt(e.currentTarget.value) })
           }
-        ></input>
+          className="w-9"
+        />
       </div>
     </div>
   );
