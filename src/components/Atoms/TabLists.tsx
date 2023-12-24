@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
+import { CancelIcon, ConfirmIcon } from "./Icons";
 
 export const TabListComponent = ({
   title,
@@ -43,7 +44,12 @@ export const TabAttributeComponent = ({
       {editMode ? (
         <>
           {EditableComponent}
-          <button onClick={() => setEditMode(false)}>Close</button>
+          <button onClick={() => setEditMode(false)}>
+            <CancelIcon />
+          </button>
+          <button>
+            <ConfirmIcon />
+          </button>
         </>
       ) : !exists ? (
         <button
