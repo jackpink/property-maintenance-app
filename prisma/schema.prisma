@@ -54,7 +54,7 @@ model Property {
   landSize        Int?
   floorSize       Int?
   height          Int?
-  wallType        WallType?
+  wallType        String?
   levels          Level[]
   jobs            Job[]
   documents       Document[]
@@ -62,14 +62,6 @@ model Property {
   homeownerUserId String?
 
   @@index([homeownerUserId])
-}
-
-enum WallType {
-  BRICK
-  CONCRETE
-  TIMBER
-  PLASTERBOARD
-  OTHER
 }
 
 model Document {
