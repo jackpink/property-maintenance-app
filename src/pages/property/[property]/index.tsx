@@ -1,4 +1,4 @@
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { toast } from "sonner";
 import { concatAddress } from "~/components/Molecules/Properties/Property";
@@ -23,11 +23,15 @@ import {
   BackgroundContainer,
   BackgroundContainerHeader,
 } from "~/components/Atoms/BackgroundContainer";
-import PropertyAttributes from "~/components/Molecules/PropertyAttributes";
+import PropertyAttributes, {
+  EditablePropertyAttributes,
+} from "~/components/Molecules/PropertyAttributes";
 import {
   TabAttributeComponent,
   TabListComponent,
 } from "~/components/Atoms/TabLists";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Tab } from "@headlessui/react";
 
 // get params, get Property by Id
 // edit and add levels and rooms /home/jack/Documents/Projects/property-maintenance-app/src/styles/globals.css
@@ -42,6 +46,17 @@ export default function HomeownerPropertyPage() {
   return <HomeownerPropertyPageWithParams propertyId={id} />;
 }
 
+type PropertyAttributes = {
+  type?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  carSpaces?: number;
+  landSize?: number;
+  floorSize?: number;
+  height?: number;
+  wallType?: string;
+};
+
 type HomeownerPropertyPageWithParamsProps = {
   propertyId: string;
 };
@@ -49,6 +64,8 @@ type HomeownerPropertyPageWithParamsProps = {
 const HomeownerPropertyPageWithParams: React.FC<
   HomeownerPropertyPageWithParamsProps
 > = ({ propertyId }) => {
+  const [propertyAttributes, setPropertyAttributes] =
+    useState<PropertyAttributes>({});
   const path = useRouter().asPath;
   const {
     data: property,
@@ -57,6 +74,14 @@ const HomeownerPropertyPageWithParams: React.FC<
   } = api.property.getPropertyForUser.useQuery({
     id: propertyId,
   });
+  const ctx = api.useContext();
+  const { mutate: updateProperty, isLoading: isUpdatingProperty } =
+    api.property.updateProperty.useMutation({
+      onSuccess: () => {
+        // refetch our property
+        void ctx.property.getPropertyForUser.invalidate();
+      },
+    });
 
   if (!!propertyFetchError) toast("Failed to fetch property");
   let address = "";
@@ -102,21 +127,60 @@ const HomeownerPropertyPageWithParams: React.FC<
             </div>
           ) : (
             <>
-              <div className=" relative mx-auto flex flex-col items-center pt-10">
-                <EditButton
-                  height="40"
-                  onClick={() => console.log("edit")}
-                  className="absolute right-0"
-                />
-                <TabAttributeComponent
-                  title="Property Type"
-                  StandardComponent={<PropertyType />}
-                  EditableComponent={<EditablePropertyType />}
-                  exists={property?.type ? true : false}
-                />
+              <TabAttributeComponent
+                title="Property Type"
+                StandardComponent={<PropertyType property={property} />}
+                EditableComponent={
+                  <EditablePropertyType
+                    setTypeValue={(type: string) =>
+                      setPropertyAttributes({
+                        ...propertyAttributes,
+                        type: type,
+                      })
+                    }
+                  />
+                }
+                onConfirmEdit={() => {
+                  updateProperty({
+                    id: propertyId,
+                    type: propertyAttributes.type,
+                  });
+                }}
+                exists={property?.type ? true : false}
+              />
+              <TabAttributeComponent
+                title="Room Information"
+                StandardComponent={<RoomInformtion property={property} />}
+                EditableComponent={
+                  <EditableRoomInformation
+                    property={property}
+                    values={propertyAttributes}
+                    setValues={setPropertyAttributes}
+                  />
+                }
+                onConfirmEdit={() => {
+                  updateProperty({
+                    id: propertyId,
+                    roomInfo: {
+                      bedrooms: propertyAttributes.bedrooms ?? 0,
+                      bathrooms: propertyAttributes.bathrooms ?? 0,
+                      carSpaces: propertyAttributes.carSpaces ?? 0,
+                    },
+                  });
+                }}
+                exists={
+                  property?.bedrooms
+                    ? true
+                    : false && property?.bathrooms
+                    ? true
+                    : false && property?.carSpaces
+                    ? true
+                    : false
+                }
+              />
 
-                <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
-              </div>
+              <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
+
               <div className="mx-auto flex flex-col items-center pt-10">
                 <Image
                   alt="House Stock Image"
@@ -133,27 +197,66 @@ const HomeownerPropertyPageWithParams: React.FC<
   );
 };
 
-const PropertyType: React.FC = () => (
-  <Text className=" text-xl font-medium tracking-wider">
-    {"Property Type:" + "   " + "House"}
-  </Text>
-);
-
-const EditablePropertyType: React.FC = () => (
+const PropertyType: React.FC<{
+  property: RouterOutputs["property"]["getPropertyForUser"];
+}> = ({ property }) => (
   <>
-    <TextSpan className="text-xl font-medium tracking-wider">
-      {"Property Type:"}
+    <TextSpan className="pl-6 text-xl font-medium">Property Type:</TextSpan>
+    <TextSpan className="pl-10 text-xl font-medium">
+      {property.type?.charAt(0).toUpperCase() ?? ""}
     </TextSpan>
-    <select className="">
-      <option value="house">House</option>
-      <option value="apartment">Apartment</option>
-      <option value="unit">Unit</option>
-      <option value="townhouse">Townhouse</option>
-      <option value="villa">Villa</option>
-      <option value="duplex">Duplex</option>
-    </select>
+    <TextSpan className=" text-xl font-medium">
+      {property.type?.slice(1) ?? ""}
+    </TextSpan>
   </>
 );
+
+const EditablePropertyType: React.FC<{
+  setTypeValue: (type: string) => void;
+}> = ({ setTypeValue }) => {
+  return (
+    <>
+      <TextSpan className="pl-7 text-xl font-medium">
+        {"Property Type:"}
+      </TextSpan>
+      <select
+        className="pl-6"
+        onChange={(e) => setTypeValue(e.currentTarget.value)}
+      >
+        <option disabled selected value="">
+          {" "}
+          -- select an option --{" "}
+        </option>
+        <option value="house">House</option>
+        <option value="apartment">Apartment</option>
+        <option value="unit">Unit</option>
+        <option value="townhouse">Townhouse</option>
+        <option value="villa">Villa</option>
+        <option value="duplex">Duplex</option>
+      </select>
+    </>
+  );
+};
+
+const RoomInformtion: React.FC<{
+  property: RouterOutputs["property"]["getPropertyForUser"];
+}> = ({ property }) => {
+  return (
+    <PropertyAttributes
+      bathrooms={property.bathrooms ?? 0}
+      bedrooms={property.bedrooms ?? 0}
+      carSpaces={property.carSpaces ?? 0}
+    />
+  );
+};
+
+const EditableRoomInformation: React.FC<{
+  property: RouterOutputs["property"]["getPropertyForUser"];
+  values: PropertyAttributes;
+  setValues: Dispatch<SetStateAction<PropertyAttributes>>;
+}> = ({ property, values, setValues }) => {
+  return <EditablePropertyAttributes values={values} setValues={setValues} />;
+};
 
 const BackToDashboardButton: React.FC = () => {
   return (
