@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
-import { CancelIcon, ConfirmIcon } from "./Icons";
+import { CancelIcon, ConfirmIcon, EditIconSmall } from "./Icons";
 
 export const TabListComponent = ({
   title,
@@ -30,26 +30,36 @@ export const TabListComponent = ({
 export const TabAttributeComponent = ({
   title,
   EditableComponent,
+  onConfirmEdit,
   StandardComponent,
   exists,
 }: {
   title: string;
   EditableComponent: ReactNode;
+  onConfirmEdit: () => void;
   StandardComponent: ReactNode;
   exists: boolean;
 }) => {
   const [editMode, setEditMode] = useState(false);
+
+  const onClickConfirmButton = () => {
+    setEditMode(false);
+    onConfirmEdit();
+  };
+
   return (
-    <div className="flex py-10">
+    <div className="flex w-full justify-between py-10">
       {editMode ? (
         <>
-          {EditableComponent}
-          <button onClick={() => setEditMode(false)}>
-            <CancelIcon />
-          </button>
-          <button>
-            <ConfirmIcon />
-          </button>
+          <div>{EditableComponent}</div>
+          <div>
+            <button onClick={() => setEditMode(false)}>
+              <CancelIcon />
+            </button>
+            <button onClick={onClickConfirmButton}>
+              <ConfirmIcon />
+            </button>
+          </div>
         </>
       ) : !exists ? (
         <button
@@ -60,8 +70,12 @@ export const TabAttributeComponent = ({
         </button>
       ) : (
         <>
-          {StandardComponent}
-          <button onClick={() => setEditMode(true)}>Edit</button>
+          <div>{StandardComponent}</div>
+          <div className="justify-self-end">
+            <button onClick={() => setEditMode(true)}>
+              <EditIconSmall />
+            </button>
+          </div>
         </>
       )}
     </div>

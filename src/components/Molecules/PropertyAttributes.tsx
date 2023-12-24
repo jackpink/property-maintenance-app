@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { Text } from "../Atoms/Text";
 
 const PropertyAttributes = ({
@@ -28,6 +29,64 @@ const PropertyAttributes = ({
 };
 
 export default PropertyAttributes;
+
+export const EditablePropertyAttributes = ({
+  values,
+  setValues,
+}: {
+  values: { bedrooms?: number; bathrooms?: number; carSpaces?: number };
+  setValues: Dispatch<
+    SetStateAction<{
+      bedrooms?: number;
+      bathrooms?: number;
+      carSpaces?: number;
+    }>
+  >;
+}) => {
+  return (
+    <div className="grid w-96 grid-cols-3 justify-items-center overflow-hidden rounded-lg bg-black/10 py-2">
+      <div className="flex gap-4">
+        <BedroomIcon height={40} />
+        <input
+          type="number"
+          id="quantity"
+          name="quantity"
+          min="0"
+          max="20"
+          onChange={(e) =>
+            setValues({ ...values, bedrooms: parseInt(e.currentTarget.value) })
+          }
+        ></input>
+      </div>
+      <div className="flex gap-4">
+        <BathroomIcon height={35} />
+        <input
+          type="number"
+          id="quantity"
+          name="quantity"
+          min="0"
+          max="20"
+          onChange={(e) =>
+            setValues({ ...values, bathrooms: parseInt(e.currentTarget.value) })
+          }
+        ></input>
+      </div>
+      <div className="flex gap-4">
+        <CarSpaceIcon height={35} />
+        <input
+          type="number"
+          id="quantity"
+          name="quantity"
+          min="0"
+          max="20"
+          onChange={(e) =>
+            setValues({ ...values, carSpaces: parseInt(e.currentTarget.value) })
+          }
+        ></input>
+      </div>
+    </div>
+  );
+};
 
 const BedroomIcon = ({ height = 20 }: { height?: number }) => (
   <svg
