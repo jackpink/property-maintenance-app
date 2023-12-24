@@ -22,7 +22,7 @@ export default {
         brandSecondary: "#c470e7",
         dark: "#011627", 
         light: "#f7ece1",
-        altPrimary: "#0E7C7B",
+        altPrimary: "#0A5B5A",//#0E7C7B",
         altSecondary: "#86bbbd",
       },
       transitionProperty: {
