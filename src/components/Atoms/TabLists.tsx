@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
-import { CancelIcon, ConfirmIcon, EditIconSmall } from "./Icons";
+import { CancelIcon, ConfirmIcon, EditIconSmall, PlusIcon } from "./Icons";
 
 export const TabListComponent = ({
   title,
@@ -48,7 +48,7 @@ export const TabAttributeComponent = ({
   };
 
   return (
-    <div className="flex w-full justify-between py-10">
+    <div className="flex w-full justify-between py-10 pl-6">
       {editMode ? (
         <>
           <div>{EditableComponent}</div>
@@ -63,10 +63,13 @@ export const TabAttributeComponent = ({
         </>
       ) : !exists ? (
         <button
-          className="text-lg text-brandSecondary"
+          className="text-xl text-brandSecondary"
           onClick={() => setEditMode(true)}
         >
-          + Add {title}
+          <div className="flex items-center justify-center">
+            <PlusIcon width={25} height={25} colour="#c470e7" />
+            <span className="pl-4">Add {title}</span>
+          </div>
         </button>
       ) : (
         <>

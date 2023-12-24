@@ -30,7 +30,7 @@ import {
   TabAttributeComponent,
   TabListComponent,
 } from "~/components/Atoms/TabLists";
-import { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Tab } from "@headlessui/react";
 
 // get params, get Property by Id
@@ -178,17 +178,26 @@ const HomeownerPropertyPageWithParams: React.FC<
                     : false
                 }
               />
-
-              <PropertyAttributes bathrooms={2} bedrooms={3} carSpaces={0} />
-
-              <div className="mx-auto flex flex-col items-center pt-10">
-                <Image
-                  alt="House Stock Image"
-                  src={house}
-                  className="min-w-xl rounded-xl p-3"
-                />
-                <GhostButton>Update Cover Image</GhostButton>
-              </div>
+              <TabAttributeComponent
+                title="Land Size"
+                StandardComponent={
+                  <LandSize landSize={property?.landSize ?? undefined} />
+                }
+                EditableComponent={
+                  <EditableLandSize
+                    landSize={property?.landSize ?? undefined}
+                    values={propertyAttributes}
+                    setValues={setPropertyAttributes}
+                  />
+                }
+                onConfirmEdit={() => {
+                  updateProperty({
+                    id: propertyId,
+                    landSize: propertyAttributes.landSize,
+                  });
+                }}
+                exists={property?.landSize ? true : false}
+              />
             </>
           )}
         </ColumnTwo>
@@ -201,7 +210,7 @@ const PropertyType: React.FC<{
   property: RouterOutputs["property"]["getPropertyForUser"];
 }> = ({ property }) => (
   <>
-    <TextSpan className="pl-6 text-xl font-medium">Property Type:</TextSpan>
+    <TextSpan className="text-xl font-medium">Property Type:</TextSpan>
     <TextSpan className="pl-10 text-xl font-medium">
       {property.type?.charAt(0).toUpperCase() ?? ""}
     </TextSpan>
@@ -216,9 +225,7 @@ const EditablePropertyType: React.FC<{
 }> = ({ setTypeValue }) => {
   return (
     <>
-      <TextSpan className="pl-7 text-xl font-medium">
-        {"Property Type:"}
-      </TextSpan>
+      <TextSpan className="text-xl font-medium">{"Property Type:"}</TextSpan>
       <select
         className="pl-6"
         onChange={(e) => setTypeValue(e.currentTarget.value)}
@@ -242,11 +249,13 @@ const RoomInformtion: React.FC<{
   property: RouterOutputs["property"]["getPropertyForUser"];
 }> = ({ property }) => {
   return (
-    <PropertyAttributes
-      bathrooms={property.bathrooms ?? 0}
-      bedrooms={property.bedrooms ?? 0}
-      carSpaces={property.carSpaces ?? 0}
-    />
+    <div className="">
+      <PropertyAttributes
+        bathrooms={property.bathrooms ?? 0}
+        bedrooms={property.bedrooms ?? 0}
+        carSpaces={property.carSpaces ?? 0}
+      />
+    </div>
   );
 };
 
@@ -255,7 +264,46 @@ const EditableRoomInformation: React.FC<{
   values: PropertyAttributes;
   setValues: Dispatch<SetStateAction<PropertyAttributes>>;
 }> = ({ property, values, setValues }) => {
-  return <EditablePropertyAttributes values={values} setValues={setValues} />;
+  return (
+    <div className="">
+      <EditablePropertyAttributes values={values} setValues={setValues} />
+    </div>
+  );
+};
+
+const LandSize: React.FC<{
+  landSize?: number;
+}> = ({ landSize }) => {
+  return (
+    <>
+      <TextSpan className="text-xl font-medium">Land Size:</TextSpan>
+      <TextSpan className="pl-10 text-xl font-medium">
+        {landSize ?? null}
+      </TextSpan>
+      <TextSpan className=" text-xl font-medium">m²</TextSpan>
+    </>
+  );
+};
+
+const EditableLandSize: React.FC<{
+  landSize?: number;
+  values: PropertyAttributes;
+  setValues: Dispatch<SetStateAction<PropertyAttributes>>;
+}> = ({ landSize, values, setValues }) => {
+  return (
+    <>
+      <TextSpan className="pr-10 text-xl font-medium">Land Size:</TextSpan>
+      <input
+        className="w-20"
+        type="number"
+        value={landSize}
+        onChange={(e) =>
+          setValues({ ...values, landSize: parseInt(e.currentTarget.value) })
+        }
+      />
+      <TextSpan className=" pl-2 text-xl font-medium">m²</TextSpan>
+    </>
+  );
 };
 
 const BackToDashboardButton: React.FC = () => {
