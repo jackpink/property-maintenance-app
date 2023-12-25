@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
 import { CancelIcon, ConfirmIcon, EditIconSmall, PlusIcon } from "./Icons";
+import { TextSpan } from "./Text";
 
 export const TabListComponent = ({
   title,
@@ -82,5 +83,20 @@ export const TabAttributeComponent = ({
         </>
       )}
     </div>
+  );
+};
+
+export const TabAttributeComponentLabel = ({ label }: { label: string }) => {
+  return <TextSpan className="text-xl font-medium">{label}</TextSpan>;
+};
+
+export const TabAttributeComponentValue = ({ value }: { value: string }) => {
+  return (
+    <>
+      <TextSpan className="pl-10 text-xl font-normal">
+        {value.charAt(0).toUpperCase()}
+      </TextSpan>
+      <TextSpan className=" text-xl font-normal">{value.slice(1)}</TextSpan>
+    </>
   );
 };

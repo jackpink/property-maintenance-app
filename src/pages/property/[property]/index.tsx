@@ -28,6 +28,8 @@ import PropertyAttributes, {
 } from "~/components/Molecules/PropertyAttributes";
 import {
   TabAttributeComponent,
+  TabAttributeComponentLabel,
+  TabAttributeComponentValue,
   TabListComponent,
 } from "~/components/Atoms/TabLists";
 import React, { Dispatch, SetStateAction, useState } from "react";
@@ -210,13 +212,8 @@ const PropertyType: React.FC<{
   property: RouterOutputs["property"]["getPropertyForUser"];
 }> = ({ property }) => (
   <>
-    <TextSpan className="text-xl font-medium">Property Type:</TextSpan>
-    <TextSpan className="pl-10 text-xl font-medium">
-      {property.type?.charAt(0).toUpperCase() ?? ""}
-    </TextSpan>
-    <TextSpan className=" text-xl font-medium">
-      {property.type?.slice(1) ?? ""}
-    </TextSpan>
+    <TabAttributeComponentLabel label="Property Type:" />
+    <TabAttributeComponentValue value={property.type ?? ""} />
   </>
 );
 
@@ -225,7 +222,7 @@ const EditablePropertyType: React.FC<{
 }> = ({ setTypeValue }) => {
   return (
     <>
-      <TextSpan className="text-xl font-medium">{"Property Type:"}</TextSpan>
+      <TabAttributeComponentLabel label="Property Type:" />
       <select
         className="pl-6"
         onChange={(e) => setTypeValue(e.currentTarget.value)}
@@ -276,10 +273,8 @@ const LandSize: React.FC<{
 }> = ({ landSize }) => {
   return (
     <>
-      <TextSpan className="text-xl font-medium">Land Size:</TextSpan>
-      <TextSpan className="pl-10 text-xl font-medium">
-        {landSize ?? null}
-      </TextSpan>
+      <TabAttributeComponentLabel label="Land Size:" />
+      <TabAttributeComponentValue value={landSize?.toString() ?? ""} />
       <TextSpan className=" text-xl font-medium">m²</TextSpan>
     </>
   );
@@ -292,7 +287,7 @@ const EditableLandSize: React.FC<{
 }> = ({ landSize, values, setValues }) => {
   return (
     <>
-      <TextSpan className="pr-10 text-xl font-medium">Land Size:</TextSpan>
+      <TabAttributeComponentLabel label="Land Size:" />
       <input
         className="w-20"
         type="number"
