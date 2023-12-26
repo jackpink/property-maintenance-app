@@ -191,7 +191,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
       <CTAButton
         onClick={removeRoomButtonClicked}
         value={room.id}
-        className={clsx(className, "border-2")}
+        className={clsx(className, "border-2 hover:bg-brand/50")}
         loading={loading || jobLoading}
       >
         {room.label}
@@ -202,7 +202,7 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
     <GhostButton
       value={room.id}
       onClick={addRoomButtonClicked}
-      className={clsx(className, "bg-inherit")}
+      className={clsx(className, "bg-inherit hover:bg-brand/50")}
       loading={loading || jobLoading}
     >
       {room.label}

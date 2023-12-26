@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
 import JobDate from "~/components/Organisms/JobTitleAndDate";
 import React from "react";
-import { PageTitle } from "~/components/Atoms/Title";
+import { PageSubTitle, PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";
 import JobDocuments from "~/components/Organisms/JobDocuments";
 import JobNotes from "~/components/Organisms/JobNotes";
@@ -42,16 +42,19 @@ type HomeownerJobPageWithParamsProps = {
 const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   id,
 }) => {
-  const job = api.job.getJob.useQuery({ jobId: id });
-  const history = api.job.getHistoryForJob.useQuery({ jobId: id });
+  const {
+    data: job,
+    isLoading: jobLoading,
+    failureReason: jobFailureReason,
+    error: jobError,
+  } = api.job.getJob.useQuery({ jobId: id });
+  const {
+    data: history,
+    isLoading: historyLoading,
+    error: historyError,
+  } = api.job.getHistoryForJob.useQuery({ jobId: id });
 
-  console.log(history.data);
-
-  const jobLoading = job.isFetching || job.isLoading;
-
-  const historyLoading = history.isFetching || history.isLoading;
-
-  const forbidden = job.failureReason?.message === "FORBIDDEN";
+  const forbidden = jobFailureReason?.message === "FORBIDDEN";
 
   // have some logic here, if has trade user, then display without any action buttons
   return (
@@ -60,13 +63,13 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
         <p>Forbidden</p>
       ) : jobLoading ? (
         <LoadingSpinner />
-      ) : !job.data ? (
+      ) : !job ? (
         <>Could not get Data</>
       ) : (
         <HomeownerJobPageWithJob
-          job={job.data}
+          job={job}
           jobLoading={jobLoading}
-          history={history.data}
+          history={history}
           historyLoading={historyLoading}
         />
       )}
@@ -107,11 +110,9 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       />
       <PageTitle>{job.title}</PageTitle>
       <JobPageNav propertyId={job.Property.id} jobId={job.id} />
-      <ResponsiveColumns>
-        <ColumnOne>
-          <JobRoomSelector job={job} jobLoading={false} />
-        </ColumnOne>
-      </ResponsiveColumns>
+
+      <PageSubTitle>Select Rooms for Job</PageSubTitle>
+      <JobRoomSelector job={job} jobLoading={false} />
     </>
   );
 };
