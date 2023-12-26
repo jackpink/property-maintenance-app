@@ -57,29 +57,27 @@ const DocumentViewer: React.FC<DocumentsProps> = ({
   refetchDataForPage,
 }) => {
   return (
-    <div className="relative mb-4  w-full overflow-x-auto py-4">
-      <div className="mx-12 flex flex-col gap-4">
-        {jobId ? (
-          <DocumentViewerForJob
-            uploadFor={uploadFor}
-            jobId={jobId}
-            refetchDataForPage={refetchDataForPage}
-          />
-        ) : documentGroupId ? (
-          <DocumentViewerForGroup
-            uploadFor={uploadFor}
-            propertyId={propertyId}
-            documentGroupId={documentGroupId}
-            refetchDataForPage={refetchDataForPage}
-          />
-        ) : (
-          <DocumentViewerForProperty
-            uploadFor={uploadFor}
-            propertyId={propertyId}
-            refetchDataForPage={refetchDataForPage}
-          />
-        )}
-      </div>
+    <div className="grid w-full place-items-center gap-4 px-5">
+      {jobId ? (
+        <DocumentViewerForJob
+          uploadFor={uploadFor}
+          jobId={jobId}
+          refetchDataForPage={refetchDataForPage}
+        />
+      ) : documentGroupId ? (
+        <DocumentViewerForGroup
+          uploadFor={uploadFor}
+          propertyId={propertyId}
+          documentGroupId={documentGroupId}
+          refetchDataForPage={refetchDataForPage}
+        />
+      ) : (
+        <DocumentViewerForProperty
+          uploadFor={uploadFor}
+          propertyId={propertyId}
+          refetchDataForPage={refetchDataForPage}
+        />
+      )}
     </div>
   );
 };
@@ -261,7 +259,7 @@ const Document: React.FC<DocumentProps> = ({ document }) => {
   });
   console.log("docuemnt url", pdfUrl);
   return (
-    <div className="flex flex-nowrap items-center	gap-1 sm:gap-4">
+    <div className="flex w-full flex-nowrap	items-center gap-1 sm:gap-4">
       <GreenTickIcon width={28} height={28} />
       <DocumentIcon width="40" height="40" />
       <div className="grow text-left">
@@ -326,7 +324,7 @@ const AddDefaultDocumentButton: React.FC<AddDefaultDocumentButtonProps> = ({
 }) => {
   console.log("add default", uploadFor, label);
   return (
-    <div className="flex flex-nowrap gap-1 sm:gap-4">
+    <div className="flex w-full flex-nowrap gap-1 sm:gap-4">
       <div className="w-7 grow-0"></div>
       <DocumentIcon width="40" height="40" />
       <div className="grow">

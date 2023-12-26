@@ -23,65 +23,66 @@ export default function JobDocuments({
 }: JobDocumentProps) {
   const [uploadDocumentPopover, setUploadDocumentPopover] = useState(false);
 
-  const { data: documents, isLoading: loading } =
-    api.document.getDocumentsForJob.useQuery({ jobId: job.id });
+  const {
+    data: documentGroups,
+    isLoading: loading,
+    error,
+  } = api.document.getDocumentGroupsForJob.useQuery();
 
   const ctx = api.useContext();
 
   const defaultDocumentsForJob = ["Invoice"]; //If documents label matches, then remove
-  if (!!documents) {
-    for (const document of documents) {
-      const index = defaultDocumentsForJob.indexOf(document.label);
-      console.log("INDEX", index);
-      if (index >= 0) defaultDocumentsForJob.splice(index, 1);
-    }
-  }
-  console.log("defaul;t docs", defaultDocumentsForJob);
 
   const refetchDataForPage = () => {
-    void ctx.document.getDocumentsForJob.invalidate();
-    setUploadDocumentPopover(false);
+    void ctx.document.getDocumentsForJobWithNoGroup.invalidate();
+    void ctx.document.getDocumentsForGroupForJob.invalidate();
   };
 
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Documents</PageSubTitle>
-      </BackgroundContainerHeader>
-      <div className="grid place-items-center">
-        {!!documents ? (
-          <DocumentViewer
-            documents={documents}
-            uploadFor="JOB"
-            propertyId={job.Property.id}
-            jobId={job.id}
-            refetchDataForPage={refetchDataForPage}
-            defaultDocuments={defaultDocumentsForJob}
-          />
-        ) : loading ? (
-          <LoadingSpinner />
-        ) : (
-          <p>error</p>
-        )}
+    <>
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <p>{error.message}</p>
+      ) : !!documentGroups ? (
+        documentGroups.map((documentGroup, index) => (
+          <>
+            <PageSubTitle>{documentGroup.label}</PageSubTitle>
+            <DocumentViewer
+              uploadFor="JOB"
+              propertyId={job.Property.id}
+              jobId={job.id}
+              documentGroupId={documentGroup.id}
+              refetchDataForPage={refetchDataForPage}
+            />
+          </>
+        ))
+      ) : (
+        <p>No documents found</p>
+      )}
 
-        <GhostButton
-          className=""
-          onClick={() => setUploadDocumentPopover(true)}
-        >
-          UPLOAD OTHER DOCUMENT
-        </GhostButton>
-        <Popover
-          popoveropen={uploadDocumentPopover}
-          setPopoverOpen={setUploadDocumentPopover}
-        >
-          <UploadDocumentWithLabelInput
-            uploadFor="JOB"
-            jobId={job.id}
-            refetchDataForPage={refetchDataForPage}
-            propertyId={job.Property.id}
-          />
-        </Popover>
-      </div>
-    </BackgroundContainer>
+      <PageSubTitle>Other</PageSubTitle>
+      <DocumentViewer
+        uploadFor="JOB"
+        jobId={job.id}
+        propertyId={job.Property.id}
+        refetchDataForPage={refetchDataForPage}
+      />
+
+      <GhostButton className="" onClick={() => setUploadDocumentPopover(true)}>
+        UPLOAD OTHER DOCUMENT
+      </GhostButton>
+      <Popover
+        popoveropen={uploadDocumentPopover}
+        setPopoverOpen={setUploadDocumentPopover}
+      >
+        <UploadDocumentWithLabelInput
+          uploadFor="JOB"
+          refetchDataForPage={refetchDataForPage}
+          propertyId={job.Property.id}
+          jobId={job.id}
+        />
+      </Popover>
+    </>
   );
 }

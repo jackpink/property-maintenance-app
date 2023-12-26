@@ -14,6 +14,7 @@ import {
   ColumnOne,
   ColumnTwo,
   PageWithMainMenu,
+  PageWithSingleColumn,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
 import { NoteHistory } from "~/components/Molecules/NotesHistory";
@@ -107,11 +108,9 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       />
       <PageTitle>{job.title}</PageTitle>
       <JobPageNav propertyId={job.Property.id} jobId={job.id} />
-      <ResponsiveColumns>
-        <ColumnOne>
-          <JobDocuments job={job} disabled={!isHomeowner} />
-        </ColumnOne>
-      </ResponsiveColumns>
+      <PageWithSingleColumn>
+        <JobDocuments job={job} disabled={!isHomeowner} />
+      </PageWithSingleColumn>
     </>
   );
 };

@@ -66,7 +66,7 @@ export default function PropertyDocuments({
   };
 
   return (
-    <div className="grid place-items-center">
+    <div className="grid w-full place-items-center">
       {loading ? (
         <LoadingSpinner />
       ) : error ? (
