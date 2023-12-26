@@ -16,6 +16,9 @@ import {
   TabAttributeComponentValue,
 } from "../Atoms/TabLists";
 import { concatAddress } from "~/utils/utits";
+import { EditIconSmall } from "../Atoms/Icons";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type Rooms = Job["rooms"];
 
@@ -30,6 +33,7 @@ export default function JobProperty({
   jobLoading,
   disabled = false,
 }: JobPropertyProps) {
+  const path = usePathname();
   return (
     <>
       <TabAttributeComponent
@@ -45,16 +49,25 @@ export default function JobProperty({
         onConfirmEdit={() => {}}
         editable={false}
       />
+      <div className="flex w-full justify-between py-10 pl-6">
+        <TabAttributeComponentLabel label="Rooms:" />
 
-      <Text className="p-3 text-lg font-extrabold ">Rooms Included in Job</Text>
-      <div className="relative text-center">
-        {job.rooms.map((room, index) => {
-          return (
-            <p className="text-xs font-light text-slate-600" key={index}>
-              {room.Level.label.toUpperCase() + "→" + room.label.toUpperCase()}
-            </p>
-          );
-        })}
+        <div className="relative text-center">
+          {job.rooms.map((room, index) => {
+            return (
+              <p className="text-sm font-light text-slate-600" key={index}>
+                {room.Level.label.toUpperCase() +
+                  "→" +
+                  room.label.toUpperCase()}
+              </p>
+            );
+          })}
+        </div>
+        <div className="justify-self-end">
+          <Link href={path + "/rooms"}>
+            <EditIconSmall />
+          </Link>
+        </div>
       </div>
     </>
   );

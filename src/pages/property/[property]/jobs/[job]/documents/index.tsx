@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { type RouterOutputs, api } from "~/utils/api";
-import JobDate from "~/components/Organisms/JobDate";
+import JobDate from "~/components/Organisms/JobTitleAndDate";
 import React from "react";
 import { PageTitle } from "~/components/Atoms/Title";
 import JobCompletedBy from "~/components/Organisms/JobCompletedBy";

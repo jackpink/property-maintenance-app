@@ -6,6 +6,11 @@ import { Text } from "../Atoms/Text";
 import { FormattedDate } from "~/utils/utits";
 import clsx from "clsx";
 import { EditCalenderButton, GhostButton } from "../Atoms/Button";
+import {
+  TabAttributeComponentLabel,
+  TabAttributeComponentValue,
+} from "../Atoms/TabLists";
+import { EditIconSmall } from "../Atoms/Icons";
 
 type EditDateProps = {
   currentDate: Date;
@@ -26,15 +31,17 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
   disabled = false,
 }) => {
   return (
-    <>
-      <Text className="relative p-4">
-        {format(currentDate, "PPPP") + " "}
-        <EditCalenderButton
-          className="absolute right-0 p-1"
-          onClick={() => setJobDayPickerOpen(true)}
-          disabled={disabled}
-        />
-      </Text>
+    <div className="flex w-full justify-between py-10 pl-6">
+      <div>
+        <TabAttributeComponentLabel label="Date:" />
+        <TabAttributeComponentValue value={format(currentDate, "PPPP") + " "} />
+      </div>
+
+      <div className="justify-self-end">
+        <button onClick={() => setJobDayPickerOpen(true)}>
+          <EditIconSmall />
+        </button>
+      </div>
 
       <Popover
         popoveropen={jobDayPickerOpen}
@@ -54,7 +61,7 @@ const EditDatePopover: React.FC<React.PropsWithChildren<EditDateProps>> = ({
           {children}
         </div>
       </Popover>
-    </>
+    </div>
   );
 };
 

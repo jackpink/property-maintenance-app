@@ -68,7 +68,7 @@ export default function JobCompletedBy({
         />
       ) : (
         <>
-          <p className="text-2xl font-medium">Contractor</p>
+          <p className="pl-6 text-xl font-medium">Contractor</p>
           <div className="w-full pl-7">
             <TabAttributeComponent
               title="Contractor"

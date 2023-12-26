@@ -112,32 +112,21 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
           <TabListComponent
             title="Overview"
             href={`/property/${job.Property.id}/jobs/${job.id}`}
-            selected={true}
+            selected={false}
           />
           <TabListComponent
             title="Notes"
             href={`/property/${job.Property.id}/jobs/${job.id}/notes`}
-            selected={false}
+            selected={true}
           />
         </ColumnOne>
         <ColumnTwo>
-          <JobDate
-            date={job.date}
-            title={job.title}
+          <JobNotes
+            notes={job.notes}
+            tradeNotes={job.tradeNotes}
             jobId={job.id}
-            disabled={!isHomeowner}
-          />
-          <JobCompletedBy
-            jobId={job.id}
-            disabled={!isHomeowner}
-            nonTradeUserPhone={job.nonUserTradePhone ?? undefined}
-            nonTradeUserEmail={job.nonUserTradeEmail ?? undefined}
-            nonTradeUserName={job.nonUserTradeName ?? undefined}
-          />
-
-          <JobProperty
-            job={job}
-            jobLoading={jobLoading}
+            history={history?.homeownerNotes as NoteHistory[]}
+            historyLoading={historyLoading}
             disabled={!isHomeowner}
           />
         </ColumnTwo>

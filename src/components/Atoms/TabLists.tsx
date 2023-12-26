@@ -51,7 +51,7 @@ export const TabAttributeComponent = ({
   };
 
   return (
-    <div className="flex w-full justify-between py-10 pl-6">
+    <div className="flex w-full justify-between py-5 pl-6">
       {editMode ? (
         <>
           <div>{EditableComponent}</div>
