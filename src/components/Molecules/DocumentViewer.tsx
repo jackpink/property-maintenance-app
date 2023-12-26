@@ -100,8 +100,6 @@ const DocumentViewerForJob: React.FC<DocumentViewerForJobProps> = ({
     jobId: jobId,
   });
 
-  let defaultDocuments: string[] = [];
-
   return (
     <>
       {loading ? (

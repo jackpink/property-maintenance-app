@@ -87,8 +87,8 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
             {numberOfCurrentFilters() === 0
               ? "NO FILTERS APLLIED"
               : numberOfCurrentFilters() === 1
-              ? numberOfCurrentFilters() + " FILTER"
-              : numberOfCurrentFilters() + " FILTERS"}
+              ? numberOfCurrentFilters().toString() + " FILTER"
+              : numberOfCurrentFilters().toString() + " FILTERS"}
             <div
               className={clsx(
                 "h-4 w-4 rotate-[-45deg] border-b-4 border-l-4 border-black transition-transform duration-500",
@@ -152,10 +152,11 @@ const SearchedJobs = ({
         <p>error</p>
       ) : jobs ? (
         <>
-          {jobs.map((job) => (
+          {jobs.map((job, index) => (
             <a
               href={`/property/${job.Property.id}/jobs/${job.id}`}
               className="cursor-pointer rounded-lg border-2 border-black  hover:bg-black/20"
+              key={index}
             >
               <div className="flex justify-between p-2">
                 <h3 className="text-3xl font-bold">{job.title}</h3>

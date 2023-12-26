@@ -46,7 +46,7 @@ export default function JobProperty({
         }
         EditableComponent={null}
         exists={true}
-        onConfirmEdit={() => {}}
+        onConfirmEdit={() => console.log("confirm")}
         editable={false}
       />
       <div className="flex w-full justify-between py-10 pl-6">

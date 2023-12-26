@@ -15,7 +15,7 @@ type RoomSelectorPopoverProps = {
   setError: Dispatch<SetStateAction<boolean>>;
   jobLoading?: boolean;
   loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
   errorMessage: string;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
@@ -71,7 +71,7 @@ type RoomSelectorProps = {
   property: PropertyWithLevelAndRooms;
   jobLoading?: boolean;
   loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
   checkRoomSelected: (roomId: string) => boolean;
@@ -116,7 +116,7 @@ type LevelProps = {
   checkRoomSelected: (roomId: string) => boolean;
   jobLoading: boolean;
   loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
 };
 
 export const Level: React.FC<LevelProps> = ({
@@ -158,7 +158,7 @@ type RoomButtonProps = {
   room: RoomFromLevels;
   jobLoading: boolean;
   loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
   onClickRoomAdd: (roomId: string) => void;
   onClickRoomRemove: (roomId: string) => void;
   checkRoomSelected: (roomId: string) => boolean;
@@ -176,14 +176,14 @@ export const RoomButton: React.FC<RoomButtonProps> = ({
 }) => {
   const addRoomButtonClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
     // Add room to job mutation
-    setLoading(true);
+    setLoading && setLoading(true);
     onClickRoomAdd(event.currentTarget.value);
   };
   const removeRoomButtonClicked = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     // Add room to job mutation
-    setLoading(true);
+    setLoading && setLoading(true);
     onClickRoomRemove(event.currentTarget.value);
   };
   if (checkRoomSelected(room.id)) {

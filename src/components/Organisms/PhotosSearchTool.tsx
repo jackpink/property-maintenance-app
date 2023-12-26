@@ -83,8 +83,8 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
             {numberOfCurrentFilters() === 0
               ? "NO FILTERS APPLIED"
               : numberOfCurrentFilters() === 1
-              ? numberOfCurrentFilters() + " FILTER"
-              : numberOfCurrentFilters() + " FILTERS"}
+              ? numberOfCurrentFilters().toString() + " FILTER"
+              : numberOfCurrentFilters().toString() + " FILTERS"}
             <div
               className={clsx(
                 "h-4 w-4 rotate-[-45deg] border-b-4 border-l-4 border-black transition-transform duration-500",

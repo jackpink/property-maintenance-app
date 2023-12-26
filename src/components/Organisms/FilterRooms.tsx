@@ -80,7 +80,6 @@ const RoomsFilter = ({
           onClickRoomAdd={onClickRoomAdd}
           onClickRoomRemove={onClickRoomRemove}
           loading={false}
-          setLoading={() => {}}
           checkRoomSelected={checkRoomSelected}
         />
       </Collapsible>
