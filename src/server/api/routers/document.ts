@@ -139,12 +139,35 @@ export const documentRouter = createTRPCRouter({
   .query(async ({ ctx, input }) => {
     const documents = ctx.prisma.document.findMany({
       where: {
-        documentGroupId: input.documentGroupId
+        documentGroupId: input.documentGroupId,
+        propertyId: input.propertyId
       }
   })
   return documents;
   }
   ),
-
+  getDocumentsForGroupForJob: privateProcedure
+  .input(z.object({ documentGroupId: z.number(), jobId: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const documents = ctx.prisma.document.findMany({
+      where: {
+        documentGroupId: input.documentGroupId,
+        jobId: input.jobId
+      }
+  })
+  return documents;
+  }
+  ),
+  getDocumentGroupsForJob: privateProcedure
+  .query(async ({ ctx }) => {
+  const documentGroups = ctx.prisma.documentGroup.findMany(
+      {
+        where: {
+          parent: "JOB"
+      }
+    }
+    )
+    return documentGroups;
+  }),
   
 });
