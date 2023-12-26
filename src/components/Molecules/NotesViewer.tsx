@@ -1,9 +1,10 @@
 import React, { MouseEvent } from "react";
 import LoadingSpinner from "../Atoms/LoadingSpinner";
-import { CTAButton, EditButton } from "../Atoms/Button";
+import { CTAButton, EditButton, EditIcon } from "../Atoms/Button";
 import NotesHistory, { NoteHistory } from "./NotesHistory";
 import { ParagraphText } from "../Atoms/Text";
 import NotesEditor from "./NotesEditor";
+import { EditIconSmall } from "../Atoms/Icons";
 
 type NotesViewerProps = {
   notes: string | null;
@@ -27,7 +28,7 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
+    <div className="grid w-full place-items-center place-self-center px-4 ">
       {notesLoading ? (
         <div className="h-8 w-8">
           <LoadingSpinner />
@@ -47,11 +48,13 @@ const NotesViewer: React.FC<NotesViewerProps> = ({
           ) : (
             <>
               <div className="relative mb-2 h-12 w-full">
-                <EditButton
+                <button
                   className="absolute  right-0"
                   onClick={() => setEditNotesMode(true)}
                   disabled={disabled}
-                />
+                >
+                  <EditIconSmall />
+                </button>
               </div>
               <ParagraphText>{notes}</ParagraphText>
             </>

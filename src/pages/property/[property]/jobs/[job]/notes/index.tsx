@@ -92,6 +92,7 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
   const { userId } = useAuth();
 
   const isHomeowner = job.Property.homeownerUserId === userId;
+  console.log("ishomeowner", isHomeowner);
 
   const address = concatAddress(job.Property);
 

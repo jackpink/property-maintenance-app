@@ -53,25 +53,20 @@ const JobNotes: React.FC<JobNotesProps> = ({
     });
   };
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Homeowner Notes</PageSubTitle>
-      </BackgroundContainerHeader>
-      <div className="grid w-full place-items-center place-self-center px-4 md:w-128">
-        <>
-          <NotesViewer
-            notes={notes}
-            notesLoading={false}
-            updateNotes={onClickUpdateNotes}
-            editNotesMode={editNotesMode}
-            setEditNotesMode={setEditNotesMode}
-            history={history}
-            historyLoading={historyLoading}
-            disabled={disabled}
-          />
-        </>
-      </div>
-    </BackgroundContainer>
+    <>
+      <>
+        <NotesViewer
+          notes={notes}
+          notesLoading={false}
+          updateNotes={onClickUpdateNotes}
+          editNotesMode={editNotesMode}
+          setEditNotesMode={setEditNotesMode}
+          history={history}
+          historyLoading={historyLoading}
+          disabled={disabled}
+        />
+      </>
+    </>
   );
 };
 
