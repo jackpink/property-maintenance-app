@@ -313,24 +313,6 @@ export const jobRouter = createTRPCRouter({
     })
     return newJob;
   }),
-  updateTradeContactForJob: privateProcedure
-  .input(z.object({jobId: z.string(), tradeName: z.string(), tradeEmail: z.string().optional(), tradePhone: z.string().optional()}))
-  .mutation( async({ ctx, input}) => {
-    const json = {
-      name: input.tradeName,
-      email: input.tradeEmail,
-      phone: input.tradePhone
-    } as Prisma.JsonObject
-    const newJob = await ctx.prisma.job.update({
-      where: {
-        id: input.jobId
-      },
-      data: {
-        nonUserTradeInfo: json
-      }
-    })
-    return newJob;
-  }),
   updateNotesForJob:privateProcedure
   .input(z.object({jobId: z.string(), notes: z.string()}))
   .mutation(async ({ ctx, input }) => {
@@ -464,5 +446,61 @@ export const jobRouter = createTRPCRouter({
       
       return [];
     }
-  })
+  }),
+  updateJob: privateProcedure
+  .input(z.object({jobId: z.string(), title: z.string().optional(), date: z.date().optional(), nonTradeUserName: z.string().optional(), nonTradeUserEmail: z.string().optional(), nonTradeUserPhone: z.string().optional()}))
+  .mutation(async ({ctx, input}) => {
+    if (input.title) {
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          title: input.title
+        }
+      })
+      return job;
+    } else if (input.date) {
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          date: input.date
+        }
+      })
+      return job;
+    } else if (input.nonTradeUserName) {
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          nonUserTradeName: input.nonTradeUserName,
+        }
+      })
+      return job;
+    } else if (input.nonTradeUserEmail) {
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          nonUserTradeEmail: input.nonTradeUserEmail
+        }
+      })
+      return job;
+    } else if (input.nonTradeUserPhone) {
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          nonUserTradePhone: input.nonTradeUserPhone
+        }
+      })
+      return job;
+    }
+  }),
+        
 });
