@@ -53,7 +53,7 @@ export const TabAttributeComponent = ({
       {editMode ? (
         <>
           <div>{EditableComponent}</div>
-          <div>
+          <div className="flex flex-nowrap">
             <button onClick={() => setEditMode(false)}>
               <CancelIcon />
             </button>

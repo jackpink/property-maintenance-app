@@ -123,9 +123,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
         <ColumnTwo>
           <JobDate date={job.date} jobId={job.id} disabled={!isHomeowner} />
           <JobCompletedBy
-            tradeInfo={job.nonUserTradeInfo}
             jobId={job.id}
             disabled={!isHomeowner}
+            nonTradeUserPhone={job.nonUserTradePhone ?? undefined}
+            nonTradeUserEmail={job.nonUserTradeEmail ?? undefined}
+            nonTradeUserName={job.nonUserTradeName ?? undefined}
           />
 
           <JobProperty

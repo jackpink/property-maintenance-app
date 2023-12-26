@@ -37,7 +37,7 @@ const TitleFilter = ({
         }
         label={"Title: " + filterValues.titleValue}
       />
-      <Collapsible open={filterValues.titleOpen && parentElementOpen}>
+      <Collapsible open={filterValues.titleOpen}>
         <TitleSearchBar
           onChange={titleSearchOnChange}
           title={filterValues.titleValue}
