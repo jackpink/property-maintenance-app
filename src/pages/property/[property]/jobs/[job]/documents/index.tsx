@@ -43,16 +43,15 @@ type HomeownerJobPageWithParamsProps = {
 const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
   id,
 }) => {
-  const job = api.job.getJob.useQuery({ jobId: id });
-  const history = api.job.getHistoryForJob.useQuery({ jobId: id });
+  const {
+    data: job,
+    isLoading: jobLoading,
+    failureReason: jobFailureReason,
+  } = api.job.getJob.useQuery({ jobId: id });
+  const { data: history, isLoading: historyLoading } =
+    api.job.getHistoryForJob.useQuery({ jobId: id });
 
-  console.log(history.data);
-
-  const jobLoading = job.isFetching || job.isLoading;
-
-  const historyLoading = history.isFetching || history.isLoading;
-
-  const forbidden = job.failureReason?.message === "FORBIDDEN";
+  const forbidden = jobFailureReason?.message === "FORBIDDEN";
 
   // have some logic here, if has trade user, then display without any action buttons
   return (
@@ -61,13 +60,13 @@ const HomeownerJobPageWithParams: React.FC<HomeownerJobPageWithParamsProps> = ({
         <p>Forbidden</p>
       ) : jobLoading ? (
         <LoadingSpinner />
-      ) : !job.data ? (
+      ) : !job ? (
         <>Could not get Data</>
       ) : (
         <HomeownerJobPageWithJob
-          job={job.data}
+          job={job}
           jobLoading={jobLoading}
-          history={history.data}
+          history={history}
           historyLoading={historyLoading}
         />
       )}
