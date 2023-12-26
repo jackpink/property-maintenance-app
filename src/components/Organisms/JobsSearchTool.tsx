@@ -137,12 +137,8 @@ const SearchedJobs = ({
   const getJobCompletedBy = (job: Job) => {
     if (job.TradeUser) {
       return job.TradeUser.companyName;
-    } else if (
-      job.nonUserTradeInfo &&
-      instanceOfTradeInfo(job.nonUserTradeInfo) &&
-      job.nonUserTradeInfo.name
-    ) {
-      return job.nonUserTradeInfo.name;
+    } else if (job.nonUserTradeName) {
+      return job.nonUserTradeName;
     } else {
       return "No trade assigned";
     }

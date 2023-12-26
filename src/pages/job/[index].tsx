@@ -106,13 +106,6 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
       />
       <ResponsiveColumns>
         <ColumnOne>
-          <JobDate date={job.date} jobId={job.id} disabled={!isHomeowner} />
-          <JobCompletedBy
-            tradeInfo={job.nonUserTradeInfo}
-            jobId={job.id}
-            disabled={!isHomeowner}
-          />
-
           <JobProperty
             job={job}
             jobLoading={jobLoading}

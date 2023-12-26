@@ -47,13 +47,7 @@ const JobsForSelectedRoom: React.FC<JobsForSelectedRoomProps> = ({
   // when room changes we want to select all jobs
 
   if (!jobs.data) return <>loading jobs</>;
-  return (
-    <Jobs
-      jobs={jobs.data}
-      selectedJobs={selectedJobs}
-      setSelectedJobs={setSelectedJobs}
-    />
-  );
+  return <></>;
 };
 
 type PropertyPhotoSearchPageWithParamsProps = {
