@@ -41,39 +41,34 @@ const JobPhotos: React.FC<JobPhotosProps> = ({ job }) => {
   }, [unassignedPhotos]);
 
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Photos</PageSubTitle>
-      </BackgroundContainerHeader>
-      <div className="flex flex-col	">
-        <UploadPhotoButton
-          jobId={job.id}
-          propertyId={job.Property.id}
-          multipleUploads={true}
-          refetchPageData={refetchDataForPage}
-          userType="HOMEOWNER"
-        />
-        <RoomSelectorDropdown
+    <div className="flex flex-col	">
+      <UploadPhotoButton
+        jobId={job.id}
+        propertyId={job.Property.id}
+        multipleUploads={true}
+        refetchPageData={refetchDataForPage}
+        userType="HOMEOWNER"
+      />
+      <RoomSelectorDropdown
+        rooms={job.rooms}
+        selectedRoom={selectedRoom}
+        setSelectedRoom={setSelectedRoom}
+        unassignedPhotos={unassignedPhotosToDisplay}
+      />
+      {selectedRoom === "UNASSIGNED" && unassignedPhotos ? (
+        <UnassignedPhotos
+          photos={unassignedPhotos}
           rooms={job.rooms}
-          selectedRoom={selectedRoom}
-          setSelectedRoom={setSelectedRoom}
-          unassignedPhotos={unassignedPhotosToDisplay}
+          refetchDataForPage={refetchDataForPage}
         />
-        {selectedRoom === "UNASSIGNED" && unassignedPhotos ? (
-          <UnassignedPhotos
-            photos={unassignedPhotos}
-            rooms={job.rooms}
-            refetchDataForPage={refetchDataForPage}
-          />
-        ) : (
-          <RoomPhotos
-            job={job}
-            roomId={selectedRoom}
-            refetchDataForPage={refetchDataForPage}
-          />
-        )}
-      </div>
-    </BackgroundContainer>
+      ) : (
+        <RoomPhotos
+          job={job}
+          roomId={selectedRoom}
+          refetchDataForPage={refetchDataForPage}
+        />
+      )}
+    </div>
   );
 };
 type RoomSelectorDropdownProps = {
