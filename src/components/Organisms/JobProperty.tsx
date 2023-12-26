@@ -10,6 +10,12 @@ import { Text } from "../Atoms/Text";
 import { Job } from "~/pages/job/[index]";
 import { Property } from "@prisma/client";
 import JobRoomSelectorPopover from "./JobRoomSelectorPopover";
+import {
+  TabAttributeComponent,
+  TabAttributeComponentLabel,
+  TabAttributeComponentValue,
+} from "../Atoms/TabLists";
+import { concatAddress } from "~/utils/utits";
 
 type Rooms = Job["rooms"];
 
@@ -25,14 +31,21 @@ export default function JobProperty({
   disabled = false,
 }: JobPropertyProps) {
   return (
-    <BackgroundContainer>
-      <BackgroundContainerHeader>
-        <PageSubTitle>Property</PageSubTitle>
-      </BackgroundContainerHeader>
-      <PropertyHeroWithSelectedRooms
-        property={job.Property}
-        rooms={job.rooms}
+    <>
+      <TabAttributeComponent
+        title="Property"
+        StandardComponent={
+          <>
+            <TabAttributeComponentLabel label="Property:" />
+            <TabAttributeComponentValue value={concatAddress(job.Property)} />
+          </>
+        }
+        EditableComponent={null}
+        exists={true}
+        onConfirmEdit={() => {}}
+        editable={false}
       />
+
       <Text className="p-3 text-lg font-extrabold ">Rooms Included in Job</Text>
       <div className="relative text-center">
         {job.rooms.map((room, index) => {
@@ -42,12 +55,7 @@ export default function JobProperty({
             </p>
           );
         })}
-        <JobRoomSelectorPopover
-          job={job}
-          jobLoading={jobLoading}
-          disabled={disabled}
-        />
       </div>
-    </BackgroundContainer>
+    </>
   );
 }

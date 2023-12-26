@@ -34,12 +34,14 @@ export const TabAttributeComponent = ({
   onConfirmEdit,
   StandardComponent,
   exists,
+  editable = true,
 }: {
   title: string;
   EditableComponent: ReactNode;
   onConfirmEdit: () => void;
   StandardComponent: ReactNode;
   exists: boolean;
+  editable?: boolean;
 }) => {
   const [editMode, setEditMode] = useState(false);
 
@@ -72,6 +74,11 @@ export const TabAttributeComponent = ({
             <span className="pl-4">Add {title}</span>
           </div>
         </button>
+      ) : !editable ? (
+        <>
+          <div>{StandardComponent}</div>
+          <div className="justify-self-end"></div>
+        </>
       ) : (
         <>
           <div>{StandardComponent}</div>
