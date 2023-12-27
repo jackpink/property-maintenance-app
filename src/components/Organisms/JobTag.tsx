@@ -74,17 +74,26 @@ const EditableTag: React.FC<{
   return (
     <>
       <TabAttributeComponentLabel label="Tag:" />
-      {tags.map((tag, index) =>
-        tag.toString() === selectedTag ? (
-          <button key={index} className="selected">
-            {tag} <span className="checkmark">✓</span>
-          </button>
-        ) : (
-          <button key={index} onClick={() => setTag(tag)}>
-            {tag}
-          </button>
-        )
-      )}
+      <div className=" flex flex-wrap">
+        {tags.map((tag, index) =>
+          tag.toString() === selectedTag ? (
+            <button
+              key={index}
+              className="m-4 rounded-lg border-2 border-altPrimary bg-brand p-1"
+            >
+              <span className="font-medium text-altPrimary">{tag}✓</span>
+            </button>
+          ) : (
+            <button
+              key={index}
+              onClick={() => setTag(tag)}
+              className="border-1 m-4 rounded-lg border-altPrimary p-1"
+            >
+              {tag}
+            </button>
+          )
+        )}
+      </div>
     </>
   );
 };
