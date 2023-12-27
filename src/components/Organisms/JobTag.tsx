@@ -1,14 +1,7 @@
 import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { api } from "~/utils/api";
-import EditDatePopover from "../Molecules/EditDatePopover";
-import { CTAButton } from "../Atoms/Button";
-import { format } from "date-fns";
-import { PageSubTitle } from "../Atoms/Title";
-import {
-  BackgroundContainer,
-  BackgroundContainerHeader,
-} from "../Atoms/BackgroundContainer";
+
 import {
   TabAttributeComponent,
   TabAttributeComponentLabel,
@@ -24,8 +17,8 @@ type JobDateProps = {
 };
 
 export default function JobTag({ tag, jobId, disabled = false }: JobDateProps) {
-  const [jobDayPickerOpen, setJobDayPickerOpen] = useState(false);
-  const [newTag, setNewTag] = useState<TagEnum>();
+  const initalTag = (tag as TagEnum) ?? undefined;
+  const [newTag, setNewTag] = useState<TagEnum | undefined>(initalTag);
   const ctx = api.useContext();
 
   const { mutate: updateJob } = api.job.updateJob.useMutation({
@@ -81,13 +74,15 @@ const EditableTag: React.FC<{
               key={index}
               className="m-4 rounded-lg border-2 border-altPrimary bg-brand p-1"
             >
-              <span className="font-medium text-altPrimary">{tag}✓</span>
+              <span className="text-lg font-medium text-altPrimary">
+                {tag}✓
+              </span>
             </button>
           ) : (
             <button
               key={index}
               onClick={() => setTag(tag)}
-              className="border-1 m-4 rounded-lg border-altPrimary p-1"
+              className="m-4 rounded-lg border-2 border-dark p-1 text-lg font-medium text-dark"
             >
               {tag}
             </button>
