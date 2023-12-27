@@ -284,7 +284,7 @@ export const jobRouter = createTRPCRouter({
     return room.jobs;
   }),
   getJobsForRooms: privateProcedure
-  .input(z.object({roomIds: z.array(z.string())}))
+  .input(z.object({roomIds: z.array(z.string()), tag: z.nativeEnum(TagEnum).optional()}))
   .query(async ({ctx, input}) => {
     const jobs = await ctx.prisma.job.findMany({
       where: {
@@ -294,7 +294,8 @@ export const jobRouter = createTRPCRouter({
               in: input.roomIds
             }
           }
-        }
+        },
+        tag: input.tag
       }
     })
     return jobs;
