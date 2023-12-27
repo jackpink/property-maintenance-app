@@ -54,7 +54,7 @@ export default function JobTitleAndDate({
   return (
     <>
       <TabAttributeComponent
-        title="Email"
+        title="Title"
         StandardComponent={<Title title={title} />}
         EditableComponent={
           <EditableTitle title={newTitle} setTitle={setNewTitle} />
