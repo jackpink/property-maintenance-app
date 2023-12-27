@@ -25,6 +25,7 @@ import {
 import { concatAddress } from "~/utils/utits";
 import { JobPageNav } from "~/components/Molecules/PageNav";
 import { TabListComponent } from "~/components/Atoms/TabLists";
+import JobTag from "~/components/Organisms/JobTag";
 
 export default function HomeownerJobPage() {
   const id = useRouter().query.job?.toString();
@@ -124,6 +125,11 @@ const HomeownerJobPageWithJob: React.FC<HomeownerJobPageWithJobProps> = ({
           <JobDate
             date={job.date}
             title={job.title}
+            jobId={job.id}
+            disabled={!isHomeowner}
+          />
+          <JobTag
+            tag={job.tag ?? undefined}
             jobId={job.id}
             disabled={!isHomeowner}
           />
