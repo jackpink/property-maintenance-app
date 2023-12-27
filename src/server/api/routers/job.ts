@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import { type RouterOutputs } from "~/utils/api";
 import { getJobHistory, updateJobHistory } from "../mongoDB/jobHistory";
-
+import { TagEnum } from "@prisma/client";
 
 export const jobRouter = createTRPCRouter({
   
@@ -448,7 +448,7 @@ export const jobRouter = createTRPCRouter({
     }
   }),
   updateJob: privateProcedure
-  .input(z.object({jobId: z.string(), title: z.string().optional(), date: z.date().optional(), nonTradeUserName: z.string().optional(), nonTradeUserEmail: z.string().optional(), nonTradeUserPhone: z.string().optional()}))
+  .input(z.object({jobId: z.string(), title: z.string().optional(), date: z.date().optional(), nonTradeUserName: z.string().optional(), nonTradeUserEmail: z.string().optional(), nonTradeUserPhone: z.string().optional(), tag: z.nativeEnum(TagEnum).optional()}))
   .mutation(async ({ctx, input}) => {
     if (input.title) {
       const job = await ctx.prisma.job.update({
@@ -497,6 +497,16 @@ export const jobRouter = createTRPCRouter({
         },
         data: {
           nonUserTradePhone: input.nonTradeUserPhone
+        }
+      })
+      return job;
+    } else if (input.tag) {
+      const job = await ctx.prisma.job.update({
+        where: {
+          id: input.jobId
+        },
+        data: {
+          tag: input.tag
         }
       })
       return job;
