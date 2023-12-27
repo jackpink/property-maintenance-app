@@ -8,9 +8,10 @@ import RecentJobsViewer from "../Molecules/RecentJobsViewer";
 import { Collapsible, CollapsibleHeader } from "../Atoms/Collapsible";
 import TitleFilter, { type TitleFilterValues } from "./FilterTitle";
 import RoomsFilter, { RoomsFilterValues } from "./FilterRooms";
-import { Room } from "@prisma/client";
+import { Room, TagEnum } from "@prisma/client";
 import clsx from "clsx";
 import { instanceOfTradeInfo } from "../Molecules/AddTradePopover";
+import TagFilter, { TagFilterValues } from "./FilterTags";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -18,8 +19,13 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
   const searchParams = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(true);
 
-  const getCurrentFilters = (): { title?: string; rooms?: string[] } => {
+  const getCurrentFilters = (): {
+    title?: string;
+    rooms?: string[];
+    tag?: TagEnum;
+  } => {
     let title;
+    let tag;
     let rooms;
     console.log("search params", searchParams.entries().next().value);
     searchParams.forEach((value, key) => {
@@ -38,16 +44,18 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
         console.log("displayedValue", displayedValue);
       } else if (key === "title") {
         title = decodedValue[0]?.toString() ?? "";
+      } else if (key === "tag") {
+        tag = (decodedValue[0]?.toString() as TagEnum) ?? undefined;
       } else {
         console.log("decodedValue", decodedValue);
         displayedValue = decodedValue[0]?.toString() ?? "";
       }
     });
 
-    return { title, rooms };
+    return { title, rooms, tag };
   };
 
-  const { title, rooms } = getCurrentFilters();
+  const { title, rooms, tag } = getCurrentFilters();
 
   console.log("rooms", rooms);
   console.log("title", title);
@@ -103,10 +111,11 @@ const JobsSearchTool = ({ property }: { property: Property }) => {
           property={property}
           title={title}
           rooms={roomObjects}
+          tag={tag}
           parentElementOpen={filterOpen}
         />
       </Collapsible>
-      <SearchedJobs property={property} title={title} rooms={rooms} />
+      <SearchedJobs property={property} title={title} rooms={rooms} tag={tag} />
     </div>
   );
 };
@@ -117,10 +126,12 @@ const SearchedJobs = ({
   property,
   title,
   rooms,
+  tag,
 }: {
   property: Property;
   title?: string;
   rooms?: string[];
+  tag?: TagEnum;
 }) => {
   const {
     data: jobs,
@@ -130,6 +141,7 @@ const SearchedJobs = ({
     propertyId: property.id,
     title: title,
     rooms: rooms,
+    tag: tag,
   });
 
   type Job = RouterOutputs["job"]["getFilteredJobsforProperty"][number];
@@ -140,7 +152,7 @@ const SearchedJobs = ({
     } else if (job.nonUserTradeName) {
       return job.nonUserTradeName;
     } else {
-      return "No trade assigned";
+      return "Not assigned";
     }
   };
 
@@ -162,8 +174,16 @@ const SearchedJobs = ({
                 <h3 className="text-3xl font-bold">{job.title}</h3>
                 <Text>{job.date.toDateString()}</Text>
               </div>
-              <div className="flex justify-between pb-2 pt-6"></div>
-              <Text>{getJobCompletedBy(job)}</Text>
+              <div className="flex justify-between pb-2 pt-6">
+                <Text className="pl-2">
+                  <span className="font-medium">Contractor: </span>
+                  {getJobCompletedBy(job)}
+                </Text>
+                <Text className="pr-2">
+                  <span className="font-medium">Tag: </span>
+                  {job.tag ?? "No tag"}
+                </Text>
+              </div>
             </a>
           ))}
         </>
@@ -178,11 +198,13 @@ const Filters = ({
   property,
   title,
   rooms,
+  tag,
   parentElementOpen,
 }: {
   property: Property;
   title?: string;
   rooms?: Room[];
+  tag?: TagEnum;
   parentElementOpen: boolean;
 }) => {
   const searchParams = useSearchParams();
@@ -203,6 +225,12 @@ const Filters = ({
       roomsSelected: rooms ? true : false,
     }
   );
+
+  const [tagFilterValues, setTagFilterValues] = useState<TagFilterValues>({
+    tagValue: tag ?? undefined,
+    tagOpen: false,
+    tagSelected: tag ? true : false,
+  });
 
   const findLevelForRoom = (roomId: string) => {
     return property.levels.find((level) =>
@@ -225,6 +253,10 @@ const Filters = ({
           JSON.stringify(roomsFilterValues.roomsValue.map((room) => room.id))
         )
       );
+    }
+
+    if (tagFilterValues.tagSelected && tagFilterValues.tagValue) {
+      params.set("tag", encodeURIComponent(tagFilterValues.tagValue));
     }
 
     //set params
@@ -277,6 +309,7 @@ const Filters = ({
     if (!parentElementOpen) {
       setTitleFilterValues((prev) => ({ ...prev, titleOpen: false }));
       setRoomsFilterValues((prev) => ({ ...prev, roomsOpen: false }));
+      setTagFilterValues((prev) => ({ ...prev, tagOpen: false }));
     }
   }, [parentElementOpen]);
 
@@ -292,6 +325,12 @@ const Filters = ({
         property={property}
         filterValues={roomsFilterValues}
         setFilterValues={setRoomsFilterValues}
+        parentElementOpen={parentElementOpen}
+      />
+      <TagFilter
+        property={property}
+        filterValues={tagFilterValues}
+        setFilterValues={setTagFilterValues}
         parentElementOpen={parentElementOpen}
       />
       <CTAButton onClick={setCurrentFilters} className="w-full">
