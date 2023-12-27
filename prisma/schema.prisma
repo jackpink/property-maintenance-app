@@ -130,9 +130,25 @@ model Job {
   nonUserTradeName  String?
   nonUserTradeEmail String?
   nonUserTradePhone String?
+  tag               TagEnum?
 
   @@index([propertyId])
   @@index([tradeUserId])
+}
+
+enum TagEnum {
+  ELECTRICAL
+  PLUMBING
+  CARPENTRY
+  AIRCONDITIONING
+  IT
+  AV
+  PAINTING
+  TILING
+  ROOFING
+  GARDENING
+  CLEANING
+  OTHER
 }
 
 model TradeUser {
@@ -165,6 +181,7 @@ model Product {
   manufacturer   String?
   model          String?
   Documents      Document[]
+  tag            TagEnum?
 
   @@index([roomId])
   @@index([jobId])
