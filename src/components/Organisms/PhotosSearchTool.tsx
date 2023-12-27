@@ -8,12 +8,13 @@ import RecentJobsViewer from "../Molecules/RecentJobsViewer";
 import { Collapsible, CollapsibleHeader } from "../Atoms/Collapsible";
 import TitleFilter, { type TitleFilterValues } from "./FilterTitle";
 import RoomsFilter, { RoomsFilterValues } from "./FilterRooms";
-import { Job, Room } from "@prisma/client";
+import { Job, Room, TagEnum } from "@prisma/client";
 import clsx from "clsx";
 import { instanceOfTradeInfo } from "../Molecules/AddTradePopover";
 import PhotoViewer from "../Molecules/PhotoViewer";
 import JobsFilter, { JobsFilterValues } from "./FilterJobs";
 import { set } from "date-fns";
+import TagFilter, { TagFilterValues } from "./FilterTags";
 
 type Property = RouterOutputs["property"]["getPropertyForUser"];
 
@@ -21,9 +22,14 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
   const searchParams = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(true);
 
-  const getCurrentFilters = (): { rooms?: string[]; jobs?: string[] } => {
+  const getCurrentFilters = (): {
+    rooms?: string[];
+    jobs?: string[];
+    tag?: TagEnum;
+  } => {
     let rooms;
     let jobs;
+    let tag;
 
     searchParams.forEach((value, key) => {
       const decodedValue = decodeURIComponent(value)
@@ -40,15 +46,17 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
         //title = decodedValue[0]?.toString() ?? "";
         jobs = decodedValue;
         // how to get jobIds from indexes
+      } else if (key === "tag") {
+        tag = (decodedValue[0]?.toString() as TagEnum) ?? undefined;
       } else {
         displayedValue = decodedValue[0]?.toString() ?? "";
       }
     });
 
-    return { rooms, jobs };
+    return { rooms, jobs, tag };
   };
 
-  const { rooms, jobs } = getCurrentFilters();
+  const { rooms, jobs, tag } = getCurrentFilters();
 
   const getRoomObjects = () => {
     if (!rooms) return [];
@@ -98,6 +106,7 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
         <Filters
           property={property}
           rooms={roomObjects}
+          tag={tag}
           parentElementOpen={filterOpen}
         />
       </Collapsible>
@@ -105,6 +114,7 @@ const PhotosSearchTool = ({ property }: { property: Property }) => {
         property={property}
         roomIds={rooms ?? []}
         jobIndices={jobs}
+        tag={tag}
       />
     </div>
   );
@@ -116,10 +126,12 @@ const SearchedPhotos = ({
   property,
   roomIds,
   jobIndices,
+  tag,
 }: {
   property: Property;
   roomIds: string[];
   jobIndices?: string[];
+  tag?: TagEnum;
 }) => {
   const {
     data: jobs,
@@ -127,8 +139,9 @@ const SearchedPhotos = ({
     error,
   } = api.job.getJobsForRooms.useQuery({
     roomIds: roomIds,
+    tag: tag,
   });
-  console.log("jobIndices", jobIndices);
+  console.log("jobIndices", jobIndices); /// jobs need to be filtered with tag as well
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col space-y-4 px-6 py-8">
@@ -139,29 +152,21 @@ const SearchedPhotos = ({
       ) : jobs ? (
         <>
           {jobs.map((job, index) => (
-            <>
+            <div key={index}>
               {!jobIndices ? (
                 <>
-                  <Text key={index}>{job.title}</Text>
-                  <PhotosForJobAndRooms
-                    key={index}
-                    jobId={job.id}
-                    roomIds={roomIds}
-                  />
+                  <Text>{job.title}</Text>
+                  <PhotosForJobAndRooms jobId={job.id} roomIds={roomIds} />
                 </>
               ) : (
                 jobIndices?.includes(index.toString()) && (
                   <>
-                    <Text key={index}>{job.title}</Text>
-                    <PhotosForJobAndRooms
-                      key={index}
-                      jobId={job.id}
-                      roomIds={roomIds}
-                    />
+                    <Text>{job.title}</Text>
+                    <PhotosForJobAndRooms jobId={job.id} roomIds={roomIds} />
                   </>
                 )
               )}
-            </>
+            </div>
           ))}
         </>
       ) : (
@@ -208,11 +213,13 @@ const Filters = ({
   property,
   rooms,
   jobs,
+  tag,
   parentElementOpen,
 }: {
   property: Property;
   rooms?: Room[];
   jobs?: number[];
+  tag?: TagEnum;
   parentElementOpen: boolean;
 }) => {
   const searchParams = useSearchParams();
@@ -231,6 +238,12 @@ const Filters = ({
     jobsValue: jobs ?? [],
     jobsOpen: false,
     jobsSelected: jobs ? true : false,
+  });
+
+  const [tagFilterValues, setTagFilterValues] = useState<TagFilterValues>({
+    tagValue: tag ?? undefined,
+    tagOpen: false,
+    tagSelected: tag ? true : false,
   });
 
   const findLevelForRoom = (roomId: string) => {
@@ -286,6 +299,8 @@ const Filters = ({
         "jobs",
         encodeURIComponent(JSON.stringify(jobsFilterValues.jobsValue))
       );
+    } else if (tagFilterValues.tagSelected && tagFilterValues.tagValue) {
+      params.set("tag", encodeURIComponent(tagFilterValues.tagValue));
     }
 
     //set params
@@ -320,6 +335,8 @@ const Filters = ({
           decodedValue.length === 1
             ? "1 Job Selected"
             : decodedValue.length.toString() + " Jobs Selected" ?? "";
+      } else if (key === "tag") {
+        displayedValue = (decodedValue[0]?.toString() as TagEnum) ?? undefined;
       } else {
         displayedValue = decodedValue[0]?.toString() ?? "";
       }
@@ -339,6 +356,8 @@ const Filters = ({
   useEffect(() => {
     if (!parentElementOpen) {
       setRoomsFilterValues((prev) => ({ ...prev, roomsOpen: false }));
+      setJobsFilterValues((prev) => ({ ...prev, jobsOpen: false }));
+      setTagFilterValues((prev) => ({ ...prev, tagOpen: false }));
     }
   }, [parentElementOpen]);
   console.log("jobsFilterValues", jobsFilterValues.jobsValue);
@@ -350,6 +369,12 @@ const Filters = ({
         property={property}
         filterValues={roomsFilterValues}
         setFilterValues={setRoomsFilterValues}
+        parentElementOpen={parentElementOpen}
+      />
+      <TagFilter
+        property={property}
+        filterValues={tagFilterValues}
+        setFilterValues={setTagFilterValues}
         parentElementOpen={parentElementOpen}
       />
       <JobsFilter

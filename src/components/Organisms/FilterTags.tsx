@@ -37,7 +37,9 @@ const TagFilter = ({
         setOpen={(open) =>
           setFilterValues((prev) => ({ ...prev, titleOpen: open }))
         }
-        label={"Tag: " + filterValues.tagValue}
+        label={
+          filterValues.tagValue ? "Tag: " + filterValues.tagValue : "Tag: "
+        }
       />
       <Collapsible open={filterValues.tagOpen}>
         <SelectableTag
