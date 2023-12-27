@@ -386,7 +386,7 @@ export const jobRouter = createTRPCRouter({
     return history;
   }),
   getFilteredJobsforProperty: privateProcedure
-  .input(z.object({ propertyId: z.string(), title: z.string().optional(), rooms: z.array(z.string()).optional()}))
+  .input(z.object({ propertyId: z.string(), title: z.string().optional(), rooms: z.array(z.string()).optional(), tag: z.nativeEnum(TagEnum).optional()}))
   .query(async ({ ctx, input }) => {
     if (input.rooms && input.title) {
       const jobs = await ctx.prisma.job.findMany({
@@ -401,7 +401,8 @@ export const jobRouter = createTRPCRouter({
                 in: input.rooms
               }
             }
-          }
+          },
+          tag: input.tag
         },
         include: {
           Property: true,
@@ -416,7 +417,8 @@ export const jobRouter = createTRPCRouter({
           propertyId: input.propertyId,
           title: {
             contains: input.title
-          }
+          },
+          tag: input.tag
         },
         include: {
           Property: true,
@@ -434,7 +436,8 @@ export const jobRouter = createTRPCRouter({
                 in: input.rooms
               }
             }
-          }
+          },
+          tag: input.tag
         },
         include: {
           Property: true,
