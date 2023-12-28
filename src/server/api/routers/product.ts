@@ -29,5 +29,17 @@ export const productRouter= createTRPCRouter({
   })
   return products;
   }),
+  createProductForRoom: privateProcedure
+  .input(z.object({ label:z.string(), roomId:z.string()}))
+  .mutation(async ({ ctx, input }) => {
+    const product = await ctx.prisma.product.create({
+      data: {
+        label: input.label,
+        roomId: input.roomId
+      }
+    });
+    return {product: product};
+
+  }),
   
 });
