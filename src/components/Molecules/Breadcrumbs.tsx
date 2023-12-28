@@ -112,6 +112,39 @@ export const JobBreadcrumbs: React.FC<JobBreadcrumbsProps> = ({
   return <Breadcrumbs breadcrumbs={breadcrumbs} />;
 };
 
+type RoomBreadcrumbsProps = {
+  address: string;
+  propertyId: string;
+  roomLabel: string;
+  roomId: string;
+};
+
+export const RoomBreadcrumbs: React.FC<RoomBreadcrumbsProps> = ({
+  address,
+  propertyId,
+  roomId,
+  roomLabel,
+}) => {
+  const breadcrumbs = [
+    { href: "/properties", text: "Properties" },
+    {
+      href: `/property/${encodeURIComponent(propertyId)}`,
+      text: address.split(",")[0] || address,
+    },
+    {
+      href: `/property/${encodeURIComponent(propertyId)}/rooms`,
+      text: "Rooms",
+    },
+    {
+      href: `/property/${encodeURIComponent(
+        propertyId
+      )}/jobs/${encodeURIComponent(roomId)}`,
+      text: roomLabel,
+    },
+  ];
+  return <Breadcrumbs breadcrumbs={breadcrumbs} />;
+};
+
 const RightArrow = ({
   height = 15,
   colour = "#0A5B5A", //#f7ece1",

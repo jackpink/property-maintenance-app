@@ -13,6 +13,7 @@ import { Text } from "../Atoms/Text";
 import { NavMenuButton } from "../Atoms/Button";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
+import { type } from "os";
 
 const checkPath = (path: string) => {
   const page = path.substring(path.lastIndexOf("/") + 1);
@@ -152,14 +153,54 @@ const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
   );
 };
 
+type RoomPageNavItemsProps = {
+  propertyId: string;
+  roomId?: string;
+  onlySelected?: boolean;
+};
+
+const RoomPageNavItems: React.FC<RoomPageNavItemsProps> = ({
+  propertyId,
+  roomId = "1",
+  onlySelected = false,
+}) => {
+  return (
+    <>
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/rooms/${encodeURIComponent(roomId)}`}
+        linkText="GENERAL"
+        onlySelected={onlySelected}
+      />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/rooms/${encodeURIComponent(roomId)}/products`}
+        linkText="PRODUCTS"
+        onlySelected={onlySelected}
+      />
+      <PageNavItem
+        linkHref={`/property/${encodeURIComponent(
+          propertyId
+        )}/rooms/${encodeURIComponent(roomId)}/alerts`}
+        linkText="ALERTS"
+        onlySelected={onlySelected}
+      />
+    </>
+  );
+};
+
 const PageNav = ({
   PageNavItems,
   propertyId,
   jobId,
+  roomId,
 }: {
-  PageNavItems: React.FC<JobPageNavItemsProps>;
+  PageNavItems: React.FC<JobPageNavItemsProps | RoomPageNavItemsProps>;
   propertyId: string;
   jobId?: string;
+  roomId?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -169,7 +210,11 @@ const PageNav = ({
         <div className="relative hidden items-center lg:flex">
           <nav className="">
             <ul className="flex space-x-8">
-              <PageNavItems propertyId={propertyId} jobId={jobId} />
+              <PageNavItems
+                propertyId={propertyId}
+                jobId={jobId}
+                roomId={roomId}
+              />
             </ul>
           </nav>
           <div className="ml-6 flex items-center border-l border-slate-200 pl-6 dark:border-slate-800"></div>
@@ -185,6 +230,7 @@ const PageNav = ({
             propertyId={propertyId}
             jobId={jobId}
             onlySelected={true}
+            roomId={roomId}
           />
         </ul>
       </div>
@@ -229,6 +275,24 @@ export const JobPageNav: React.FC<JobPageNavProps> = ({
       PageNavItems={JobPageNavItems}
       propertyId={propertyId}
       jobId={jobId}
+    />
+  );
+};
+
+type RoomPageNavProps = {
+  propertyId: string;
+  roomId: string;
+};
+
+export const RoomPageNav: React.FC<RoomPageNavProps> = ({
+  propertyId,
+  roomId,
+}) => {
+  return (
+    <PageNav
+      PageNavItems={RoomPageNavItems}
+      propertyId={propertyId}
+      roomId={roomId}
     />
   );
 };
