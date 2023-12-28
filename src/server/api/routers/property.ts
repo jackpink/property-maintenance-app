@@ -328,5 +328,34 @@ export const propertyRouter = createTRPCRouter({
       });
       return property;
     }
-  })
+  }),
+  getRoom: privateProcedure
+  .input(z.object({ id: z.string() }))
+  .query(async ({ctx, input}) => {
+    const room = await ctx.prisma.room.findUnique({
+      where: {
+        id: input.id
+      }
+    });
+    return room;
+  }),
+  updateRoom: privateProcedure
+  .input(z.object({ id: z.string(), label: z.string().optional()}))
+  .mutation(async ({ctx, input}) => {
+    const room = await ctx.prisma.room.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        label: input.label
+      }
+    });
+    return room;
+  }),
+  getHistoryForRoom: privateProcedure
+  .input(z.object({ roomId: z.string() }))
+  .query(async ({ctx, input}) => {
+    
+    return null;
+  }),
 });
