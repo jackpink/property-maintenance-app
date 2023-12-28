@@ -379,6 +379,7 @@ const Filters = ({
       />
       <JobsFilter
         roomIds={rooms?.map((room) => room.id) ?? []}
+        tag={tag}
         filterValues={jobsFilterValues}
         setFilterValues={setJobsFilterValues}
         parentElementOpen={parentElementOpen}

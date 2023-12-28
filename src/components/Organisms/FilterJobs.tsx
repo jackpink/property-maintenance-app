@@ -1,4 +1,4 @@
-import { Job, Room } from "@prisma/client";
+import { Job, Room, TagEnum } from "@prisma/client";
 import { Dispatch, SetStateAction, use, useEffect } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import { Collapsible, CollapsibleFilterHeader } from "../Atoms/Collapsible";
@@ -17,11 +17,13 @@ export type JobsFilterValues = {
 
 const JobsFilter = ({
   roomIds,
+  tag,
   filterValues,
   setFilterValues,
   parentElementOpen,
 }: {
   roomIds: string[];
+  tag?: TagEnum;
   filterValues: JobsFilterValues;
   setFilterValues: Dispatch<SetStateAction<JobsFilterValues>>;
   parentElementOpen: boolean;
@@ -30,7 +32,7 @@ const JobsFilter = ({
     data: jobs,
     isLoading,
     error,
-  } = api.job.getJobsForRooms.useQuery({ roomIds: roomIds });
+  } = api.job.getJobsForRooms.useQuery({ roomIds: roomIds, tag: tag });
 
   const onClickJobAdd = (jobIndex: number) => {
     console.log("Adding to ", filterValues.jobsValue);
