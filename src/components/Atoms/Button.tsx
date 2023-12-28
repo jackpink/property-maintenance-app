@@ -13,6 +13,7 @@ import { Text } from "./Text";
 import LoadingSpinner from "./LoadingSpinner";
 import Image from "next/image";
 import { toast } from "sonner";
+import { EditIconSmall } from "./Icons";
 
 type ButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -38,7 +39,7 @@ export const CTAButton: React.FC<ButtonProps> = ({
       value={value ? value : "value"}
       onClick={onClick}
       className={clsx(
-        "rounded border border-dark bg-brand p-2 text-xl font-extrabold text-dark",
+        "rounded border border-dark bg-brand p-2 text-xl font-extrabold text-dark hover:bg-brand/70",
         className,
         disabled && "cursor-not-allowed opacity-50",
         loading && "animate-pulse cursor-wait",
@@ -298,7 +299,7 @@ export const EditButton: React.FC<EditButtonProps> = ({
       onClick={disabled ? ButtonDisabledToast : onClick}
       className={clsx(className, disabled && "cursor-not-allowed opacity-50")}
     >
-      <EditIcon width={width} height={height} />
+      <EditIconSmall width={20} height={20} />
     </button>
   );
 };

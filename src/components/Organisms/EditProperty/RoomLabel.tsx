@@ -2,6 +2,8 @@ import { useState } from "react";
 import { RouterOutputs, api } from "~/utils/api";
 import { ValidRoomInput } from "./AddRoom";
 import TextInputWithEditButton from "~/components/Molecules/TextInputWithEditButton";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type Room =
   RouterOutputs["property"]["getPropertyForUser"]["levels"][number]["rooms"][number];
@@ -18,6 +20,8 @@ const RoomLabel: React.FC<RoomLabelProps> = ({ room }) => {
   const [errorMessage, setErrorMessage] = useState("Error");
 
   const ctx = api.useContext();
+
+  const path = usePathname();
 
   const { mutate: updateRoom, isLoading: isUpdatingRoom } =
     api.property.updateRoomLabel.useMutation({
@@ -55,17 +59,11 @@ const RoomLabel: React.FC<RoomLabelProps> = ({ room }) => {
 
   return (
     <>
-      <TextInputWithEditButton
-        label={room.label}
-        editLabelInput={editLabelInput}
-        setEditLabelInput={setEditLabelInput}
-        editLabelMode={editLabelMode}
-        setEditLabelMode={setEditLabelMode}
-        textInputDisabled={isUpdatingRoom}
-        updateLabelClickEvent={updateRoomClickEvent}
-        error={error}
-        errorMessage={errorMessage}
-      />
+      <Link href={path + "/" + room.id}>
+        <button className="w-full rounded-md border border-dark bg-black/10 p-1 text-xl font-medium hover:bg-black/20">
+          {room.label}
+        </button>
+      </Link>
     </>
   );
 };

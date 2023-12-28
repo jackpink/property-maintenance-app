@@ -62,7 +62,7 @@ const Level: React.FC<LevelProps> = ({ level }) => {
           updateLabelClickEvent={updateLevelClickEvent}
         />
       </div>
-      <div className="grid grid-cols-1 gap-2 p-2">
+      <div className="grid grid-cols-1 gap-6 p-2">
         {level.rooms.map((room, index) => {
           return <RoomLabel room={room} key={index} />;
         })}
