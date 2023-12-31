@@ -37,44 +37,44 @@ import RoomAddProduct from "~/components/Organisms/RoomAddProduct";
 // add new job ----> new job upload photos, assgin to rooms
 
 export default function RoomProductPage() {
+  const productId = useRouter().query.product?.toString();
   const propertyId = useRouter().query.property?.toString();
-  const roomId = useRouter().query.room?.toString();
 
   //const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: userId});
-  if (!roomId || !propertyId) return <>loading</>;
-  return <RoomProductPageWithParams propertyId={propertyId} roomId={roomId} />;
+  if (!productId || !propertyId) return <>loading</>;
+  return (
+    <RoomProductPageWithParams productId={productId} propertyId={propertyId} />
+  );
 }
 
 type RoomProductPageWithParamsProps = {
+  productId: string;
   propertyId: string;
-  roomId: string;
 };
 
 const RoomProductPageWithParams: React.FC<RoomProductPageWithParamsProps> = ({
+  productId,
   propertyId,
-  roomId,
 }) => {
-  const [createProductPopoverOpen, setCreateProductPopoverOpen] =
-    useState(false);
+  const {
+    data: product,
+    error: productError,
+    isLoading: productLoading,
+  } = api.product.getProduct.useQuery({
+    id: productId,
+  });
+
   const {
     data: property,
-    error: propertyFetchError,
-    isLoading: propertyIsLoading,
+    isLoading: propertyLoading,
+    error: propertyError,
   } = api.property.getPropertyForUser.useQuery({
     id: propertyId,
   });
 
-  if (!!propertyFetchError) toast("Failed to fetch property");
-  const {
-    data: room,
-    error: roomError,
-    isLoading: roomLoading,
-  } = api.property.getRoom.useQuery({
-    id: roomId,
-  });
+  if (!!propertyError) toast("Failed to fetch property");
 
-  if (!!propertyFetchError) toast("Failed to fetch property");
-  if (!!roomError) toast("Failed to fetch Recent Jobs");
+  if (!!productError) toast("Failed to fetch product");
   let address = "";
   if (!!property) address = concatAddress(property);
 
@@ -83,27 +83,20 @@ const RoomProductPageWithParams: React.FC<RoomProductPageWithParamsProps> = ({
       <RoomBreadcrumbs
         address={address}
         propertyId={propertyId}
-        roomId={roomId}
-        roomLabel={room?.label ?? ""}
-        roomPage="Products"
+        roomId={product?.Room.id ?? ""}
+        roomLabel={product?.Room.label ?? ""}
       />
-      <PageTitle>{room?.label}</PageTitle>
+      <PageTitle>{product?.label}</PageTitle>
 
-      <RoomPageNav propertyId={propertyId} roomId={roomId} />
+      <RoomPageNav propertyId={propertyId} roomId={product?.Room.id || ""} />
 
       <PageWithSingleColumn>
-        <div className="mx-auto flex justify-center py-8">
-          <RoomAddProduct
-            roomId={roomId}
-            createProductPopoverOpen={createProductPopoverOpen}
-            setCreateProductPopoverOpen={setCreateProductPopoverOpen}
-          />
-        </div>
+        <div className="mx-auto flex justify-center py-8"></div>
         <BackgroundContainer>
-          {propertyIsLoading ? (
+          {productLoading ? (
             <LoadingSpinner />
-          ) : propertyFetchError ? (
-            <Text>{propertyFetchError?.message}</Text>
+          ) : productError ? (
+            <Text>{propertyError?.message}</Text>
           ) : property ? null : (
             <Text>Could not load property.</Text>
           )}
