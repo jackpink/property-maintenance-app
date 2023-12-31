@@ -28,9 +28,9 @@ const RoomAddProduct: React.FC<RoomAddProductProps> = ({
   return (
     <>
       <LargeButton onClick={() => setCreateProductPopoverOpen(true)}>
-        <LargeButtonTitle>Add New Job</LargeButtonTitle>
+        <LargeButtonTitle>Add New Product</LargeButtonTitle>
         <LargeButtonContent>
-          Create a new Job to be added to this property
+          Create a new Product to be added to this room
         </LargeButtonContent>
       </LargeButton>
       <Popover
@@ -88,7 +88,7 @@ const CreateProductForm: React.FC<CreateProductFormProps> = ({ roomId }) => {
   return (
     <div className="grid justify-items-center">
       <TextInputWithError
-        label="Enter Job Title"
+        label="Enter Product Name"
         value={productNameInput}
         onChange={(e) => setProductNameInput(e.target.value)}
         error={error}
