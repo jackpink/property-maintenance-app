@@ -117,6 +117,7 @@ type RoomBreadcrumbsProps = {
   propertyId: string;
   roomLabel: string;
   roomId: string;
+  roomPage?: string;
 };
 
 export const RoomBreadcrumbs: React.FC<RoomBreadcrumbsProps> = ({
@@ -124,24 +125,49 @@ export const RoomBreadcrumbs: React.FC<RoomBreadcrumbsProps> = ({
   propertyId,
   roomId,
   roomLabel,
+  roomPage,
 }) => {
-  const breadcrumbs = [
-    { href: "/properties", text: "Properties" },
-    {
-      href: `/property/${encodeURIComponent(propertyId)}`,
-      text: address.split(",")[0] || address,
-    },
-    {
-      href: `/property/${encodeURIComponent(propertyId)}/rooms`,
-      text: "Rooms",
-    },
-    {
-      href: `/property/${encodeURIComponent(
-        propertyId
-      )}/jobs/${encodeURIComponent(roomId)}`,
-      text: roomLabel,
-    },
-  ];
+  const breadcrumbs = roomPage
+    ? [
+        { href: "/properties", text: "Properties" },
+        {
+          href: `/property/${encodeURIComponent(propertyId)}`,
+          text: address.split(",")[0] || address,
+        },
+        {
+          href: `/property/${encodeURIComponent(propertyId)}/rooms`,
+          text: "Rooms",
+        },
+        {
+          href: `/property/${encodeURIComponent(
+            propertyId
+          )}/rooms/${encodeURIComponent(roomId)}`,
+          text: roomLabel,
+        },
+        {
+          href: `/property/${encodeURIComponent(
+            propertyId
+          )}/rooms/${encodeURIComponent(roomId)}/${roomPage.toLowerCase()}`,
+          text: roomPage,
+        },
+      ]
+    : [
+        { href: "/properties", text: "Properties" },
+        {
+          href: `/property/${encodeURIComponent(propertyId)}`,
+          text: address.split(",")[0] || address,
+        },
+        {
+          href: `/property/${encodeURIComponent(propertyId)}/rooms`,
+          text: "Rooms",
+        },
+        {
+          href: `/property/${encodeURIComponent(
+            propertyId
+          )}/jobs/${encodeURIComponent(roomId)}`,
+          text: roomLabel,
+        },
+      ];
   return <Breadcrumbs breadcrumbs={breadcrumbs} />;
 };
 
