@@ -172,8 +172,8 @@ model Product {
   label          String
   notes          String?    @db.VarChar(2000)
   tradeNotes     String?    @db.VarChar(2000)
-  Room           Room?      @relation(fields: [roomId], references: [id])
-  roomId         String?
+  Room           Room       @relation(fields: [roomId], references: [id])
+  roomId         String
   Job            Job?       @relation(fields: [jobId], references: [id])
   jobId          String?
   installDate    DateTime?
