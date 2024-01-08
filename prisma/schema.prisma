@@ -12,15 +12,15 @@ datasource db {
 }
 
 model Room {
-  id        String    @id @default(cuid())
-  createdAt DateTime  @default(now())
+  id        String        @id @default(cuid())
+  createdAt DateTime      @default(now())
   label     String
   order     Int?
-  Level     Level     @relation(fields: [levelId], references: [id])
+  Level     Level         @relation(fields: [levelId], references: [id])
   levelId   String
   jobs      Job[]
   photos    Photo[]
-  products  Product[]
+  products  ProductItem[]
 
   @@index([levelId])
 }
@@ -58,7 +58,7 @@ model Property {
   levels          Level[]
   jobs            Job[]
   documents       Document[]
-  homeownerUser   HomeownerUser? @relation(fields: [homeownerUserId], references: [id])
+  homeowner       HomeownerUser? @relation(fields: [homeownerUserId], references: [id])
   homeownerUserId String?
 
   @@index([homeownerUserId])
@@ -75,13 +75,13 @@ model Document {
   jobId           String?
   Property        Property?      @relation(fields: [propertyId], references: [id])
   propertyId      String?
-  Product         Product?       @relation(fields: [productId], references: [id])
-  productId       String?
+  Product         ProductItem?   @relation(fields: [productItemId], references: [id])
+  productItemId   String?
 
   @@index([jobId])
   @@index([propertyId])
   @@index([documentGroupId])
-  @@index([productId])
+  @@index([productItemId])
 }
 
 model DocumentGroup {
@@ -113,20 +113,20 @@ model Photo {
 }
 
 model Job {
-  id                String     @id @default(cuid())
-  createdAt         DateTime   @default(now())
+  id                String        @id @default(cuid())
+  createdAt         DateTime      @default(now())
   title             String
-  Property          Property   @relation(fields: [propertyId], references: [id])
+  Property          Property      @relation(fields: [propertyId], references: [id])
   propertyId        String
   documents         Document[]
   photos            Photo[]
   rooms             Room[]
-  products          Product[]
+  products          ProductItem[]
   date              DateTime
-  TradeUser         TradeUser? @relation(fields: [tradeUserId], references: [id])
+  Contractor        Contractor?   @relation(fields: [tradeUserId], references: [id])
   tradeUserId       String?
-  notes             String?    @db.VarChar(2000)
-  tradeNotes        String?    @db.VarChar(2000)
+  notes             String?       @db.VarChar(2000)
+  tradeNotes        String?       @db.VarChar(2000)
   nonUserTradeName  String?
   nonUserTradeEmail String?
   nonUserTradePhone String?
@@ -151,7 +151,7 @@ enum TagEnum {
   OTHER
 }
 
-model TradeUser {
+model Contractor {
   id          String   @id
   createdAt   DateTime @default(now())
   jobs        Job[]
@@ -167,9 +167,18 @@ model HomeownerUser {
 }
 
 model Product {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  label        String
+  manufacturer String?
+  model        String?
+  order        Int?
+  productItems ProductItem[]
+}
+
+model ProductItem {
   id             String     @id @default(cuid())
   createdAt      DateTime   @default(now())
-  label          String
   notes          String?    @db.VarChar(2000)
   tradeNotes     String?    @db.VarChar(2000)
   Room           Room       @relation(fields: [roomId], references: [id])
@@ -178,11 +187,12 @@ model Product {
   jobId          String?
   installDate    DateTime?
   warrantyPeriod Int?
-  manufacturer   String?
-  model          String?
+  Product        Product    @relation(fields: [productId], references: [id])
+  productId      String
   Documents      Document[]
   tag            TagEnum?
 
   @@index([roomId])
   @@index([jobId])
+  @@index([productId])
 }
