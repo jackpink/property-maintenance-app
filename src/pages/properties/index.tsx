@@ -14,6 +14,7 @@ import HomeownerCreateProperty from "~/components/Organisms/HomeownerCreatePrope
 import { Text } from "~/components/Atoms/Text";
 import Link from "next/link";
 import { PropertiesBreadcrumbs } from "~/components/Molecules/Breadcrumbs";
+import { HomeownerPageRedirect } from "~/components/Atoms/UserRedirects";
 
 const HomeownerPage = () => {
   const { userId } = useAuth();
@@ -37,22 +38,24 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
   name,
 }) => {
   return (
-    <PageWithMainMenu>
-      <PageTitle>Properties</PageTitle>
-      <PropertiesBreadcrumbs />
-      <ResponsiveColumns>
-        <ColumnOne>
-          <Text className="mb-6 border-b-2 border-black py-4 text-center font-sans text-xl font-extrabold text-slate-900">
-            Welcome {name}, this is your Dashboard. Create or Select a specific
-            property or browse recent jobs here.
-          </Text>
-          <HomeownerCreateProperty userId={userId} />
-          <div className="p-2"></div>
-          <DashboardProperties userId={userId} />
-        </ColumnOne>
-        <ColumnTwo></ColumnTwo>
-      </ResponsiveColumns>
-    </PageWithMainMenu>
+    <HomeownerPageRedirect>
+      <PageWithMainMenu>
+        <PageTitle>Properties</PageTitle>
+        <PropertiesBreadcrumbs />
+        <ResponsiveColumns>
+          <ColumnOne>
+            <Text className="mb-6 border-b-2 border-black py-4 text-center font-sans text-xl font-extrabold text-slate-900">
+              Welcome {name}, this is your Dashboard. Create or Select a
+              specific property or browse recent jobs here.
+            </Text>
+            <HomeownerCreateProperty userId={userId} />
+            <div className="p-2"></div>
+            <DashboardProperties userId={userId} />
+          </ColumnOne>
+          <ColumnTwo></ColumnTwo>
+        </ResponsiveColumns>
+      </PageWithMainMenu>
+    </HomeownerPageRedirect>
   );
 };
 
