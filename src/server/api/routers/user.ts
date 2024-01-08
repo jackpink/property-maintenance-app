@@ -12,6 +12,24 @@ export const userRouter = createTRPCRouter({
         }
     });
   }),
+  checkHomeownerExists: privateProcedure
+  .input(z.object({ user: z.string() }))
+  .query(({ ctx, input }) => {
+    return ctx.prisma.homeownerUser.findUnique({
+        where: {
+            id: input.user
+        }
+    });
+  }),
+  checkContractorExists: privateProcedure
+  .input(z.object({ contractorId: z.string() }))
+  .query(({ ctx, input }) => {
+    return ctx.prisma.contractor.findUnique({
+        where: {
+            id: input.contractorId
+        }
+    });
+  }),
   
 
 })
