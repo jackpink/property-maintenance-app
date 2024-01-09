@@ -54,6 +54,10 @@ const MainMenuButtons = ({ isHomeowner }: { isHomeowner: boolean }) => {
   const propertiesSelected = path === "properties" || path === "property";
   const alertsSelected = path === "alerts";
   const accountSelected = path === "account";
+  const contractorHomeSelected = path === "contractor";
+  const contractorJobsSelected = path === "jobs";
+  const contractorProductsSelected = path === "products";
+  const contractorServicesSelected = path === "services";
 
   return (
     <>
@@ -69,33 +73,45 @@ const MainMenuButtons = ({ isHomeowner }: { isHomeowner: boolean }) => {
       ) : (
         <>
           <Link href="/contractor">
-            <MainMenuButton selected={propertiesSelected}>
-              <PropertiesIcon selected={propertiesSelected} />
-              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+            <MainMenuButton selected={contractorHomeSelected}>
+              <PropertiesIcon selected={contractorHomeSelected} />
+              <Text
+                colour={contractorHomeSelected ? "text-brand" : "text-light"}
+              >
                 HOME
               </Text>
             </MainMenuButton>
           </Link>
           <Link href="/contractor/jobs">
-            <MainMenuButton selected={propertiesSelected}>
-              <PropertiesIcon selected={propertiesSelected} />
-              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+            <MainMenuButton selected={contractorJobsSelected}>
+              <PropertiesIcon selected={contractorJobsSelected} />
+              <Text
+                colour={contractorJobsSelected ? "text-brand" : "text-light"}
+              >
                 Jobs
               </Text>
             </MainMenuButton>
           </Link>
           <Link href="/contractor/products">
-            <MainMenuButton selected={propertiesSelected}>
-              <PropertiesIcon selected={propertiesSelected} />
-              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+            <MainMenuButton selected={contractorProductsSelected}>
+              <PropertiesIcon selected={contractorProductsSelected} />
+              <Text
+                colour={
+                  contractorProductsSelected ? "text-brand" : "text-light"
+                }
+              >
                 PRODUCTS
               </Text>
             </MainMenuButton>
           </Link>
           <Link href="/contractor/services">
-            <MainMenuButton selected={propertiesSelected}>
-              <PropertiesIcon selected={propertiesSelected} />
-              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+            <MainMenuButton selected={contractorServicesSelected}>
+              <PropertiesIcon selected={contractorServicesSelected} />
+              <Text
+                colour={
+                  contractorServicesSelected ? "text-brand" : "text-light"
+                }
+              >
                 Services
               </Text>
             </MainMenuButton>
