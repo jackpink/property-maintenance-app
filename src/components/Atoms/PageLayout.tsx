@@ -25,14 +25,17 @@ export function ColumnTwo({ children }: PropsWithChildren) {
   );
 }
 
-export function PageWithMainMenu({ children }: PropsWithChildren) {
+export function PageWithMainMenu({
+  children,
+  isHomeowner,
+}: PropsWithChildren<{ isHomeowner: boolean }>) {
   return (
     <div className="flex w-full flex-nowrap">
       <div className="fixed top-0 hidden h-full w-40 flex-none overflow-hidden border border-r-4  border-altPrimary bg-altPrimary md:block">
-        <MainMenuSide />
+        <MainMenuSide isHomeowner={isHomeowner} />
       </div>
       <div className="h-34 fixed bottom-0 z-40  w-full  overflow-hidden border border-t-4 border-altPrimary bg-altPrimary py-8  md:hidden">
-        <MainMenuBottom />
+        <MainMenuBottom isHomeowner={isHomeowner} />
       </div>
       <div className="grow md:pl-40">{children}</div>
     </div>
