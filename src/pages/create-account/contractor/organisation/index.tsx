@@ -4,43 +4,34 @@ import React, {
   type SetStateAction,
   useCallback,
   useState,
+  use,
+  useMemo,
+  useRef,
 } from "react";
-import { useSignUp } from "@clerk/nextjs";
+import { useAuth, useOrganizationList, useSignUp } from "@clerk/nextjs";
 import { z } from "zod";
 import { CTAButton } from "~/components/Atoms/Button";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { toast } from "sonner";
 import { PageTitle } from "~/components/Atoms/Title";
+import { create } from "domain";
 
 type Form = {
-  firstName: string;
-  firstNameError: boolean;
-  firstNameErrorMessage: string;
-  lastName: string;
-  lastNameError: boolean;
-  lastNameErrorMessage: string;
-  email: string;
-  emailError: boolean;
-  emailErrorMessage: string;
-  password: string;
-  passwordError: boolean;
-  passwordErrorMessage: string;
+  organisationName: string;
+  organisationNameError: boolean;
+  organisationNameErrorMessage: string;
+};
+
+type ContractorDetails = {
+  id: string;
+  companyName: string;
 };
 
 const initialForm: Form = {
-  firstName: "",
-  firstNameError: false,
-  firstNameErrorMessage: "",
-  lastName: "",
-  lastNameError: false,
-  lastNameErrorMessage: "",
-  email: "",
-  emailError: false,
-  emailErrorMessage: "",
-  password: "",
-  passwordError: false,
-  passwordErrorMessage: "",
+  organisationName: "",
+  organisationNameError: false,
+  organisationNameErrorMessage: "",
 };
 
 const ValidNameInput = z
@@ -48,134 +39,95 @@ const ValidNameInput = z
   .min(1, { message: "Must be 5 or more characters long" })
   .max(30, { message: "Must be less than 30 characters" });
 
-const ValidEmailInput = z
-  .string()
-  .min(1, { message: "Please enter your email" })
-  .email("Please enter a valid email");
-
-const ValidPasswordInput = z
-  .string()
-  .min(8, "Password must be minimum 8 characters")
-  .regex(
-    new RegExp(`(?=.*[A-Z])(?=.*[a-z]).*$`),
-    "Password must contain at least one lowercase, uppercase and number"
-  );
-
 const ContractorCreateAccountPage = () => {
   const [form, setForm] = useState(initialForm);
-  const [code, setCode] = useState("");
+
+  const contractorDetails = useRef<ContractorDetails>({
+    id: "",
+    companyName: "",
+  });
+
+  const { mutate: createContractor } = api.user.createContractor.useMutation({
+    onSuccess: () => {
+      // Move to homeowner page
+      void router.push("/create-account/contractor/payment");
+    },
+    onError: () => {
+      toast("Could Not Create Contractor User");
+    },
+  });
+
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [completeSignUpError, setCompleteSignUpError] = useState(false);
-  const [comleteSignUpErrorMessage, setCompleteSignUpErrorMessage] =
-    useState("");
-  const { isLoaded, signUp, setActive } = useSignUp();
+
+  const { createOrganization, isLoaded, userMemberships } = useOrganizationList(
+    {
+      userMemberships: true,
+    }
+  );
   const router = useRouter();
 
-  const checkFirstNameInput = () => {
-    let errorMessage = "";
-    const checkFirstNameInputResult = ValidNameInput.safeParse(form.firstName);
-    if (!checkFirstNameInputResult.success) {
-      const firstNameErrorFormatted = checkFirstNameInputResult.error
-        .format()
-        ._errors.pop();
-      if (!!firstNameErrorFormatted) {
-        errorMessage = firstNameErrorFormatted;
-      }
-      return { firstNameError: true, firstNameErrorMessage: errorMessage };
-    } else {
-      return { firstNameError: false, firstNameErrorMessage: errorMessage };
-    }
-  };
+  console.log("userMemberships", userMemberships?.data?.pop()?.organization.id);
 
-  const checkLastNameInput = () => {
+  const checkOrganisationNameInput = () => {
     let errorMessage = "";
-    const checkLastNameInputResult = ValidNameInput.safeParse(form.lastName);
-    if (!checkLastNameInputResult.success) {
-      const lastNameErrorFormatted = checkLastNameInputResult.error
-        .format()
-        ._errors.pop();
-      if (!!lastNameErrorFormatted) {
-        errorMessage = lastNameErrorFormatted;
-      }
-      return { lastNameError: true, lastNameErrorMessage: errorMessage };
-    } else {
-      return { lastNameError: false, lastNameErrorMessage: errorMessage };
-    }
-  };
-
-  const checkEmailInput = () => {
-    let errorMessage = "";
-    const checkEmailInputResult = ValidEmailInput.safeParse(form.email);
-    if (!checkEmailInputResult.success) {
-      const emailErrorFormatted = checkEmailInputResult.error
-        .format()
-        ._errors.pop();
-      if (!!emailErrorFormatted) {
-        errorMessage = emailErrorFormatted;
-      }
-      return { emailError: true, emailErrorMessage: errorMessage };
-    } else {
-      return { emailError: false, emailErrorMessage: errorMessage };
-    }
-  };
-
-  const checkPasswordInput = () => {
-    let errorMessage = "";
-    const checkPasswordInputResult = ValidPasswordInput.safeParse(
-      form.password
+    const checkOrganisationNameInputResult = ValidNameInput.safeParse(
+      form.organisationName
     );
-    if (!checkPasswordInputResult.success) {
-      const passwordErrorFormatted = checkPasswordInputResult.error
-        .format()
-        ._errors.pop();
-      if (!!passwordErrorFormatted) {
-        errorMessage = passwordErrorFormatted;
+    if (!checkOrganisationNameInputResult.success) {
+      const organisationNameErrorFormatted =
+        checkOrganisationNameInputResult.error.format()._errors.pop();
+      if (!!organisationNameErrorFormatted) {
+        errorMessage = organisationNameErrorFormatted;
       }
-      return { passwordError: true, passwordErrorMessage: errorMessage };
+      return {
+        organisationNameError: true,
+        organisationNameErrorMessage: errorMessage,
+      };
     } else {
-      return { passwordError: false, passwordErrorMessage: errorMessage };
+      return {
+        organisationNameError: false,
+        organisationNameErrorMessage: errorMessage,
+      };
     }
   };
 
   const SignUpWithClerk = async () => {
     try {
       if (!!isLoaded) {
-        await signUp.create({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          emailAddress: form.email,
-          password: form.password,
-        });
+        const { addMember, getMemberships, id, name } =
+          await createOrganization({
+            name: form.organisationName,
+          });
         // send the email
-        await signUp.prepareEmailAddressVerification({
-          strategy: "email_code",
-        });
+        //await addMember({
+        await userMemberships.revalidate();
+        console.log("new org Id", id, name);
+        contractorDetails.current.id = id;
+        contractorDetails.current.companyName = name;
       }
     } catch {
       toast("Could not create Account");
+    } finally {
+      // setLoading(false);
+      console.log("new org Id finally");
+      createContractor({
+        contractorId: contractorDetails.current.id,
+        companyName: contractorDetails.current.companyName,
+      });
     }
   };
 
   const onSubmit = useCallback(() => {
     // Check validity of form inputs
-    const { firstNameError, firstNameErrorMessage } = checkFirstNameInput();
-    const { lastNameError, lastNameErrorMessage } = checkLastNameInput();
-    const { emailError, emailErrorMessage } = checkEmailInput();
-    const { passwordError, passwordErrorMessage } = checkPasswordInput();
+    const { organisationNameError, organisationNameErrorMessage } =
+      checkOrganisationNameInput();
 
     setForm({
       ...form,
-      firstNameError: firstNameError,
-      firstNameErrorMessage: firstNameErrorMessage,
-      lastNameError: lastNameError,
-      lastNameErrorMessage: lastNameErrorMessage,
-      emailError: emailError,
-      emailErrorMessage: emailErrorMessage,
-      passwordError: passwordError,
-      passwordErrorMessage: passwordErrorMessage,
+      organisationNameError: organisationNameError,
+      organisationNameErrorMessage: organisationNameErrorMessage,
     });
-    const totalFormSuccess =
-      !firstNameError && !lastNameError && !emailError && !passwordError;
+    const totalFormSuccess = !organisationNameError;
     if (totalFormSuccess) {
       console.log("Form is good");
       // Send to Clerk
@@ -183,58 +135,8 @@ const ContractorCreateAccountPage = () => {
         return;
       }
       void SignUpWithClerk();
-
-      // change UI to pending verfication
-      setPendingVerification(true);
     }
-  }, [
-    form.firstNameError,
-    form.lastNameError,
-    form.firstName,
-    form.lastName,
-    form.email,
-    form.emailError,
-    form.password,
-    form.passwordError,
-    SignUpWithClerk,
-    checkEmailInput,
-    checkFirstNameInput,
-    checkLastNameInput,
-    checkPasswordInput,
-    form,
-    isLoaded,
-  ]);
-
-  const Verify = async () => {
-    if (!isLoaded) {
-      return;
-    }
-
-    try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
-        code,
-      });
-      if (completeSignUp.status !== "complete") {
-        /*  investigate the response, to see if there was an error
-         or if the user needs to complete more steps.*/
-        console.log(JSON.stringify(completeSignUp, null, 2));
-      }
-      if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
-        console.log("user id", completeSignUp.createdUserId);
-        if (!!completeSignUp.createdUserId)
-          void router.push("/create-account/contractor/organisation");
-      }
-    } catch (err) {
-      setCompleteSignUpError(true);
-      setCompleteSignUpErrorMessage("Could not complete");
-      console.log(err);
-    }
-  };
-
-  const onPressVerify = () => {
-    void Verify();
-  };
+  }, [form.organisationNameError, SignUpWithClerk, form, isLoaded]);
 
   return (
     <div>
@@ -253,18 +155,9 @@ const ContractorCreateAccountPage = () => {
             </div>
           </div>
           <h1>Please enter your details</h1>
-          <FirstNameInput form={form} setForm={setForm} />
+          <OrganisationNameInput form={form} setForm={setForm} />
           <CTAButton onClick={onSubmit}>Submit</CTAButton>{" "}
         </>
-      )}
-      {pendingVerification && (
-        <EmailVerificationInput
-          code={code}
-          setCode={setCode}
-          onPressVerify={onPressVerify}
-          error={completeSignUpError}
-          errorMessage={comleteSignUpErrorMessage}
-        />
       )}
     </div>
   );
@@ -277,145 +170,28 @@ type InputProps = {
   setForm: Dispatch<SetStateAction<Form>>;
 };
 
-const FirstNameInput: React.FC<InputProps> = ({ form, setForm }) => {
+const OrganisationNameInput: React.FC<InputProps> = ({ form, setForm }) => {
   return (
     <div>
-      <label htmlFor="firstName">First Name:</label>
+      <label htmlFor="firstName">Company Name:</label>
       <input
-        value={form.firstName}
+        value={form.organisationName}
         type="text"
         name="firstName"
         id="firstName"
         inputMode="text"
         autoComplete="given-name"
-        onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+        onChange={(e) => setForm({ ...form, organisationName: e.target.value })}
         className={clsx(
           "w-full p-2 font-extrabold text-slate-900 outline-none",
           {
-            "border border-2 border-red-500": form.firstNameError,
+            "border border-2 border-red-500": form.organisationNameError,
           }
         )}
       />
-      {form.firstNameError && (
-        <p className="text-red-500">⚠️ {form.firstNameErrorMessage}</p>
+      {form.organisationNameError && (
+        <p className="text-red-500">⚠️ {form.organisationNameErrorMessage}</p>
       )}
-    </div>
-  );
-};
-
-const LastNameInput: React.FC<InputProps> = ({ form, setForm }) => {
-  return (
-    <div>
-      <label htmlFor="lastName">Last Name:</label>
-      <input
-        value={form.lastName}
-        type="text"
-        name="lastName"
-        id="lastName"
-        inputMode="text"
-        autoComplete="family-name"
-        onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-        className={clsx(
-          "w-full p-2 font-extrabold text-slate-900 outline-none",
-          {
-            "border border-2 border-red-500": form.lastNameError,
-          }
-        )}
-      />
-      {form.lastNameError && (
-        <p className="text-red-500">⚠️ {form.lastNameErrorMessage}</p>
-      )}
-    </div>
-  );
-};
-
-const EmailInput: React.FC<InputProps> = ({ form, setForm }) => {
-  return (
-    <div>
-      <label htmlFor="email">Email:</label>
-      <input
-        value={form.email}
-        type="email"
-        name="email"
-        id="email"
-        inputMode="email"
-        autoComplete="email"
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-        className={clsx(
-          "w-full p-2 font-extrabold text-slate-900 outline-none",
-          {
-            "border border-2 border-red-500": form.emailError,
-          }
-        )}
-      />
-      {form.emailError && (
-        <p className="text-red-500">⚠️ {form.emailErrorMessage}</p>
-      )}
-    </div>
-  );
-};
-
-const PasswordInput: React.FC<InputProps> = ({ form, setForm }) => {
-  return (
-    <div>
-      <label htmlFor="password">Password:</label>
-      <input
-        value={form.password}
-        type="password"
-        name="password"
-        id="password"
-        inputMode="text"
-        autoComplete="new-password"
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-        className={clsx(
-          "w-full p-2 font-extrabold text-slate-900 outline-none",
-          {
-            "border border-2 border-red-500": form.passwordError,
-          }
-        )}
-      />
-      {form.passwordError && (
-        <p className="text-red-500">⚠️ {form.passwordErrorMessage}</p>
-      )}
-    </div>
-  );
-};
-
-type EmailVerificationInputProps = {
-  code: string;
-  setCode: Dispatch<SetStateAction<string>>;
-  onPressVerify: () => void;
-  error: boolean;
-  errorMessage: string;
-};
-
-const EmailVerificationInput: React.FC<EmailVerificationInputProps> = ({
-  code,
-  setCode,
-  onPressVerify,
-  error,
-  errorMessage,
-}) => {
-  return (
-    <div>
-      <label htmlFor="code">Enter verication code sent to your email:</label>
-      <input
-        value={code}
-        type="numeric"
-        name="code"
-        id="code"
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        onChange={(e) => setCode(e.target.value)}
-        className={clsx(
-          "w-full p-2 font-extrabold text-slate-900 outline-none",
-          {
-            "border border-2 border-red-500": error,
-          }
-        )}
-      />
-      {error && <p className="text-red-500">⚠️ {errorMessage}</p>}
-      <CTAButton onClick={onPressVerify}>Verify Email</CTAButton>
     </div>
   );
 };

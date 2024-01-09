@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import Link from "next/link";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut, useAuth } from "@clerk/nextjs";
 import {
   CTAButton,
   LargeButton,
@@ -11,6 +11,7 @@ import { Text } from "~/components/Atoms/Text";
 import Logo from "~/components/Atoms/Logo";
 
 const Home: NextPage = () => {
+  const homeownerUser = true; //check homeowner users in db for id match
   return (
     <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
       <Logo width="300px" height="300px" colour="#c470e7" />
