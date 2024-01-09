@@ -1,4 +1,9 @@
-import { useAuth } from "@clerk/nextjs";
+import {
+  useAuth,
+  useOrganization,
+  useOrganizationList,
+  useUser,
+} from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import LoadingSpinner from "./LoadingSpinner";
 import router from "next/router";
@@ -113,11 +118,30 @@ const RedirectToContractorPage: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   // get Clerk user object
-  const { orgId } = useAuth(); // we actually want to organisation id here
-  console.log("orgId", orgId);
+  const { organization, memberships, membership, membershipRequests } =
+    useOrganization();
+  const { setActive, userMemberships } = useOrganizationList({
+    userMemberships: true,
+  });
+  const { user, isLoaded } = useUser();
+  const { userId, orgSlug } = useAuth(); // we actually want to organisation id here
+  console.log(
+    "orgId",
+
+    userId,
+    orgSlug,
+    userMemberships
+  );
+
+  //console.log(user?.getOrganizationMemberships());
+
+  const contractorId = user?.organizationMemberships[0]?.organization.id;
+  console.log(contractorId);
+
+  const orgId = userMemberships.data?.pop()?.organization.id;
   return (
     <>
-      <RedirectPageCheckContractor contractorId={orgId ?? ""}>
+      <RedirectPageCheckContractor contractorId={contractorId ?? ""}>
         {children}
       </RedirectPageCheckContractor>
     </>
@@ -129,7 +153,7 @@ const RedirectPageCheckContractor: React.FC<
 > = ({ children, contractorId }) => {
   const { data: isContractor, isLoading } =
     api.user.checkContractorExists.useQuery({ contractorId: contractorId });
-
+  console.log("contractorId", contractorId);
   console.log("isContractor", isContractor);
 
   if (isContractor) void router.push("/contractor");
