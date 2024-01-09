@@ -43,14 +43,16 @@ export const ContractorPageRedirect: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   // get Clerk user object
-  const { orgId } = useAuth(); // we actually want to organisation id here
+  const { user, isLoaded } = useUser();
+
+  const contractorId = user?.organizationMemberships[0]?.organization.id;
 
   return (
     <>
-      {!orgId ? (
+      {!contractorId ? (
         <LoadingSpinner />
       ) : (
-        <ContractorPageCheckUser contractorId={orgId}>
+        <ContractorPageCheckUser contractorId={contractorId}>
           {children}
         </ContractorPageCheckUser>
       )}
@@ -118,27 +120,14 @@ const RedirectToContractorPage: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   // get Clerk user object
-  const { organization, memberships, membership, membershipRequests } =
-    useOrganization();
-  const { setActive, userMemberships } = useOrganizationList({
-    userMemberships: true,
-  });
-  const { user, isLoaded } = useUser();
-  const { userId, orgSlug } = useAuth(); // we actually want to organisation id here
-  console.log(
-    "orgId",
 
-    userId,
-    orgSlug,
-    userMemberships
-  );
+  const { user, isLoaded } = useUser();
 
   //console.log(user?.getOrganizationMemberships());
 
   const contractorId = user?.organizationMemberships[0]?.organization.id;
   console.log(contractorId);
 
-  const orgId = userMemberships.data?.pop()?.organization.id;
   return (
     <>
       <RedirectPageCheckContractor contractorId={contractorId ?? ""}>
