@@ -6,7 +6,7 @@ import { Text } from "../Atoms/Text";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
-export const MainMenuSide = () => {
+export const MainMenuSide = ({ isHomeowner }: { isHomeowner: boolean }) => {
   return (
     <div className="flex h-full flex-col items-center pt-10">
       <Logo
@@ -17,16 +17,16 @@ export const MainMenuSide = () => {
         textColour="#f7ece1"
       />
       <div className="grid h-full flex-col content-center justify-center gap-4">
-        <MainMenuButtons />
+        <MainMenuButtons isHomeowner={isHomeowner} />
       </div>
     </div>
   );
 };
 
-export const MainMenuBottom = () => {
+export const MainMenuBottom = ({ isHomeowner }: { isHomeowner: boolean }) => {
   return (
-    <div className="flex flex-row justify-around">
-      <MainMenuButtons />
+    <div className="flex flex-wrap justify-around gap-y-2">
+      <MainMenuButtons isHomeowner={isHomeowner} />
     </div>
   );
 };
@@ -48,22 +48,61 @@ const MainMenuButton: React.FC<
   </button>
 );
 
-const MainMenuButtons = () => {
+const MainMenuButtons = ({ isHomeowner }: { isHomeowner: boolean }) => {
   const path = usePathname().split("/")[1];
   console.log(path);
   const propertiesSelected = path === "properties" || path === "property";
   const alertsSelected = path === "alerts";
   const accountSelected = path === "account";
+
   return (
     <>
-      <Link href="/properties">
-        <MainMenuButton selected={propertiesSelected}>
-          <PropertiesIcon selected={propertiesSelected} />
-          <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
-            Properties
-          </Text>
-        </MainMenuButton>
-      </Link>
+      {isHomeowner ? (
+        <Link href="/properties">
+          <MainMenuButton selected={propertiesSelected}>
+            <PropertiesIcon selected={propertiesSelected} />
+            <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+              Properties
+            </Text>
+          </MainMenuButton>
+        </Link>
+      ) : (
+        <>
+          <Link href="/contractor">
+            <MainMenuButton selected={propertiesSelected}>
+              <PropertiesIcon selected={propertiesSelected} />
+              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+                HOME
+              </Text>
+            </MainMenuButton>
+          </Link>
+          <Link href="/contractor/jobs">
+            <MainMenuButton selected={propertiesSelected}>
+              <PropertiesIcon selected={propertiesSelected} />
+              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+                Jobs
+              </Text>
+            </MainMenuButton>
+          </Link>
+          <Link href="/contractor/products">
+            <MainMenuButton selected={propertiesSelected}>
+              <PropertiesIcon selected={propertiesSelected} />
+              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+                PRODUCTS
+              </Text>
+            </MainMenuButton>
+          </Link>
+          <Link href="/contractor/services">
+            <MainMenuButton selected={propertiesSelected}>
+              <PropertiesIcon selected={propertiesSelected} />
+              <Text colour={propertiesSelected ? "text-brand" : "text-light"}>
+                Services
+              </Text>
+            </MainMenuButton>
+          </Link>
+        </>
+      )}
+
       <Link href="/alerts">
         <MainMenuButton selected={alertsSelected}>
           <AlertsIcon selected={alertsSelected} />
