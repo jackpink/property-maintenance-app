@@ -1,8 +1,9 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { ReactNode, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { CancelIcon, ConfirmIcon, EditIconSmall, PlusIcon } from "./Icons";
 import { TextSpan } from "./Text";
+import { TextInput } from "./TextInput";
 
 export const TabListComponent = ({
   title,
@@ -104,6 +105,61 @@ export const TabAttributeComponentValue = ({ value }: { value: string }) => {
         {value.charAt(0).toUpperCase()}
       </TextSpan>
       <TextSpan className=" text-xl font-normal">{value.slice(1)}</TextSpan>
+    </>
+  );
+};
+
+export const TabListComponentTextField: React.FC<{
+  label: string;
+  value: string;
+  exists: boolean;
+  updateValueFunction: (newValue: string) => void;
+}> = ({ label, value, exists, updateValueFunction }) => {
+  const [newValue, setNewValue] = useState(value ?? "");
+  return (
+    <TabAttributeComponent
+      title={label}
+      StandardComponent={<StandardTextComponent label={label} value={value} />}
+      EditableComponent={
+        <EditableTextComponent
+          value={newValue}
+          setValue={setNewValue}
+          label={label}
+        />
+      }
+      exists={exists}
+      onConfirmEdit={() => {
+        updateValueFunction(newValue);
+      }}
+    />
+  );
+};
+
+const StandardTextComponent: React.FC<{ label: string; value: string }> = ({
+  label,
+  value,
+}) => {
+  return (
+    <>
+      <TabAttributeComponentLabel label={label} />
+      <TabAttributeComponentValue value={value} />
+    </>
+  );
+};
+
+const EditableTextComponent: React.FC<{
+  value: string;
+  setValue: Dispatch<SetStateAction<string>>;
+  label: string;
+}> = ({ value, setValue, label }) => {
+  return (
+    <>
+      <TabAttributeComponentLabel label={label} />
+      <TextInput
+        value={value}
+        onChange={(e) => setValue(e.currentTarget.value)}
+        error={false}
+      />
     </>
   );
 };
