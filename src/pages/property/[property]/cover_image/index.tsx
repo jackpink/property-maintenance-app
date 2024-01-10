@@ -88,7 +88,7 @@ const HomeownerPropertyPageWithParams: React.FC<
   if (!!property) address = concatAddress(property);
 
   return (
-    <PageWithMainMenu>
+    <PageWithMainMenu isHomeowner>
       <PropertiesBreadcrumbs address={address} propertyId={propertyId} />
       <PageTitle>{address}</PageTitle>
       <PropertyPageNav propertyId={propertyId} />

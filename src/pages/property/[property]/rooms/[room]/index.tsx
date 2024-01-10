@@ -64,7 +64,7 @@ const RoomPageWithParams: React.FC<RoomPageWithParamsProps> = ({
 
   // have some logic here, if has trade user, then display without any action buttons
   return (
-    <PageWithMainMenu>
+    <PageWithMainMenu isHomeowner>
       {forbidden ? (
         <p>Forbidden</p>
       ) : roomLoading || propertyLoading ? (

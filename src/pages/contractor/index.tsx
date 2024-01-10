@@ -5,6 +5,7 @@ import {
   ColumnOne,
   ColumnTwo,
   PageWithMainMenu,
+  PageWithSingleColumn,
   ResponsiveColumns,
 } from "~/components/Atoms/PageLayout";
 import { PageTitle } from "~/components/Atoms/Title";
@@ -18,8 +19,12 @@ import {
   ContractorPageRedirect,
   HomeownerPageRedirect,
 } from "~/components/Atoms/UserRedirects";
+import { api } from "~/utils/api";
+import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
+import { TabListComponent } from "~/components/Atoms/TabLists";
+import { useRouter } from "next/router";
 
-const HomeownerPage = () => {
+const ContractorHomePage = () => {
   const { userId } = useAuth();
   const { user } = useUser();
   console.log(user);
@@ -30,41 +35,79 @@ const HomeownerPage = () => {
 
   return (
     <HomeownerPageWithUser
-      userId={userId}
+      contractorId={user.organizationMemberships[0]?.organization.id ?? ""}
       name={user.organizationMemberships[0]?.organization.name ?? ""}
+      admin={user.organizationMemberships[0]?.role === "Admin"}
     />
   );
 };
 
 type HomeownerPageWithUserProps = {
-  userId: string;
-  name: string | null;
+  contractorId: string;
+  name: string;
+  admin: boolean;
 };
 
 const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
-  userId,
+  contractorId,
   name,
+  admin,
 }) => {
+  const {
+    data: contractor,
+    isLoading: contractorIsLoading,
+    error: contractorFetchError,
+  } = api.user.getContractor.useQuery({ contractorId });
+  const path = useRouter().asPath;
   return (
     <ContractorPageRedirect>
       <PageWithMainMenu isHomeowner={false}>
-        <PageTitle>{}</PageTitle>
-        <PropertiesBreadcrumbs />
+        <PageTitle>{name}</PageTitle>
         <ResponsiveColumns>
           <ColumnOne>
-            <Text className="mb-6 border-b-2 border-black py-4 text-center font-sans text-xl font-extrabold text-slate-900">
-              Welcome {name}, this is your Dashboard. Create or Select a
-              specific property or browse recent jobs here.
-            </Text>
-            <HomeownerCreateProperty userId={userId} />
-            <div className="p-2"></div>
-            <DashboardProperties userId={userId} />
+            {contractorIsLoading ? (
+              <div className="h-30 w-30">
+                <LoadingSpinner />
+              </div>
+            ) : contractorFetchError ? (
+              <div className="grid place-items-center">
+                <Text>{contractorFetchError?.message}</Text>
+              </div>
+            ) : (
+              <>
+                <TabListComponent title="About" href={path} selected={true} />
+
+                <TabListComponent
+                  title="Licenses & Legal"
+                  href={path + "/licenses"}
+                  selected={false}
+                />
+
+                <TabListComponent
+                  title="Logo"
+                  href={path + "/logo"}
+                  selected={false}
+                />
+              </>
+            )}
           </ColumnOne>
-          <ColumnTwo></ColumnTwo>
+          <ColumnTwo>
+            {contractorIsLoading ? (
+              <div className="h-30 w-30">
+                <LoadingSpinner />
+              </div>
+            ) : contractorFetchError ? (
+              <div className="grid place-items-center">
+                <Text>{contractorFetchError?.message}</Text>
+              </div>
+            ) : (
+              <></>
+            )}
+          </ColumnTwo>
         </ResponsiveColumns>
       </PageWithMainMenu>
     </ContractorPageRedirect>
   );
 };
 
-export default HomeownerPage;
+export default ContractorHomePage;
