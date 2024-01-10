@@ -3,9 +3,11 @@ import {
   TabAttributeComponent,
   TabAttributeComponentLabel,
   TabAttributeComponentValue,
+  TabAttributeComponentValueLargeText,
 } from "../Atoms/TabLists";
 import { TextInput } from "../Atoms/TextInput";
 import { TagEnum } from "@prisma/client";
+import clsx from "clsx";
 
 export const TabListComponentTextField: React.FC<{
   label: string;
@@ -58,6 +60,73 @@ const EditableTextComponent: React.FC<{
         onChange={(e) => setValue(e.currentTarget.value)}
         error={false}
       />
+    </>
+  );
+};
+
+export const TabListComponentLargeTextField: React.FC<{
+  label: string;
+  value: string;
+  exists: boolean;
+  updateValueFunction: (newValue: string) => void;
+}> = ({ label, value, exists, updateValueFunction }) => {
+  const [newValue, setNewValue] = useState(value ?? "");
+  return (
+    <TabAttributeComponent
+      title={label}
+      StandardComponent={
+        <StandardLargeTextComponent label={label} value={value} />
+      }
+      EditableComponent={
+        <EditableLargeTextComponent
+          value={newValue}
+          setValue={setNewValue}
+          label={label}
+        />
+      }
+      exists={exists}
+      onConfirmEdit={() => {
+        updateValueFunction(newValue);
+      }}
+    />
+  );
+};
+
+const StandardLargeTextComponent: React.FC<{
+  label: string;
+  value: string;
+}> = ({ label, value }) => {
+  return (
+    <>
+      <TabAttributeComponentLabel label={label} />
+      <TabAttributeComponentValueLargeText value={value} />
+    </>
+  );
+};
+
+const EditableLargeTextComponent: React.FC<{
+  value: string;
+  setValue: Dispatch<SetStateAction<string>>;
+  label: string;
+}> = ({ value, setValue, label }) => {
+  return (
+    <>
+      <TabAttributeComponentLabel label={label} />
+      <TextInput
+        value={value}
+        onChange={(e) => setValue(e.currentTarget.value)}
+        error={false}
+      />
+      <textarea
+        onChange={(e) => setValue(e.currentTarget.value)}
+        value={value}
+        cols={60}
+        rows={3}
+        className={clsx(
+          "border-1 w-full border border-slate-400 p-2 font-extrabold text-slate-900 outline-none",
+          { "border border-2 border-red-500": false }
+        )}
+      ></textarea>
     </>
   );
 };
