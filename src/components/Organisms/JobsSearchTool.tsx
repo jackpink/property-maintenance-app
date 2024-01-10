@@ -147,8 +147,8 @@ const SearchedJobs = ({
   type Job = RouterOutputs["job"]["getFilteredJobsforProperty"][number];
 
   const getJobCompletedBy = (job: Job) => {
-    if (job.TradeUser) {
-      return job.TradeUser.companyName;
+    if (job.Contractor) {
+      return job.Contractor.companyName;
     } else if (job.nonUserTradeName) {
       return job.nonUserTradeName;
     } else {

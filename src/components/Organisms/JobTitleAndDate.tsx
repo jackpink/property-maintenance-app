@@ -15,6 +15,7 @@ import {
   TabAttributeComponentValue,
 } from "../Atoms/TabLists";
 import { TextInput } from "../Atoms/TextInput";
+import { TabListComponentTextField } from "../Molecules/EditableAttributes";
 
 type JobDateProps = {
   date: Date;
@@ -53,14 +54,11 @@ export default function JobTitleAndDate({
 
   return (
     <>
-      <TabAttributeComponent
-        title="Title"
-        StandardComponent={<Title title={title} />}
-        EditableComponent={
-          <EditableTitle title={newTitle} setTitle={setNewTitle} />
-        }
-        exists={title ? true : false}
-        onConfirmEdit={() => {
+      <TabListComponentTextField
+        label="Title:"
+        value={title}
+        exists={!!title}
+        updateValueFunction={(newTitle: string) => {
           updateJob({ jobId: jobId, title: newTitle });
         }}
       />
@@ -83,28 +81,3 @@ export default function JobTitleAndDate({
     </>
   );
 }
-
-const Title: React.FC<{ title: string }> = ({ title }) => {
-  return (
-    <>
-      <TabAttributeComponentLabel label="Title:" />
-      <TabAttributeComponentValue value={title} />
-    </>
-  );
-};
-
-const EditableTitle: React.FC<{
-  title: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-}> = ({ title, setTitle }) => {
-  return (
-    <>
-      <TabAttributeComponentLabel label="Email:" />
-      <TextInput
-        value={title}
-        onChange={(e) => setTitle(e.currentTarget.value)}
-        error={false}
-      />
-    </>
-  );
-};

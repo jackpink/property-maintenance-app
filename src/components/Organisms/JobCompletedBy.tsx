@@ -5,12 +5,7 @@ import AddTradePopover, {
 } from "../Molecules/AddTradePopover";
 import { api } from "~/utils/api";
 import { toast } from "sonner";
-import { TextSpan } from "../Atoms/Text";
-import {
-  BackgroundContainer,
-  BackgroundContainerHeader,
-} from "../Atoms/BackgroundContainer";
-import { PageSubTitle } from "../Atoms/Title";
+
 import {
   TabAttributeComponent,
   TabAttributeComponentLabel,
