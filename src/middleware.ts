@@ -1,6 +1,6 @@
 import { authMiddleware } from "@clerk/nextjs";
 
-export default authMiddleware({ publicRoutes: ['/', '/demo', '/demo/property/1', '/sign-in', '/create-account', '/create-account/homeowner']});
+export default authMiddleware({ publicRoutes: ['/', '/sign-in', '/create-account', '/create-account/homeowner', '/create-account/contractor']});
 
 export const config = {
   matcher: [
