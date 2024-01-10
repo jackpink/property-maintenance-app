@@ -167,12 +167,12 @@ enum TagEnum {
 }
 
 model Contractor {
-  id          String                           @id
-  createdAt   DateTime                         @default(now())
+  id          String                    @id
+  createdAt   DateTime                  @default(now())
   jobs        Job[]
   companyName String
-  licenses    ContractorLicenseDocumentGroup[]
-  dataStorage Int                              @default(0) //in bytes
+  licenses    ContractorDocumentGroup[]
+  dataStorage Int                       @default(0) //in bytes
 }
 
 model HomeownerUser {
