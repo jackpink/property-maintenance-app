@@ -407,7 +407,7 @@ export const jobRouter = createTRPCRouter({
         },
         include: {
           Property: true,
-          TradeUser: true
+          Contractor: true
         }
       })
       return jobs;
@@ -423,7 +423,7 @@ export const jobRouter = createTRPCRouter({
         },
         include: {
           Property: true,
-          TradeUser: true
+          Contractor: true
         }
       })
       return jobs;
@@ -442,7 +442,7 @@ export const jobRouter = createTRPCRouter({
         },
         include: {
           Property: true,
-          TradeUser: true
+          Contractor: true
         }
       })
       return jobs;

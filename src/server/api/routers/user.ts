@@ -30,6 +30,25 @@ export const userRouter = createTRPCRouter({
         }
     });
   }),
+  createContractor: privateProcedure
+  .input(z.object({ contractorId: z.string(), companyName: z.string() }))
+  .mutation(({ ctx, input }) => {
+    return ctx.prisma.contractor.create({
+        data: {
+            id: input.contractorId,
+            companyName: input.companyName
+        }
+    });
+  }),
+  getContractor: privateProcedure
+  .input(z.object({ contractorId: z.string() }))
+  .query(({ ctx, input }) => {
+    return ctx.prisma.contractor.findUnique({
+        where: {
+            id: input.contractorId
+        }
+    });
+  }),
   
 
 })
