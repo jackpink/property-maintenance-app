@@ -65,23 +65,26 @@ model Property {
 }
 
 model Document {
-  id              String         @id @default(cuid())
-  createdAt       DateTime       @default(now())
-  label           String
-  filename        String
-  DocumentGroup   DocumentGroup? @relation(fields: [documentGroupId], references: [id])
-  documentGroupId Int?
-  Job             Job?           @relation(fields: [jobId], references: [id])
-  jobId           String?
-  Property        Property?      @relation(fields: [propertyId], references: [id])
-  propertyId      String?
-  Product         ProductItem?   @relation(fields: [productItemId], references: [id])
-  productItemId   String?
+  id                        String                   @id @default(cuid())
+  createdAt                 DateTime                 @default(now())
+  label                     String
+  filename                  String
+  DocumentGroup             DocumentGroup?           @relation(fields: [documentGroupId], references: [id])
+  documentGroupId           Int?
+  Job                       Job?                     @relation(fields: [jobId], references: [id])
+  jobId                     String?
+  Property                  Property?                @relation(fields: [propertyId], references: [id])
+  propertyId                String?
+  Product                   ProductItem?             @relation(fields: [productItemId], references: [id])
+  productItemId             String?
+  ContractorDocumentGroup   ContractorDocumentGroup? @relation(fields: [contractorDocumentGroupId], references: [id])
+  contractorDocumentGroupId Int?
 
   @@index([jobId])
   @@index([propertyId])
   @@index([documentGroupId])
   @@index([productItemId])
+  @@index([contractorDocumentGroupId])
 }
 
 model DocumentGroup {
@@ -91,6 +94,18 @@ model DocumentGroup {
   parent    DocumentGroupParent
   order     Int?
   documents Document[]
+}
+
+model ContractorDocumentGroup {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  label        String
+  Contractor   Contractor @relation(fields: [contractorId], references: [id])
+  contractorId String
+  order        Int?
+  documents    Document[]
+
+  @@index([contractorId])
 }
 
 enum DocumentGroupParent {
@@ -152,11 +167,12 @@ enum TagEnum {
 }
 
 model Contractor {
-  id          String   @id
-  createdAt   DateTime @default(now())
+  id          String                           @id
+  createdAt   DateTime                         @default(now())
   jobs        Job[]
   companyName String
-  dataStorage Int      @default(0) //in bytes
+  licenses    ContractorLicenseDocumentGroup[]
+  dataStorage Int                              @default(0) //in bytes
 }
 
 model HomeownerUser {
