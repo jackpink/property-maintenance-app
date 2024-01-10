@@ -2,7 +2,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { CancelIcon, ConfirmIcon, EditIconSmall, PlusIcon } from "./Icons";
-import { TextSpan } from "./Text";
+import { ParagraphText, TextSpan } from "./Text";
 import { TextInput } from "./TextInput";
 
 export const TabListComponent = ({
@@ -66,15 +66,10 @@ export const TabAttributeComponent = ({
           </div>
         </>
       ) : !exists ? (
-        <button
-          className="text-xl text-brandSecondary"
+        <TabAttributeAddButton
+          title={title}
           onClick={() => setEditMode(true)}
-        >
-          <div className="flex items-center justify-center">
-            <PlusIcon width={25} height={25} colour="#c470e7" />
-            <span className="pl-4">Add {title}</span>
-          </div>
-        </button>
+        />
       ) : !editable ? (
         <>
           <div>{StandardComponent}</div>
@@ -94,6 +89,23 @@ export const TabAttributeComponent = ({
   );
 };
 
+export const TabAttributeAddButton = ({
+  onClick,
+  title,
+}: {
+  onClick: () => void;
+  title: string;
+}) => {
+  return (
+    <button className="text-xl text-brandSecondary" onClick={onClick}>
+      <div className="flex items-center justify-center">
+        <PlusIcon width={25} height={25} colour="#c470e7" />
+        <span className="pl-4">Add {title}</span>
+      </div>
+    </button>
+  );
+};
+
 export const TabAttributeComponentLabel = ({ label }: { label: string }) => {
   return <TextSpan className="text-xl font-medium">{label}</TextSpan>;
 };
@@ -109,57 +121,16 @@ export const TabAttributeComponentValue = ({ value }: { value: string }) => {
   );
 };
 
-export const TabListComponentTextField: React.FC<{
-  label: string;
-  value: string;
-  exists: boolean;
-  updateValueFunction: (newValue: string) => void;
-}> = ({ label, value, exists, updateValueFunction }) => {
-  const [newValue, setNewValue] = useState(value ?? "");
-  return (
-    <TabAttributeComponent
-      title={label}
-      StandardComponent={<StandardTextComponent label={label} value={value} />}
-      EditableComponent={
-        <EditableTextComponent
-          value={newValue}
-          setValue={setNewValue}
-          label={label}
-        />
-      }
-      exists={exists}
-      onConfirmEdit={() => {
-        updateValueFunction(newValue);
-      }}
-    />
-  );
-};
-
-const StandardTextComponent: React.FC<{ label: string; value: string }> = ({
-  label,
+export const TabAttributeComponentValueLargeText = ({
   value,
+}: {
+  value: string;
 }) => {
   return (
     <>
-      <TabAttributeComponentLabel label={label} />
-      <TabAttributeComponentValue value={value} />
-    </>
-  );
-};
-
-const EditableTextComponent: React.FC<{
-  value: string;
-  setValue: Dispatch<SetStateAction<string>>;
-  label: string;
-}> = ({ value, setValue, label }) => {
-  return (
-    <>
-      <TabAttributeComponentLabel label={label} />
-      <TextInput
-        value={value}
-        onChange={(e) => setValue(e.currentTarget.value)}
-        error={false}
-      />
+      <ParagraphText className="pl-10 text-xl font-normal">
+        {value}
+      </ParagraphText>
     </>
   );
 };
