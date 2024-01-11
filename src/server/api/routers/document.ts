@@ -169,5 +169,16 @@ export const documentRouter = createTRPCRouter({
     )
     return documentGroups;
   }),
+  addNewDocumentToContractorDocumentGroup: privateProcedure
+  .input(z.object({ contractorDocumentGroupId: z.number(), label: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    const document = await ctx.prisma.document.create({
+      data: {
+        label: input.label,
+        contractorDocumentGroupId: input.contractorDocumentGroupId
+      }
+    });
+    return document;
+  }),
   
 });

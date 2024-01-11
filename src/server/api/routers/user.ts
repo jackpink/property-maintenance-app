@@ -44,7 +44,7 @@ export const userRouter = createTRPCRouter({
   getContractor: privateProcedure
   .input(z.object({ contractorId: z.string() }))
   .query(async({ ctx, input }) => {
-    const contractor =await ctx.prisma.contractor.findUnique({
+    const contractor =await ctx.prisma.contractor.findUniqueOrThrow({
         where: {
             id: input.contractorId
         }, include: {
@@ -57,7 +57,7 @@ export const userRouter = createTRPCRouter({
         }
         
     });
-    return {Contractor: contractor};
+    return contractor;
   }),
   updateContractor: privateProcedure
   .input(z.object({ contractorId: z.string(), companyName: z.string().optional(), aboutStatement: z.string().optional(), tag: z.nativeEnum(TagEnum).optional(), website: z.string().optional() }))

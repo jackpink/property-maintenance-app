@@ -1,5 +1,8 @@
 import { RouterOutputs, api } from "~/utils/api";
-import { TabListComponentAddField } from "../Molecules/EditableAttributes";
+import {
+  TabListComponentAddDocument,
+  TabListComponentAddField,
+} from "../Molecules/EditableAttributes";
 import { PageSubTitle } from "../Atoms/Title";
 import { ContractorDocumentGroup } from "@prisma/client";
 
@@ -32,12 +35,31 @@ const ContractorLicensesSectionEditable = ({
       onError: () => {},
     });
 
-  console.log("contractor", !!contractor?.aboutStatement);
+  const { mutate: addLicenseDocumentToContractor } =
+    api.document.addNewDocumentToContractorDocumentGroup.useMutation({
+      onSuccess: () => {
+        void ctx.user.getContractor.invalidate();
+      },
+      onError: () => {},
+    });
+
+  console.log("contractor", contractor);
 
   return (
     <div>
       {contractor?.licenses?.map((section, index) => (
-        <DisplayDocumentsForSection key={index} section={section} />
+        <>
+          <DisplayDocumentsForSection
+            key={index}
+            section={section}
+            createDocument={(documentName: string) =>
+              addLicenseDocumentToContractor({
+                contractorDocumentGroupId: section.id,
+                label: documentName,
+              })
+            }
+          />
+        </>
       ))}
 
       <TabListComponentAddField
@@ -55,15 +77,26 @@ const ContractorLicensesSectionEditable = ({
 
 const DisplayDocumentsForSection = ({
   section,
+  createDocument,
 }: {
-  section: RouterOutputs["user"]["getContractor"]["licenses"][0];
+  section: Contractor["licenses"][0];
+  createDocument: (documentName: string) => void;
 }) => {
   return (
-    <div>
+    <div className="">
       <PageSubTitle>{section.label}</PageSubTitle>
       {section.documents.map((document, index) => (
-        <div key={index}>{document.label}</div>
+        <>
+          <div key={index}>{document.label}</div>
+        </>
       ))}
+      <div className="pb-16 pl-10">
+        <TabListComponentAddDocument
+          onClick={(documentName: string) => {
+            createDocument(documentName);
+          }}
+        />
+      </div>
     </div>
   );
 };
