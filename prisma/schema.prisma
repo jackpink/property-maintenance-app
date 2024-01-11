@@ -127,6 +127,16 @@ model Photo {
   @@index([roomId])
 }
 
+model Logo {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  filename     String
+  Contractor   Contractor? @relation(fields: [contractorId], references: [id])
+  contractorId String?     @unique
+
+  @@index([contractorId])
+}
+
 model Job {
   id                String        @id @default(cuid())
   createdAt         DateTime      @default(now())
@@ -167,12 +177,16 @@ enum TagEnum {
 }
 
 model Contractor {
-  id          String                    @id
-  createdAt   DateTime                  @default(now())
-  jobs        Job[]
-  companyName String
-  licenses    ContractorDocumentGroup[]
-  dataStorage Int                       @default(0) //in bytes
+  id             String                    @id
+  createdAt      DateTime                  @default(now())
+  jobs           Job[]
+  companyName    String
+  licenses       ContractorDocumentGroup[]
+  dataStorage    Int                       @default(0) //in bytes
+  aboutStatement String?                   @db.VarChar(2000)
+  tag            TagEnum?
+  website        String?
+  logo           Logo?
 }
 
 model HomeownerUser {
