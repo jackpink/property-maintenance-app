@@ -43,12 +43,21 @@ export const userRouter = createTRPCRouter({
   }),
   getContractor: privateProcedure
   .input(z.object({ contractorId: z.string() }))
-  .query(({ ctx, input }) => {
-    return ctx.prisma.contractor.findUnique({
+  .query(async({ ctx, input }) => {
+    const contractor =await ctx.prisma.contractor.findUnique({
         where: {
             id: input.contractorId
+        }, include: {
+          licenses: {
+            include: {
+              documents: true
+            }
+          }
+          
         }
+        
     });
+    return {Contractor: contractor};
   }),
   updateContractor: privateProcedure
   .input(z.object({ contractorId: z.string(), companyName: z.string().optional(), aboutStatement: z.string().optional(), tag: z.nativeEnum(TagEnum).optional(), website: z.string().optional() }))
@@ -62,7 +71,17 @@ export const userRouter = createTRPCRouter({
             aboutStatement: input.aboutStatement,
             tag: input.tag,
             website: input.website,
-            
+
+        }
+    });
+  }),
+  addLicenseSectionToContractor: privateProcedure
+  .input(z.object({ contractorId: z.string(), sectionName: z.string() }))
+  .mutation(async({ ctx, input }) => {
+    return ctx.prisma.contractorDocumentGroup.create({
+        data: {
+            contractorId: input.contractorId,
+            label: input.sectionName
         }
     });
   }),

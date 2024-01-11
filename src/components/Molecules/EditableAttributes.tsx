@@ -203,7 +203,7 @@ const EditableTag: React.FC<{
   );
 };
 
-const TabListComponentAddField: React.FC<{
+export const TabListComponentAddField: React.FC<{
   onClick: (sectionName: string) => void;
   label: string;
 }> = ({ onClick, label }) => {
@@ -235,7 +235,7 @@ const TabListComponentAddField: React.FC<{
   );
 };
 
-const TabListComponentAddDocument: React.FC<{
+export const TabListComponentAddDocument: React.FC<{
   onClick: (documentName: string) => void;
 }> = ({ onClick }) => {
   const [inputMode, setInputMode] = useState(false);

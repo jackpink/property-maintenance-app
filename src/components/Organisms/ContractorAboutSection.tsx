@@ -6,7 +6,7 @@ import {
 } from "../Molecules/EditableAttributes";
 import { TagEnum } from "@prisma/client";
 
-type Contractor = RouterOutputs["user"]["getContractor"];
+type Contractor = RouterOutputs["user"]["getContractor"]["Contractor"];
 
 export const ContractorAboutSection = ({
   contractor,
