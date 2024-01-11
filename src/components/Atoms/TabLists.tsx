@@ -126,13 +126,21 @@ export const TabAttributeComponentLabel = ({ label }: { label: string }) => {
   return <TextSpan className="text-xl font-medium">{label}</TextSpan>;
 };
 
-export const TabAttributeComponentValue = ({ value }: { value: string }) => {
+export const TabAttributeComponentValue = ({
+  value,
+  capitalise = true,
+}: {
+  value: string;
+  capitalise?: boolean;
+}) => {
   return (
     <>
       <TextSpan className="pl-10 text-xl font-normal">
-        {value.charAt(0).toUpperCase()}
+        {capitalise ? value.charAt(0).toUpperCase() : value}
       </TextSpan>
-      <TextSpan className=" text-xl font-normal">{value.slice(1)}</TextSpan>
+      <TextSpan className=" text-xl font-normal">
+        {capitalise ? value.slice(1) : ""}
+      </TextSpan>
     </>
   );
 };

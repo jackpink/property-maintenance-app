@@ -69,6 +69,7 @@ const ContractorAboutSectionEditable = ({
             contractorId: contractor?.id ?? "",
           });
         }}
+        capitalise={false}
       />
     </div>
   );

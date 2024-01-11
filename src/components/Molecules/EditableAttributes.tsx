@@ -17,12 +17,19 @@ export const TabListComponentTextField: React.FC<{
   value: string;
   exists: boolean;
   updateValueFunction: (newValue: string) => void;
-}> = ({ label, value, exists, updateValueFunction }) => {
+  capitalise?: boolean;
+}> = ({ label, value, exists, updateValueFunction, capitalise = true }) => {
   const [newValue, setNewValue] = useState(value ?? "");
   return (
     <TabAttributeComponent
       title={label}
-      StandardComponent={<StandardTextComponent label={label} value={value} />}
+      StandardComponent={
+        <StandardTextComponent
+          label={label}
+          value={value}
+          capitalise={capitalise}
+        />
+      }
       EditableComponent={
         <EditableTextComponent
           value={newValue}
@@ -38,14 +45,15 @@ export const TabListComponentTextField: React.FC<{
   );
 };
 
-const StandardTextComponent: React.FC<{ label: string; value: string }> = ({
-  label,
-  value,
-}) => {
+const StandardTextComponent: React.FC<{
+  label: string;
+  value: string;
+  capitalise?: boolean;
+}> = ({ label, value, capitalise = true }) => {
   return (
     <>
       <TabAttributeComponentLabel label={label} />
-      <TabAttributeComponentValue value={value} />
+      <TabAttributeComponentValue value={value} capitalise={capitalise} />
     </>
   );
 };
