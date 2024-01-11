@@ -1,13 +1,16 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import {
+  TabAttributeAddButton,
   TabAttributeComponent,
   TabAttributeComponentLabel,
   TabAttributeComponentValue,
   TabAttributeComponentValueLargeText,
+  TabAttributeEditMode,
 } from "../Atoms/TabLists";
 import { TextInput } from "../Atoms/TextInput";
 import { TagEnum } from "@prisma/client";
 import clsx from "clsx";
+import { on } from "events";
 
 export const TabListComponentTextField: React.FC<{
   label: string;
@@ -193,5 +196,73 @@ const EditableTag: React.FC<{
         )}
       </div>
     </>
+  );
+};
+
+const TabListComponentAddDocumentSection: React.FC<{
+  onClick: (sectionName: string) => void;
+}> = ({ onClick }) => {
+  const [inputMode, setInputMode] = useState(false);
+  const [sectionName, setSectionName] = useState("");
+
+  if (!inputMode)
+    return (
+      <TabAttributeAddButton
+        onClick={() => setInputMode(true)}
+        title="Section"
+      />
+    );
+
+  return (
+    <div className="flex ">
+      <TabAttributeEditMode
+        EditableComponent={
+          <EditableTextComponent
+            value={sectionName}
+            setValue={setSectionName}
+            label="Section Name"
+          />
+        }
+        onClickCancel={() => setInputMode(false)}
+        onClickConfirm={() => {
+          onClick(sectionName);
+          setInputMode(false);
+        }}
+      />
+    </div>
+  );
+};
+
+const TabListComponentAddDocument: React.FC<{
+  onClick: (documentName: string) => void;
+}> = ({ onClick }) => {
+  const [inputMode, setInputMode] = useState(false);
+  const [documentName, setDocumentName] = useState("");
+
+  if (!inputMode)
+    return (
+      <TabAttributeAddButton
+        onClick={() => setInputMode(true)}
+        title="Document"
+      />
+    );
+
+  return (
+    <div className="flex ">
+      <TabAttributeEditMode
+        EditableComponent={
+          <EditableTextComponent
+            value={documentName}
+            setValue={setDocumentName}
+            label="Document Name"
+          />
+        }
+        onClickCancel={() => setInputMode(false)}
+        onClickConfirm={() => {
+          onClick(documentName);
+          setInputMode(false);
+        }}
+      />
+    </div>
   );
 };
