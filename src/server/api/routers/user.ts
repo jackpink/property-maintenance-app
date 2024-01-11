@@ -1,3 +1,4 @@
+import { TagEnum } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 
@@ -50,7 +51,7 @@ export const userRouter = createTRPCRouter({
     });
   }),
   updateContractor: privateProcedure
-  .input(z.object({ contractorId: z.string(), companyName: z.string().optional(), aboutStatement: z.string().optional() }))
+  .input(z.object({ contractorId: z.string(), companyName: z.string().optional(), aboutStatement: z.string().optional(), tag: z.nativeEnum(TagEnum).optional(), website: z.string().optional() }))
   .mutation(({ ctx, input }) => {
     return ctx.prisma.contractor.update({
         where: {
@@ -58,7 +59,10 @@ export const userRouter = createTRPCRouter({
         },
         data: {
             companyName: input.companyName,
-            aboutStatement: input.aboutStatement
+            aboutStatement: input.aboutStatement,
+            tag: input.tag,
+            website: input.website,
+            
         }
     });
   }),

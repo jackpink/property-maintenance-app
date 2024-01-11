@@ -1,5 +1,10 @@
 import { RouterOutputs, api } from "~/utils/api";
-import { TabListComponentLargeTextField } from "../Molecules/EditableAttributes";
+import {
+  TabListComponentLargeTextField,
+  TabListComponentTags,
+  TabListComponentTextField,
+} from "../Molecules/EditableAttributes";
+import { TagEnum } from "@prisma/client";
 
 type Contractor = RouterOutputs["user"]["getContractor"];
 
@@ -40,6 +45,27 @@ const ContractorAboutSectionEditable = ({
         updateValueFunction={(newValue: string) => {
           updateContractor({
             aboutStatement: newValue,
+            contractorId: contractor?.id ?? "",
+          });
+        }}
+      />
+      <TabListComponentTags
+        tag={contractor?.tag ?? TagEnum.OTHER}
+        exists={!!contractor?.tag}
+        updateTagFunction={(newTag?: TagEnum) => {
+          updateContractor({
+            tag: newTag,
+            contractorId: contractor?.id ?? "",
+          });
+        }}
+      />
+      <TabListComponentTextField
+        label="Website"
+        value={contractor?.website ?? ""}
+        exists={!!contractor?.website}
+        updateValueFunction={(newValue: string) => {
+          updateContractor({
+            website: newValue,
             contractorId: contractor?.id ?? "",
           });
         }}
