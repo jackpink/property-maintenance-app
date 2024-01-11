@@ -199,18 +199,16 @@ const EditableTag: React.FC<{
   );
 };
 
-const TabListComponentAddDocumentSection: React.FC<{
+const TabListComponentAddField: React.FC<{
   onClick: (sectionName: string) => void;
-}> = ({ onClick }) => {
+  label: string;
+}> = ({ onClick, label }) => {
   const [inputMode, setInputMode] = useState(false);
   const [sectionName, setSectionName] = useState("");
 
   if (!inputMode)
     return (
-      <TabAttributeAddButton
-        onClick={() => setInputMode(true)}
-        title="Section"
-      />
+      <TabAttributeAddButton onClick={() => setInputMode(true)} title={label} />
     );
 
   return (
