@@ -115,11 +115,7 @@ const EditableLargeTextComponent: React.FC<{
   return (
     <>
       <TabAttributeComponentLabel label={label} />
-      <TextInput
-        value={value}
-        onChange={(e) => setValue(e.currentTarget.value)}
-        error={false}
-      />
+
       <textarea
         onChange={(e) => setValue(e.currentTarget.value)}
         value={value}

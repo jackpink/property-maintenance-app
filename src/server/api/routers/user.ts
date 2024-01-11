@@ -49,6 +49,19 @@ export const userRouter = createTRPCRouter({
         }
     });
   }),
+  updateContractor: privateProcedure
+  .input(z.object({ contractorId: z.string(), companyName: z.string().optional(), aboutStatement: z.string().optional() }))
+  .mutation(({ ctx, input }) => {
+    return ctx.prisma.contractor.update({
+        where: {
+            id: input.contractorId
+        },
+        data: {
+            companyName: input.companyName,
+            aboutStatement: input.aboutStatement
+        }
+    });
+  }),
   
 
 })

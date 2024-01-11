@@ -23,6 +23,7 @@ import { api } from "~/utils/api";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 import { TabListComponent } from "~/components/Atoms/TabLists";
 import { useRouter } from "next/router";
+import { ContractorAboutSection } from "~/components/Organisms/ContractorAboutSection";
 
 const ContractorHomePage = () => {
   const { userId } = useAuth();
@@ -101,7 +102,9 @@ const HomeownerPageWithUser: React.FC<HomeownerPageWithUserProps> = ({
                 <Text>{contractorFetchError?.message}</Text>
               </div>
             ) : (
-              <></>
+              <>
+                <ContractorAboutSection contractor={contractor} />
+              </>
             )}
           </ColumnTwo>
         </ResponsiveColumns>
