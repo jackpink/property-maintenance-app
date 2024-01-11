@@ -55,15 +55,11 @@ export const TabAttributeComponent = ({
     <div className="flex w-full justify-between py-5 pl-6">
       {editMode ? (
         <>
-          <div>{EditableComponent}</div>
-          <div className="flex flex-nowrap">
-            <button onClick={() => setEditMode(false)}>
-              <CancelIcon />
-            </button>
-            <button onClick={onClickConfirmButton}>
-              <ConfirmIcon />
-            </button>
-          </div>
+          <TabAttributeEditMode
+            onClickConfirm={onClickConfirmButton}
+            onClickCancel={() => setEditMode(false)}
+            EditableComponent={EditableComponent}
+          />
         </>
       ) : !exists ? (
         <TabAttributeAddButton
@@ -103,6 +99,26 @@ export const TabAttributeAddButton = ({
         <span className="pl-4">Add {title}</span>
       </div>
     </button>
+  );
+};
+
+export const TabAttributeEditMode: React.FC<{
+  onClickConfirm: () => void;
+  onClickCancel: () => void;
+  EditableComponent: ReactNode;
+}> = ({ onClickConfirm, onClickCancel, EditableComponent }) => {
+  return (
+    <>
+      <div>{EditableComponent}</div>
+      <div className="flex flex-nowrap">
+        <button onClick={onClickCancel}>
+          <CancelIcon />
+        </button>
+        <button onClick={onClickConfirm}>
+          <ConfirmIcon />
+        </button>
+      </div>
+    </>
   );
 };
 
