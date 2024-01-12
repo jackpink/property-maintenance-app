@@ -49,15 +49,16 @@ const MainMenuButton: React.FC<
 );
 
 const MainMenuButtons = ({ isHomeowner }: { isHomeowner: boolean }) => {
-  const path = usePathname().split("/")[1];
+  const path = usePathname().split("/");
   console.log(path);
-  const propertiesSelected = path === "properties" || path === "property";
-  const alertsSelected = path === "alerts";
-  const accountSelected = path === "account";
-  const contractorHomeSelected = path === "contractor";
-  const contractorJobsSelected = path === "jobs";
-  const contractorProductsSelected = path === "products";
-  const contractorServicesSelected = path === "services";
+  const propertiesSelected =
+    path.includes("properties") || path.includes("property"); //path === "properties" || path === "property";
+  const alertsSelected = path.includes("alerts");
+  const accountSelected = path.includes("account");
+  const contractorHomeSelected = path.includes("contractor");
+  const contractorJobsSelected = path.includes("jobs");
+  const contractorProductsSelected = path.includes("products");
+  const contractorServicesSelected = path.includes("services");
 
   return (
     <>
