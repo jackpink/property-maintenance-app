@@ -253,7 +253,7 @@ type DocumentProps = {
 const Document: React.FC<DocumentProps> = ({ document }) => {
   const [documentOpen, setDocumentOpen] = useState(false);
   const { data: pdfUrl } = api.document.getDocument.useQuery({
-    filename: document.filename,
+    filename: document.filename ?? undefined,
   });
   console.log("docuemnt url", pdfUrl);
   return (
