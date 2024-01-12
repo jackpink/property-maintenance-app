@@ -10,7 +10,7 @@ import { TRPCError } from "@trpc/server";
 export const documentRouter = createTRPCRouter({
   
   getDocumentUploadPresignedUrl: privateProcedure
-  .input(z.object({ key: z.string(), property: z.string() }))
+  .input(z.object({ key: z.string(), userId: z.string() }))
   .mutation(async ({ ctx, input}) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR UPLOAD")
@@ -19,7 +19,7 @@ export const documentRouter = createTRPCRouter({
     const fileExtension = filenameArray[1];
     if (!fileExtension) throw new TRPCError({code: "BAD_REQUEST"});
     const uuidName = uuidv4();
-    const newFilename = input.property + "/" + uuidName + "." + fileExtension;
+    const newFilename = input.userId + "/" + uuidName + "." + fileExtension;
     console.log("new filename ", newFilename);
     const key = newFilename;
     
@@ -40,29 +40,12 @@ export const documentRouter = createTRPCRouter({
   }),
 
   createDocumentRecord: privateProcedure
-  .input(z.object({filename: z.string(), label:z.string(), jobId: z.string().optional(), propertyId: z.string().optional()}))
+  .input(z.object({filename: z.string().optional(), label:z.string(), documentGroupId: z.number()}))
   .mutation(async ({ ctx, input }) => {
     const document = await ctx.prisma.document.create({
       data: {
         filename: input.filename,
         label: input.label,
-        jobId: input.jobId ? input.jobId : null,
-        propertyId: input.propertyId ? input.propertyId : null
-
-      }
-    });
-    return document;
-
-  }),
-  createDocumentRecordForGroup: privateProcedure
-  .input(z.object({filename: z.string(), label:z.string(), documentGroupId: z.number(), jobId: z.string().optional(), propertyId: z.string().optional()}))  
-  .mutation(async ({ ctx, input }) => {
-    const document = await ctx.prisma.document.create({
-      data: {
-        filename: input.filename,
-        label: input.label,
-        jobId: input.jobId ? input.jobId : null,
-        propertyId: input.propertyId ? input.propertyId : null,
         documentGroupId: input.documentGroupId
 
       }
@@ -70,13 +53,30 @@ export const documentRouter = createTRPCRouter({
     return document;
 
   }),
+  updateDocumentRecord: privateProcedure
+  .input(z.object({id: z.string(), label:z.string().optional(), jobId: z.string().optional(), propertyId: z.string().optional(), documentGroupId: z.number().optional(), contractorDocumentGroupId: z.number().optional(), filename: z.string().optional()}))
+  .mutation(async ({ ctx, input }) => {
+    const document = await ctx.prisma.document.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        label: input.label,
+        documentGroupId: input.documentGroupId,
+        filename: input.filename
+      }
+    });
+    return document;
+
+  }),
+  
 
   getDocument: privateProcedure
-  .input(z.object({ filename: z.string() }))
+  .input(z.object({ filename: z.string().optional() }))
   .query(async ({ ctx, input }) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR Download")   
-  
+    if (!input.filename) throw new TRPCError({code: "BAD_REQUEST"});
     const { s3 } = ctx
 
     const key = input.filename;
@@ -100,85 +100,24 @@ export const documentRouter = createTRPCRouter({
     }
   }),
 
-  getDocumentsForJobWithNoGroup: privateProcedure
-  .input(z.object({ jobId: z.string()}))
-  .query(async ({ ctx, input }) => {
-    const documents = ctx.prisma.document.findMany({
-      where: {
-        jobId: input.jobId,
-        documentGroupId: null
-      }
-  })
-  return documents;
-  }),
-  getDocumentsForPropertyWithNoGroup: privateProcedure
-  .input(z.object({ propertyId: z.string()}))
-  .query(async ({ ctx, input }) => {
-    const documents = ctx.prisma.document.findMany({
-      where: {
-        propertyId: input.propertyId,
-        documentGroupId: null
-      }
-  })
-  return documents;
-  }),
 
-  getDocumentGroupsForProperty: privateProcedure
-  .query(async ({ ctx }) => {
-  const documentGroups = ctx.prisma.documentGroup.findMany(
-      {
-        where: {
-          parent: "PROPERTY"
-      }
-    }
-    )
-    return documentGroups;
-  }),
-  getDocumentsForGroupForProperty: privateProcedure
-  .input(z.object({ documentGroupId: z.number(), propertyId: z.string() }))
-  .query(async ({ ctx, input }) => {
-    const documents = ctx.prisma.document.findMany({
-      where: {
-        documentGroupId: input.documentGroupId,
-        propertyId: input.propertyId
-      }
-  })
-  return documents;
-  }
-  ),
-  getDocumentsForGroupForJob: privateProcedure
-  .input(z.object({ documentGroupId: z.number(), jobId: z.string() }))
-  .query(async ({ ctx, input }) => {
-    const documents = ctx.prisma.document.findMany({
-      where: {
-        documentGroupId: input.documentGroupId,
-        jobId: input.jobId
-      }
-  })
-  return documents;
-  }
-  ),
-  getDocumentGroupsForJob: privateProcedure
-  .query(async ({ ctx }) => {
-  const documentGroups = ctx.prisma.documentGroup.findMany(
-      {
-        where: {
-          parent: "JOB"
-      }
-    }
-    )
-    return documentGroups;
-  }),
-  addNewDocumentToContractorDocumentGroup: privateProcedure
-  .input(z.object({ contractorDocumentGroupId: z.number(), label: z.string() }))
+  
+
+  createDocumentGroup: privateProcedure
+  .input(z.object({ contractorId: z.string().optional(), label: z.string(), jobId: z.string().optional(), propertyId: z.string().optional(), productId: z.string().optional() }))
   .mutation(async ({ ctx, input }) => {
-    const document = await ctx.prisma.document.create({
+    const documentGroup = await ctx.prisma.documentGroup.create({
       data: {
+        contractorId: input.contractorId,
         label: input.label,
-        contractorDocumentGroupId: input.contractorDocumentGroupId
+        jobId: input.jobId,
+        propertyId: input.propertyId,
+        productId: input.productId
       }
     });
-    return document;
+    return documentGroup;
+
   }),
+  
   
 });

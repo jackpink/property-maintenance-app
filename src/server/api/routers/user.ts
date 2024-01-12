@@ -78,7 +78,7 @@ export const userRouter = createTRPCRouter({
   addLicenseSectionToContractor: privateProcedure
   .input(z.object({ contractorId: z.string(), sectionName: z.string() }))
   .mutation(async({ ctx, input }) => {
-    return ctx.prisma.contractorDocumentGroup.create({
+    return ctx.prisma.documentGroup.create({
         data: {
             contractorId: input.contractorId,
             label: input.sectionName
