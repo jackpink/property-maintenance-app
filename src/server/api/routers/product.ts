@@ -20,6 +20,19 @@ export const productRouter= createTRPCRouter({
     return product;
 
   }),
+  createProduct: privateProcedure
+  .input(z.object({ manufacturer:z.string(), model:z.string(), label : z.string()}))
+  .mutation(async ({ ctx, input }) => {
+    const product = await ctx.prisma.product.create({
+      data: {
+        manufacturer: input.manufacturer,
+        model: input.model,
+        label: input.label
+      }
+    });
+    return product;
+
+  }),
   getProductsForJob: privateProcedure
   .input(z.object({ jobId: z.string()}))
   .query(async ({ ctx, input }) => {

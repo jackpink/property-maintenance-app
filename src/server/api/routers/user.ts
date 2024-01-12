@@ -52,7 +52,8 @@ export const userRouter = createTRPCRouter({
             include: {
               documents: true
             }
-          }
+          },
+          products: true
           
         }
         
