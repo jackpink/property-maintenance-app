@@ -38,8 +38,8 @@ model Level {
 }
 
 model Property {
-  id              String         @id @default(cuid())
-  createdAt       DateTime       @default(now())
+  id              String          @id @default(cuid())
+  createdAt       DateTime        @default(now())
   apartment       String?
   streetNumber    String
   street          String
@@ -57,55 +57,43 @@ model Property {
   wallType        String?
   levels          Level[]
   jobs            Job[]
-  documents       Document[]
-  homeowner       HomeownerUser? @relation(fields: [homeownerUserId], references: [id])
+  documentGroups  DocumentGroup[]
+  homeowner       HomeownerUser?  @relation(fields: [homeownerUserId], references: [id])
   homeownerUserId String?
 
   @@index([homeownerUserId])
 }
 
 model Document {
-  id                        String                   @id @default(cuid())
-  createdAt                 DateTime                 @default(now())
-  label                     String
-  filename                  String
-  DocumentGroup             DocumentGroup?           @relation(fields: [documentGroupId], references: [id])
-  documentGroupId           Int?
-  Job                       Job?                     @relation(fields: [jobId], references: [id])
-  jobId                     String?
-  Property                  Property?                @relation(fields: [propertyId], references: [id])
-  propertyId                String?
-  Product                   ProductItem?             @relation(fields: [productItemId], references: [id])
-  productItemId             String?
-  ContractorDocumentGroup   ContractorDocumentGroup? @relation(fields: [contractorDocumentGroupId], references: [id])
-  contractorDocumentGroupId Int?
+  id              String         @id @default(cuid())
+  createdAt       DateTime       @default(now())
+  label           String
+  filename        String?
+  DocumentGroup   DocumentGroup? @relation(fields: [documentGroupId], references: [id])
+  documentGroupId Int?
 
-  @@index([jobId])
-  @@index([propertyId])
   @@index([documentGroupId])
-  @@index([productItemId])
-  @@index([contractorDocumentGroupId])
 }
 
 model DocumentGroup {
-  id        Int                 @id @default(autoincrement())
-  createdAt DateTime            @default(now())
-  label     String
-  parent    DocumentGroupParent
-  order     Int?
-  documents Document[]
-}
-
-model ContractorDocumentGroup {
-  id           Int        @id @default(autoincrement())
-  createdAt    DateTime   @default(now())
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
   label        String
-  Contractor   Contractor @relation(fields: [contractorId], references: [id])
-  contractorId String
+  Contractor   Contractor? @relation(fields: [contractorId], references: [id])
+  contractorId String?
+  Job          Job?        @relation(fields: [jobId], references: [id])
+  jobId        String?
+  Product      Product?    @relation(fields: [productId], references: [id])
+  productId    String?
+  Property     Property?   @relation(fields: [propertyId], references: [id])
+  propertyId   String?
   order        Int?
   documents    Document[]
 
   @@index([contractorId])
+  @@index([jobId])
+  @@index([productId])
+  @@index([propertyId])
 }
 
 enum DocumentGroupParent {
@@ -138,24 +126,25 @@ model Logo {
 }
 
 model Job {
-  id                String        @id @default(cuid())
-  createdAt         DateTime      @default(now())
-  title             String
-  Property          Property      @relation(fields: [propertyId], references: [id])
-  propertyId        String
-  documents         Document[]
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  title      String
+  Property   Property @relation(fields: [propertyId], references: [id])
+  propertyId String
+
   photos            Photo[]
   rooms             Room[]
   products          ProductItem[]
   date              DateTime
-  Contractor        Contractor?   @relation(fields: [tradeUserId], references: [id])
+  Contractor        Contractor?     @relation(fields: [tradeUserId], references: [id])
   tradeUserId       String?
-  notes             String?       @db.VarChar(2000)
-  tradeNotes        String?       @db.VarChar(2000)
+  notes             String?         @db.VarChar(2000)
+  tradeNotes        String?         @db.VarChar(2000)
   nonUserTradeName  String?
   nonUserTradeEmail String?
   nonUserTradePhone String?
   tag               TagEnum?
+  documentGroups    DocumentGroup[]
 
   @@index([propertyId])
   @@index([tradeUserId])
@@ -177,13 +166,13 @@ enum TagEnum {
 }
 
 model Contractor {
-  id             String                    @id
-  createdAt      DateTime                  @default(now())
+  id             String          @id
+  createdAt      DateTime        @default(now())
   jobs           Job[]
   companyName    String
-  licenses       ContractorDocumentGroup[]
-  dataStorage    Int                       @default(0) //in bytes
-  aboutStatement String?                   @db.VarChar(2000)
+  licenses       DocumentGroup[]
+  dataStorage    Int             @default(0) //in bytes
+  aboutStatement String?         @db.VarChar(2000)
   tag            TagEnum?
   website        String?
   logo           Logo?
@@ -197,29 +186,29 @@ model HomeownerUser {
 }
 
 model Product {
-  id           String        @id @default(cuid())
-  createdAt    DateTime      @default(now())
+  id           String          @id @default(cuid())
+  createdAt    DateTime        @default(now())
   label        String
   manufacturer String?
   model        String?
   order        Int?
   productItems ProductItem[]
+  documents    DocumentGroup[]
 }
 
 model ProductItem {
-  id             String     @id @default(cuid())
-  createdAt      DateTime   @default(now())
-  notes          String?    @db.VarChar(2000)
-  tradeNotes     String?    @db.VarChar(2000)
-  Room           Room       @relation(fields: [roomId], references: [id])
+  id             String    @id @default(cuid())
+  createdAt      DateTime  @default(now())
+  notes          String?   @db.VarChar(2000)
+  tradeNotes     String?   @db.VarChar(2000)
+  Room           Room      @relation(fields: [roomId], references: [id])
   roomId         String
-  Job            Job?       @relation(fields: [jobId], references: [id])
+  Job            Job?      @relation(fields: [jobId], references: [id])
   jobId          String?
   installDate    DateTime?
   warrantyPeriod Int?
-  Product        Product    @relation(fields: [productId], references: [id])
+  Product        Product   @relation(fields: [productId], references: [id])
   productId      String
-  Documents      Document[]
   tag            TagEnum?
 
   @@index([roomId])
