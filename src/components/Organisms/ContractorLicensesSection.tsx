@@ -4,7 +4,8 @@ import {
   TabListComponentAddField,
 } from "../Molecules/EditableAttributes";
 import { PageSubTitle } from "../Atoms/Title";
-import { ContractorDocumentGroup } from "@prisma/client";
+import { DocumentGroup } from "@prisma/client";
+import { DocumentNotUploaded, DocumentUploaded } from "../Molecules/Document";
 
 type Contractor = RouterOutputs["user"]["getContractor"];
 
@@ -36,7 +37,7 @@ const ContractorLicensesSectionEditable = ({
     });
 
   const { mutate: addLicenseDocumentToContractor } =
-    api.document.addNewDocumentToContractorDocumentGroup.useMutation({
+    api.document.createDocumentRecord.useMutation({
       onSuccess: () => {
         void ctx.user.getContractor.invalidate();
       },
@@ -54,10 +55,11 @@ const ContractorLicensesSectionEditable = ({
             section={section}
             createDocument={(documentName: string) =>
               addLicenseDocumentToContractor({
-                contractorDocumentGroupId: section.id,
+                documentGroupId: section.id,
                 label: documentName,
               })
             }
+            contractorId={contractor?.id ?? ""}
           />
         </>
       ))}
@@ -78,16 +80,26 @@ const ContractorLicensesSectionEditable = ({
 const DisplayDocumentsForSection = ({
   section,
   createDocument,
+  contractorId,
 }: {
   section: Contractor["licenses"][0];
   createDocument: (documentName: string) => void;
+  contractorId: string;
 }) => {
   return (
     <div className="">
       <PageSubTitle>{section.label}</PageSubTitle>
       {section.documents.map((document, index) => (
         <>
-          <div key={index}>{document.label}</div>
+          {document.filename ? (
+            <DocumentUploaded document={document} />
+          ) : (
+            <DocumentNotUploaded
+              documentId={document.id}
+              userId={contractorId}
+              label={document.label}
+            />
+          )}
         </>
       ))}
       <div className="pb-16 pl-10">
