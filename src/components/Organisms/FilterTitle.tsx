@@ -65,5 +65,3 @@ const TitleSearchBar = ({
     />
   );
 };
-
-("Search by job title");

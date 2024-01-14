@@ -128,6 +128,7 @@ const CreateProductForm: React.FC<CreateProductFormProps> = ({
         manufacturer: input.manufacturer,
         model: input.model,
         label: input.label,
+        contractorId: contractorId,
       });
     }
   };
