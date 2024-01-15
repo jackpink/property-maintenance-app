@@ -28,13 +28,15 @@ import { ContractorLicensesSection } from "~/components/Organisms/ContractorLice
 import { ContractorProducts } from "~/components/Organisms/ContractorProducts";
 import ContractorAddProduct from "~/components/Organisms/ContractorProductAdd";
 import { ContractorProductPageNav } from "~/components/Molecules/PageNav";
+import { AddGuide } from "~/components/Organisms/ContractorProductGuide";
 
 const ContractorProductPage = () => {
   const { userId } = useAuth();
   const { user } = useUser();
   const productId = useRouter().query.product?.toString();
+  const guideId = useRouter().query.guide?.toString();
   console.log(user);
-  if (!userId || !user || !productId) {
+  if (!userId || !user || !productId || !guideId) {
     return <>Loading</>;
   }
   //const propertiesWithJobs = api.property.getPropertiesForTradeUser.useQuery({ user: userId});
@@ -45,6 +47,7 @@ const ContractorProductPage = () => {
       name={user.organizationMemberships[0]?.organization.name ?? ""}
       admin={user.organizationMemberships[0]?.role === "Admin"}
       productId={productId}
+      guideId={guideId}
     />
   );
 };
@@ -54,64 +57,23 @@ type ContractorProductPageWithUserProps = {
   name: string;
   admin: boolean;
   productId: string;
+  guideId: string;
 };
 
 const ContractorProductPageWithUser: React.FC<
   ContractorProductPageWithUserProps
-> = ({ contractorId, name, admin, productId }) => {
+> = ({ contractorId, name, admin, productId, guideId }) => {
   const {
-    data: product,
-    isLoading: productIsLoading,
-    error: productFetchError,
-  } = api.product.getProduct.useQuery({ id: productId });
+    data: guide,
+    isLoading: guideIsLoading,
+    error: guideFetchError,
+  } = api.guide.getGuide.useQuery({ id: guideId });
   const path = useRouter().asPath;
   return (
     <ContractorPageRedirect>
       <PageWithMainMenu isHomeowner={false}>
         <PageTitle>{name}</PageTitle>
-        <ContractorProductPageNav productId={productId} />
-        <ResponsiveColumns>
-          <ColumnOne>
-            {productIsLoading ? (
-              <div className="h-30 w-30">
-                <LoadingSpinner />
-              </div>
-            ) : productFetchError ? (
-              <div className="grid place-items-center">
-                <Text>{productFetchError?.message}</Text>
-              </div>
-            ) : (
-              <>
-                <TabListComponent title="Details" href={path} selected={true} />
-
-                <TabListComponent
-                  title="Documents"
-                  href={path + "/licenses"}
-                  selected={false}
-                />
-
-                <TabListComponent
-                  title="Image"
-                  href={path + "/image"}
-                  selected={false}
-                />
-              </>
-            )}
-          </ColumnOne>
-          <ColumnTwo>
-            {productIsLoading ? (
-              <div className="h-30 w-30">
-                <LoadingSpinner />
-              </div>
-            ) : productFetchError ? (
-              <div className="grid place-items-center">
-                <Text>{productFetchError?.message}</Text>
-              </div>
-            ) : (
-              <></>
-            )}
-          </ColumnTwo>
-        </ResponsiveColumns>
+        {guide?.label}
       </PageWithMainMenu>
     </ContractorPageRedirect>
   );
