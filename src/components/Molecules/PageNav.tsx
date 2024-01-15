@@ -73,12 +73,12 @@ const PageNavItem: React.FC<PageNavItemProps> = ({
 };
 
 type PropertyPageNavItemsProps = {
-  propertyId: string;
+  propertyId?: string;
   onlySelected?: boolean;
 };
 
 const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
-  propertyId,
+  propertyId = "",
   onlySelected = false,
 }) => {
   return (
@@ -113,13 +113,13 @@ const PropertyPageNavItems: React.FC<PropertyPageNavItemsProps> = ({
 };
 
 type JobPageNavItemsProps = {
-  propertyId: string;
+  propertyId?: string;
   jobId?: string;
   onlySelected?: boolean;
 };
 
 const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
-  propertyId,
+  propertyId = "",
   jobId = "1",
   onlySelected = false,
 }) => {
@@ -157,14 +157,43 @@ const JobPageNavItems: React.FC<JobPageNavItemsProps> = ({
   );
 };
 
+type ContractorProductPageNavItemsProps = {
+  productId?: string;
+};
+
+const ContractorProductPageNavItems: React.FC<
+  ContractorProductPageNavItemsProps
+> = ({ productId = "1" }) => {
+  return (
+    <>
+      <PageNavItem
+        linkHref={`/contractor/products/${encodeURIComponent(productId)}`}
+        linkText="GENERAL"
+      />
+      <PageNavItem
+        linkHref={`/contractor/products/${encodeURIComponent(
+          productId
+        )}/guides`}
+        linkText="GUIDES"
+      />
+      <PageNavItem
+        linkHref={`/contractor/products/${encodeURIComponent(
+          productId
+        )}/installs`}
+        linkText="INSTALLS"
+      />
+    </>
+  );
+};
+
 type RoomPageNavItemsProps = {
-  propertyId: string;
+  propertyId?: string;
   roomId?: string;
   onlySelected?: boolean;
 };
 
 const RoomPageNavItems: React.FC<RoomPageNavItemsProps> = ({
-  propertyId,
+  propertyId = "",
   roomId = "1",
   onlySelected = false,
 }) => {
@@ -200,11 +229,17 @@ const PageNav = ({
   propertyId,
   jobId,
   roomId,
+  productId,
 }: {
-  PageNavItems: React.FC<JobPageNavItemsProps | RoomPageNavItemsProps>;
-  propertyId: string;
+  PageNavItems:
+    | React.FC<PropertyPageNavItemsProps>
+    | React.FC<JobPageNavItemsProps>
+    | React.FC<RoomPageNavItemsProps>
+    | React.FC<ContractorProductPageNavItemsProps>;
+  propertyId?: string;
   jobId?: string;
   roomId?: string;
+  productId?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -218,6 +253,7 @@ const PageNav = ({
                 propertyId={propertyId}
                 jobId={jobId}
                 roomId={roomId}
+                productId={productId}
               />
             </ul>
           </nav>
@@ -235,6 +271,7 @@ const PageNav = ({
             jobId={jobId}
             onlySelected={true}
             roomId={roomId}
+            productId={productId}
           />
         </ul>
       </div>
@@ -297,6 +334,17 @@ export const RoomPageNav: React.FC<RoomPageNavProps> = ({
       PageNavItems={RoomPageNavItems}
       propertyId={propertyId}
       roomId={roomId}
+    />
+  );
+};
+
+export const ContractorProductPageNav: React.FC<
+  ContractorProductPageNavItemsProps
+> = ({ productId }) => {
+  return (
+    <PageNav
+      PageNavItems={ContractorProductPageNavItems}
+      productId={productId}
     />
   );
 };
