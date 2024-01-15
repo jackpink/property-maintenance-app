@@ -29,6 +29,10 @@ const checkPath = (path: string) => {
       return "DOCUMENTS";
     case "general":
       return "GENERAL";
+    case "guides":
+      return "GUIDES";
+    case "installs":
+      return "INSTALLS";
     case "products":
       return "PRODUCTS";
     case "alerts":
