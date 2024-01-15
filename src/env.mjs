@@ -15,6 +15,7 @@ export const env = createEnv({
     REGION: z.string(),
     GOOGLE_MAPS_API_KEY: z.string(),
     DOCUMENT_BUCKET_NAME: z.string(),
+    GUIDE_PHOTOS_BUCKET_NAME: z.string(),
     MONGODB_URI: z.string(),
     MONGODB_DB: z.string(),
   
@@ -42,6 +43,7 @@ export const env = createEnv({
     REGION: process.env.REGION,
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
     DOCUMENT_BUCKET_NAME: process.env.DOCUMENT_BUCKET_NAME,
+    GUIDE_PHOTOS_BUCKET_NAME: process.env.GUIDE_PHOTOS_BUCKET_NAME,
     MONGODB_URI: process.env.MONGODB_URI,
     MONGODB_DB: process.env.MONGODB_DB,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
