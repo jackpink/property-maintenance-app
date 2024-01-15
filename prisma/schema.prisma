@@ -177,6 +177,7 @@ model Contractor {
   website        String?
   logo           Logo?
   products       Product[]
+  guides         Guide[]
 }
 
 model HomeownerUser {
@@ -197,6 +198,7 @@ model Product {
   contractorId String?
   productItems ProductItem[]
   documents    DocumentGroup[]
+  guides       Guide[]
 
   @@index([contractorId])
 }
@@ -222,10 +224,17 @@ model ProductItem {
 }
 
 model Guide {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  label     String
-  steps     Step[]
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  label        String
+  steps        Step[]
+  Product      Product?    @relation(fields: [productId], references: [id])
+  productId    String?
+  contractor   Contractor? @relation(fields: [contractorId], references: [id])
+  contractorId String?
+
+  @@index([productId])
+  @@index([contractorId])
 }
 
 model Step {
@@ -241,11 +250,17 @@ model Step {
 }
 
 model StepMultimedia {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  id        String             @id @default(cuid())
+  createdAt DateTime           @default(now())
   filename  String
-  Step      Step     @relation(fields: [stepId], references: [id])
-  stepId    String   @unique
+  type      StepMultimediaType
+  Step      Step               @relation(fields: [stepId], references: [id])
+  stepId    String             @unique
 
   @@index([stepId])
+}
+
+enum StepMultimediaType {
+  IMAGE
+  VIDEO
 }
