@@ -176,6 +176,7 @@ model Contractor {
   tag            TagEnum?
   website        String?
   logo           Logo?
+  products       Product[]
 }
 
 model HomeownerUser {
@@ -192,8 +193,12 @@ model Product {
   manufacturer String?
   model        String?
   order        Int?
+  contractor   Contractor?     @relation(fields: [contractorId], references: [id])
+  contractorId String?
   productItems ProductItem[]
   documents    DocumentGroup[]
+
+  @@index([contractorId])
 }
 
 model ProductItem {
@@ -214,4 +219,33 @@ model ProductItem {
   @@index([roomId])
   @@index([jobId])
   @@index([productId])
+}
+
+model Guide {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  label     String
+  steps     Step[]
+}
+
+model Step {
+  id         String          @id @default(cuid())
+  createdAt  DateTime        @default(now())
+  text       String?
+  order      Int?
+  guide      Guide           @relation(fields: [guideId], references: [id])
+  guideId    String
+  multimedia StepMultimedia?
+
+  @@index([guideId])
+}
+
+model StepMultimedia {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  filename  String
+  Step      Step     @relation(fields: [stepId], references: [id])
+  stepId    String   @unique
+
+  @@index([stepId])
 }
