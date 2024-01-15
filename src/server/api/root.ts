@@ -5,6 +5,7 @@ import { photoRouter } from "./routers/photo";
 import { userRouter } from "./routers/user";
 import { documentRouter } from "./routers/document";
 import { productRouter } from "./routers/product";
+import { guideRouter } from "./routers/guide";
 /**
  * This is the primary router for your server.
  *
@@ -16,7 +17,8 @@ export const appRouter = createTRPCRouter({
   job: jobRouter,
   photo: photoRouter,
   document: documentRouter,
-  product: productRouter
+  product: productRouter,
+  guide: guideRouter
 
 });
 

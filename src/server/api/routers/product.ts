@@ -6,12 +6,12 @@ export const productRouter= createTRPCRouter({
   
   
 
-  createProductForJob: privateProcedure
-  .input(z.object({ label:z.string(),  installDate: z.date(), jobId:z.string(), roomId:z.string()}))
+  createProductItemForJob: privateProcedure
+  .input(z.object({ label:z.string(),  installDate: z.date(), jobId:z.string(), roomId:z.string(), productId:z.string()}))
   .mutation(async ({ ctx, input }) => {
-    const product = await ctx.prisma.product.create({
+    const product = await ctx.prisma.productItem.create({
       data: {
-        label: input.label,
+        productId: input.productId,
         installDate: input.installDate,
         jobId: input.jobId,
         roomId: input.roomId
@@ -21,13 +21,14 @@ export const productRouter= createTRPCRouter({
 
   }),
   createProduct: privateProcedure
-  .input(z.object({ manufacturer:z.string(), model:z.string(), label : z.string()}))
+  .input(z.object({ manufacturer:z.string(), model:z.string(), label : z.string(), contractorId:z.string()}))
   .mutation(async ({ ctx, input }) => {
     const product = await ctx.prisma.product.create({
       data: {
         manufacturer: input.manufacturer,
         model: input.model,
-        label: input.label
+        label: input.label,
+        contractorId: input.contractorId
       }
     });
     return product;
@@ -46,7 +47,7 @@ export const productRouter= createTRPCRouter({
   createProductForRoom: privateProcedure
   .input(z.object({ label:z.string(), roomId:z.string()}))
   .mutation(async ({ ctx, input }) => {
-    const product = await ctx.prisma.product.create({
+    const product = await ctx.prisma.productItem.create({
       data: {
         label: input.label,
         roomId: input.roomId
@@ -62,10 +63,7 @@ export const productRouter= createTRPCRouter({
       where: {
         id: input.id
       },
-      include: {
-        Room: true,
-        Job: true
-      }
+      
     });
     return product;
   }),
