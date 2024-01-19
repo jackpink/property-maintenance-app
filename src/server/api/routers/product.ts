@@ -59,10 +59,13 @@ export const productRouter= createTRPCRouter({
   getProduct: privateProcedure
   .input(z.object({ id: z.string()}))
   .query(async ({ ctx, input }) => {
-    const product = await ctx.prisma.product.findUnique({
+    const product = await ctx.prisma.product.findUniqueOrThrow({
       where: {
         id: input.id
       },
+      include: {
+        guides: true,
+      }
       
     });
     return product;

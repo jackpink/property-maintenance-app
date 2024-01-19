@@ -18,7 +18,7 @@ import { TRPCError } from "@trpc/server";
 export const guideRouter = createTRPCRouter({
   
   getPhotoUploadPresignedUrl: privateProcedure
-  .input(z.object({ key: z.string(), property: z.string() }))
+  .input(z.object({ key: z.string(), guideId: z.string() }))
   .mutation(async ({ ctx, input}) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR UPLOAD")
@@ -27,7 +27,7 @@ export const guideRouter = createTRPCRouter({
     const fileExtension = filenameArray[1];
     if (!fileExtension) throw new TRPCError({code: "BAD_REQUEST"});
     const uuidName = uuidv4();
-    const newFilename = input.property + "/" + uuidName + "." + fileExtension;
+    const newFilename = input.guideId + "/" + uuidName + "." + fileExtension;
     console.log("new filename ", newFilename);
     const key = "original/" + newFilename;
     
@@ -167,12 +167,58 @@ export const guideRouter = createTRPCRouter({
     getGuide: privateProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const guide = await ctx.prisma.guide.findUnique({
+      const guide = await ctx.prisma.guide.findUniqueOrThrow({
         where: {
           id: input.id
+        },
+        include: {
+          steps: {
+            orderBy: {
+              order: "asc"
+            },
+          }
+          
         }
       });
       return guide;
+    }),
+    updateGuide: privateProcedure
+    .input(z.object({ id: z.string(), label: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const guide = await ctx.prisma.guide.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          label: input.label
+        }
+      });
+      return guide;
+    }),
+    updateStep: privateProcedure
+    .input(z.object({ id: z.string(), text: z.string().optional()}))
+    .mutation(async ({ ctx, input }) => {
+      const step = await ctx.prisma.step.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          text: input.text,
+        }
+      });
+      return step;
+    }),
+    createStepMultimedia: privateProcedure
+    .input(z.object({ stepId: z.string(), type: z.enum(["IMAGE", "VIDEO"] as const), filename: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const multimedia = await ctx.prisma.stepMultimedia.create({
+        data: {
+          stepId: input.stepId,
+          type: input.type,
+          filename: input.filename
+        }
+      });
+      return multimedia;
     }),
 
 });
