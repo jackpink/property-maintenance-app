@@ -23,12 +23,12 @@ import { api } from "~/utils/api";
 import LoadingSpinner from "~/components/Atoms/LoadingSpinner";
 import { TabListComponent } from "~/components/Atoms/TabLists";
 import { useRouter } from "next/router";
-import { ContractorAboutSection } from "~/components/Organisms/ContractorAboutSection";
-import { ContractorLicensesSection } from "~/components/Organisms/ContractorLicensesSection";
-import { ContractorProducts } from "~/components/Organisms/ContractorProducts";
-import ContractorAddProduct from "~/components/Organisms/ContractorProductAdd";
+
 import { ContractorProductPageNav } from "~/components/Molecules/PageNav";
-import { AddGuide } from "~/components/Organisms/ContractorProductGuide";
+import {
+  AddGuide,
+  ProductGuides,
+} from "~/components/Organisms/ContractorProductGuide";
 
 const ContractorProductPage = () => {
   const { userId } = useAuth();
@@ -72,6 +72,7 @@ const ContractorProductPageWithUser: React.FC<
         <PageTitle>{name}</PageTitle>
         <ContractorProductPageNav />
         <AddGuide productId={productId} contractorId={contractorId} />
+        <ProductGuides guides={product?.guides ?? []} />
       </PageWithMainMenu>
     </ContractorPageRedirect>
   );

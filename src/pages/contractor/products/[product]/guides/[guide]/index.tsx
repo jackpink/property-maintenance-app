@@ -28,7 +28,10 @@ import { ContractorLicensesSection } from "~/components/Organisms/ContractorLice
 import { ContractorProducts } from "~/components/Organisms/ContractorProducts";
 import ContractorAddProduct from "~/components/Organisms/ContractorProductAdd";
 import { ContractorProductPageNav } from "~/components/Molecules/PageNav";
-import { AddGuide } from "~/components/Organisms/ContractorProductGuide";
+import {
+  AddGuide,
+  EditGuide,
+} from "~/components/Organisms/ContractorProductGuide";
 
 const ContractorProductPage = () => {
   const { userId } = useAuth();
@@ -73,7 +76,14 @@ const ContractorProductPageWithUser: React.FC<
     <ContractorPageRedirect>
       <PageWithMainMenu isHomeowner={false}>
         <PageTitle>{name}</PageTitle>
-        {guide?.label}
+
+        {guideIsLoading ? (
+          <LoadingSpinner />
+        ) : guideFetchError ? (
+          <Text>There was an error loading the guide</Text>
+        ) : (
+          <EditGuide guide={guide} />
+        )}
       </PageWithMainMenu>
     </ContractorPageRedirect>
   );
