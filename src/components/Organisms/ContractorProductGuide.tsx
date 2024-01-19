@@ -9,6 +9,12 @@ import {
 import router, { useRouter } from "next/router";
 import { EditIconSmall, GreenTickIcon, ViewIcon } from "../Atoms/Icons";
 import Link from "next/link";
+import {
+  TabListComponentLargeTextField,
+  TabListComponentTextField,
+} from "../Molecules/EditableAttributes";
+import { useState } from "react";
+import { PageSubTitle } from "../Atoms/Title";
 
 export const AddGuide = ({
   productId,
@@ -81,5 +87,65 @@ const Guide = ({ guide }: { guide: Guides[0] }) => {
         </Link>
       </div>
     </div>
+  );
+};
+
+type Guide = RouterOutputs["guide"]["getGuide"];
+
+export const EditGuide = ({ guide }: { guide: Guide }) => {
+  const [newLabel, setNewLabel] = useState(guide.label);
+
+  const ctx = api.useContext();
+
+  const { mutateAsync: updateGuide } = api.guide.updateGuide.useMutation({
+    onSuccess: (guide) => {
+      console.log("updated guide", guide);
+      ctx.guide.getGuide.invalidate();
+    },
+  });
+  return (
+    <>
+      <TabListComponentTextField
+        label="Label:"
+        value={guide.label}
+        exists={!!guide.label}
+        updateValueFunction={(newLabel: string) => {
+          updateGuide({ id: guide.id, label: newLabel });
+        }}
+      />
+      {guide.steps.map((step, index) => (
+        <div>
+          <PageSubTitle>Step {step.order}</PageSubTitle>
+          <EditStep key={index} step={step} />
+        </div>
+      ))}
+    </>
+  );
+};
+
+const EditStep = ({ step }: { step: Guide["steps"][0] }) => {
+  const [newText, setNewText] = useState(step.text ?? "");
+
+  const ctx = api.useContext();
+
+  const { mutateAsync: updateStep } = api.guide.updateStep.useMutation({
+    onSuccess: (step) => {
+      console.log("updated step", step);
+      ctx.guide.getGuide.invalidate();
+    },
+  });
+
+  return (
+    <>
+      <TabListComponentLargeTextField
+        label="Text:"
+        value={step.text ?? ""}
+        exists={!!step.text}
+        updateValueFunction={(newText: string) => {
+          updateStep({ id: step.id, text: newText });
+        }}
+      />
+      <>Add Multimedia</>
+    </>
   );
 };
