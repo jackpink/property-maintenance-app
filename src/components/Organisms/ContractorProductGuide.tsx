@@ -15,6 +15,7 @@ import {
 } from "../Molecules/EditableAttributes";
 import { useState } from "react";
 import { PageSubTitle } from "../Atoms/Title";
+import { AddMultimediaButton } from "./ContractorGuideStepAddMultimedia";
 
 export const AddGuide = ({
   productId,
@@ -145,7 +146,7 @@ const EditStep = ({ step }: { step: Guide["steps"][0] }) => {
           updateStep({ id: step.id, text: newText });
         }}
       />
-      <>Add Multimedia</>
+      <AddMultimediaButton step={step} />
     </>
   );
 };
