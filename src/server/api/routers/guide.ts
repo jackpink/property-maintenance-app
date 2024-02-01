@@ -1,14 +1,22 @@
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import {  getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { GetObjectAclCommand, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { AbortMultipartUploadCommand, CompleteMultipartUploadCommand, CreateMultipartUploadCommand, GetObjectAclCommand, GetObjectCommand, PutObjectCommand, UploadPartCommand } from "@aws-sdk/client-s3";
 import { env } from "../../../env.mjs";
 import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
 import { aws4Interceptor } from "aws4-axios";
 import { TRPCError } from "@trpc/server";
 
-
+const MAX_FILE_SIZE = 10000000;
+function checkFileType(file: File) {
+    if (file?.name) {
+        const fileType = file.name.split(".").pop();
+        console.log("file type is ", fileType);
+        if (fileType === "mp4" ) return true;
+    }
+    return false;
+}
 /**
  * Router for handling photo-related API requests.
  * @remarks
@@ -17,24 +25,24 @@ import { TRPCError } from "@trpc/server";
  */
 export const guideRouter = createTRPCRouter({
   
-  getPhotoUploadPresignedUrl: privateProcedure
-  .input(z.object({ key: z.string(), guideId: z.string() }))
+  getUploadPresignedUrl: privateProcedure
+  .input(z.object({ key: z.string(), guideId: z.string(), multimediaType: z.enum(["IMAGE", "VIDEO"] as const)}))
   .mutation(async ({ ctx, input}) => {
     // Create a record of the photo
     console.log("GETTING SIGNED URL FOR UPLOAD")
     // try change name here
     const filenameArray = input.key.split(".");
-    const fileExtension = filenameArray[1];
+    const fileExtension = filenameArray.pop()
     if (!fileExtension) throw new TRPCError({code: "BAD_REQUEST"});
     const uuidName = uuidv4();
     const newFilename = input.guideId + "/" + uuidName + "." + fileExtension;
     console.log("new filename ", newFilename);
-    const key = "original/" + newFilename;
+    const key =  newFilename;
     
     const { s3 } = ctx
 
     const putObjectCommand = new PutObjectCommand({
-        Bucket: env.GUIDE_PHOTOS_BUCKET_NAME,
+        Bucket: input.multimediaType ==="IMAGE" ? env.GUIDE_PHOTOS_BUCKET_NAME : env.GUIDE_VIDEOS_BUCKET_NAME,
         Key: key, 
     });
 
@@ -69,6 +77,125 @@ export const guideRouter = createTRPCRouter({
     return photo;
 
   }),
+  uploadVideo: privateProcedure
+  .input(z.object({ 
+    guideId: z.string(), 
+    file: z.any()
+      .refine((file: File) => file?.length !== 0, "File is required")
+      /*.refine((file) => file.size < MAX_FILE_SIZE, "Max size is 5MB.")
+      .refine((file) => checkFileType(file), "Only .pdf, .docx formats are supported."),*/
+ }))
+  .mutation(async ({ ctx, input}) => {
+    // Create a record of the phot
+    console.log("file", input.file);
+    const fileExtension = input.file.name.split(".").pop();
+    console.log("file", input.file);
+       
+    
+    const uuidName = uuidv4();
+    const newFilename = input.guideId + "/" + uuidName + "." + fileExtension;
+    console.log("new filename ", newFilename);
+    const key = newFilename;
+    
+    const { s3 } = ctx
+
+  
+
+   
+  const bucketName = "property-maintenance-app-guide-videos";
+  
+
+  const buffer = Buffer.from(input.file, "utf8");
+
+  let uploadId;
+
+  try {
+    const multipartUpload = await s3.send(
+      new CreateMultipartUploadCommand({
+        Bucket: bucketName,
+        Key: key,
+      }),
+    );
+
+    uploadId = multipartUpload.UploadId;
+
+    const uploadPromises = [];
+    // Multipart uploads require a minimum size of 5 MB per part.
+    const partSize = Math.ceil(buffer.length / 5);
+
+    // Upload each part.
+    for (let i = 0; i < 5; i++) {
+      const start = i * partSize;
+      const end = start + partSize;
+      uploadPromises.push(
+        s3
+          .send(
+            new UploadPartCommand({
+              Bucket: bucketName,
+              Key: key,
+              UploadId: uploadId,
+              Body: buffer.subarray(start, end),
+              PartNumber: i + 1,
+            }),
+          )
+          .then((d) => {
+            console.log("Part", i + 1, "uploaded");
+            return d;
+          }),
+      );
+    }
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    return await s3.send(
+      new CompleteMultipartUploadCommand({
+        Bucket: bucketName,
+        Key: key,
+        UploadId: uploadId,
+        MultipartUpload: {
+          Parts: uploadResults.map(({ ETag }, i) => ({
+            ETag,
+            PartNumber: i + 1,
+          })),
+        },
+      }),
+    );
+
+    // Verify the output by downloading the file from the Amazon Simple Storage Service (Amazon S3) console.
+    // Because the output is a 25 MB string, text editors might struggle to open the file.
+  } catch (err) {
+    console.error(err);
+
+    if (uploadId) {
+      const abortCommand = new AbortMultipartUploadCommand({
+        Bucket: bucketName,
+        Key: key,
+        UploadId: uploadId,
+      });
+
+      await s3.send(abortCommand);
+    }
+  }
+
+
+  }),
+  getVideo: privateProcedure
+  .input(z.object({ name: z.string()}))
+  .query( async ({ ctx, input }) => {
+    // Get presigned url
+    const { s3 } = ctx
+    const params = {
+      Bucket: env.GUIDE_VIDEOS_BUCKET_NAME,
+      Key: input.name, 
+    }
+    const getObjectCommand = new GetObjectCommand(params); 
+    const url = await getSignedUrl(s3, getObjectCommand); 
+      
+      console.log("url is ", url)
+
+      return url;
+  }),
+
 
 
   getPhoto: privateProcedure
@@ -176,6 +303,9 @@ export const guideRouter = createTRPCRouter({
             orderBy: {
               order: "asc"
             },
+            include: {
+              multimedia: true
+            }
           }
           
         }
@@ -211,6 +341,7 @@ export const guideRouter = createTRPCRouter({
     createStepMultimedia: privateProcedure
     .input(z.object({ stepId: z.string(), type: z.enum(["IMAGE", "VIDEO"] as const), filename: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      console.log("creating multimedia", input.filename, input.type, input.stepId);
       const multimedia = await ctx.prisma.stepMultimedia.create({
         data: {
           stepId: input.stepId,

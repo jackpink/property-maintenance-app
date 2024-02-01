@@ -16,6 +16,7 @@ import {
 import { useState } from "react";
 import { PageSubTitle } from "../Atoms/Title";
 import { AddMultimediaButton } from "./ContractorGuideStepAddMultimedia";
+import { StepMultimedia } from "@prisma/client";
 
 export const AddGuide = ({
   productId,
@@ -138,6 +139,8 @@ const EditStep = ({ step }: { step: Guide["steps"][0] }) => {
 
   return (
     <>
+      {step.multimedia && <>{step.multimedia.filename}</>}
+      <StepMultimedia multimedia={step.multimedia} />
       <TabListComponentLargeTextField
         label="Text:"
         value={step.text ?? ""}
@@ -147,6 +150,51 @@ const EditStep = ({ step }: { step: Guide["steps"][0] }) => {
         }}
       />
       <AddMultimediaButton step={step} />
+    </>
+  );
+};
+
+const StepMultimedia = ({
+  multimedia,
+}: {
+  multimedia: Guide["steps"][0]["multimedia"];
+}) => {
+  if (!multimedia) {
+    return <>No multimedia for step</>;
+  } else if (multimedia.type === "IMAGE") {
+    return <StepImage image={multimedia} />;
+  } else if (multimedia.type === "VIDEO") {
+    return <StepVideo video={multimedia} />;
+  } else {
+    return <>Unknown multimedia type</>;
+  }
+};
+
+const StepImage = ({ image }: { image: StepMultimedia }) => {
+  const { data: url } = api.guide.getPhoto.useQuery({
+    name: image.filename,
+    type: "sm",
+  });
+
+  return (
+    <>
+      <img src={url} width={208} height={208} alt="image" />
+    </>
+  );
+};
+
+const StepVideo = ({ video }: { video: StepMultimedia }) => {
+  const { data: url } = api.guide.getVideo.useQuery({
+    name: video.filename,
+  });
+
+  return (
+    <>
+      <p>url: {url}</p>
+      <video controls>
+        <source src={url} type="video/mp4" />
+        The browser does not support videos.
+      </video>
     </>
   );
 };
